@@ -6,8 +6,7 @@ static void on_button_clicked(GtkButton *btn, gpointer data)
 {
     // change button label when it's clicked
     gtk_button_set_label(btn, "Hello World");
-    char command[] = "qpdf-10.0.1-x86_64.AppImage --empty --pages /tmp/spelling*.pdf -- /tmp/heskem_mamon.pdf";
-    int omg = system(command);
+
 }
 
 static void barf(GApplication *app, gpointer data) {
@@ -62,8 +61,6 @@ static void on_app_activate(GApplication *app, gpointer data)
     GtkWidget *btn = gtk_button_new_with_label("Click Me!");
 
     g_signal_connect(btn, "clicked", G_CALLBACK(on_button_clicked), NULL);
-
-
 
     GtkListStore *list_store = gtk_list_store_new(N_COLUMNS, G_TYPE_STRING, G_TYPE_STRING, G_TYPE_BOOLEAN);
 
