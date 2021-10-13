@@ -7,7 +7,7 @@ int main(int argc, char *argv[]) {
 
     printf("Here");
     GtkApplication *app = gtk_application_new(
-        "net.lautman.DepositSlip",
+        "net.lautman.DepositSlips",
         G_APPLICATION_FLAGS_NONE);
 
     g_signal_connect(app, "activate", G_CALLBACK(on_app_activate), NULL);
