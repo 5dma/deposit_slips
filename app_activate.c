@@ -5,43 +5,61 @@ static void on_button_clicked(GtkButton *btn, gpointer data)
 {
     // change button label when it's clicked
     gtk_button_set_label(btn, "Hello World");
-
 }
 
-static void barf(GApplication *app, gpointer data) {
+static void barf(GApplication *app, gpointer data)
+{
     g_print("OMG barf");
 }
 
-enum {
-        ACCOUNT_NUMBER,
-        DESCRIPTION,
-        CHECKBOX,
-        N_COLUMNS
-    };
+enum
+{
+    ACCOUNT_NUMBER,
+    DESCRIPTION,
+    CHECKBOX,
+    N_COLUMNS
+};
 
-void last_row_cell_data_func (GtkTreeViewColumn *col,
-                    GtkCellRenderer   *renderer,
-                    GtkTreeModel      *model,
-                    GtkTreeIter       *iter,
-                    gpointer           user_data) {
-
+void last_row_cell_data_func(GtkTreeViewColumn *col,
+                             GtkCellRenderer *renderer,
+                             GtkTreeModel *model,
+                             GtkTreeIter *iter,
+                             gpointer user_data)
+{
 
     gchararray account_number[500];
     gtk_tree_model_get(model, iter, ACCOUNT_NUMBER, account_number, -1);
-    g_debug("Here is the account number after %s\n",*account_number);
+    g_print("Here is the account number after %s\n", *account_number);
 
-    if (g_ascii_strcasecmp ("New", *account_number) == 0)  {
-        g_object_set(renderer, "style", PANGO_STYLE_ITALIC, NULL); 
-    } else {
+    if (g_ascii_strcasecmp("New", *account_number) == 0)
+    {
+        g_object_set(renderer, "style", PANGO_STYLE_ITALIC, NULL);
+    }
+    else
+    {
         g_object_set(renderer, "style", PANGO_STYLE_NORMAL, NULL);
-  }
+    }
 
-  g_object_set(renderer, "text", *account_number, NULL); 
+    g_object_set(renderer, "text", *account_number, NULL);
 }
 
+static void account_number_edited(GtkCellRendererText *renderer,
+                                  gchar *path,
+                                  gchar *new_account_number,
+                                  GtkTreeView *treeview) {
+    GtkTreeIter iter;
+    GtkTreeModel *model;
+    if (g_ascii_strcasecmp(new_account_number, "") != 0) {
+        model = gtk_tree_view_get_model(treeview);
+        if (gtk_tree_model_get_iter_from_string(model, &iter, path)) {
+            gtk_list_store_set(GTK_LIST_STORE(model), &iter, ACCOUNT_NUMBER, new_account_number, -1);
+        }
+    }
+}
 
 // callback function which is called when application is first started
-void on_app_activate(GApplication *app, gpointer data) {
+void on_app_activate(GApplication *app, gpointer data)
+{
 
     GtkWidget *window = gtk_application_window_new(GTK_APPLICATION(app));
 
@@ -83,7 +101,7 @@ void on_app_activate(GApplication *app, gpointer data) {
     GtkWidget *tree;
 
     tree = gtk_tree_view_new_with_model(GTK_TREE_MODEL(list_store));
-    g_object_set(tree, "enable-grid-lines", GTK_TREE_VIEW_GRID_LINES_BOTH, NULL); 
+    g_object_set(tree, "enable-grid-lines", GTK_TREE_VIEW_GRID_LINES_BOTH, NULL);
 
     GtkCellRenderer *rendererAccount;
     GtkTreeViewColumn *columnAccount;
@@ -93,6 +111,9 @@ void on_app_activate(GApplication *app, gpointer data) {
                                                              rendererAccount,
                                                              "text", ACCOUNT_NUMBER,
                                                              NULL);
+    g_object_set(rendererAccount, "editable", TRUE, "editable-set", TRUE, NULL);
+
+    g_signal_connect(G_OBJECT(rendererAccount), "edited", G_CALLBACK(account_number_edited), (gpointer)tree);
 
     GtkCellRenderer *rendererDescription;
     GtkTreeViewColumn *columnDescription;
@@ -124,7 +145,6 @@ void on_app_activate(GApplication *app, gpointer data) {
     gtk_tree_view_append_column(GTK_TREE_VIEW(tree), columnToggle);
 
     gtk_tree_view_column_set_cell_data_func(columnAccount, rendererAccount, last_row_cell_data_func, NULL, NULL);
-
 
     g_signal_connect(rendererToggle, "toggled", G_CALLBACK(barf), NULL);
 
