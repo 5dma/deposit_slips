@@ -1,4 +1,5 @@
 #include <gtk/gtk.h>
+#include "headers.h"
 /* G_MESSAGES_DEBUG=all ./deposit_slip */
 // callback function which is called when button is clicked
 static void on_button_clicked(GtkButton *btn, gpointer data) {
@@ -74,6 +75,28 @@ static void toggle_clicked(GtkCellRendererToggle *renderer,
     }
 }
 
+/* Adds a passed Account structure to the list store of accounts */
+static void build_list_store(gpointer account, gpointer list_builder_struct) {
+
+    GtkListStore *list_store = ((List_Builder_Struct *) list_builder_struct) -> list_store;
+    GtkTreeIter iter = ((List_Builder_Struct *) list_builder_struct) -> iter;
+    Account *local_account = (Account *) account;
+
+    /* Convert the passed integer account number to a string. */
+    char account_string[25];
+    sprintf(account_string, "%d", local_account -> number);
+    
+    gtk_list_store_append(list_store, &iter); 
+
+    gtk_list_store_set(list_store, &iter,
+                       ACCOUNT_NUMBER, account_string,
+                       DESCRIPTION, local_account -> description,
+                       CHECKBOX,
+                       FALSE,
+                       -1);
+
+}
+
 // callback function which is called when application is first started
 void on_app_activate(GApplication *app, gpointer data) {
 
@@ -94,21 +117,14 @@ void on_app_activate(GApplication *app, gpointer data) {
 
     GtkTreeIter iter;
 
-    gtk_list_store_append(list_store, &iter); /* Acquire an iterator */
+    /* Read account numbers from disk.*/
+    GSList * account_numbers = read_account_numbers();
 
-    gtk_list_store_set(list_store, &iter,
-                       ACCOUNT_NUMBER, "123456",
-                       DESCRIPTION, "Personal checking",
-                       CHECKBOX,
-                       FALSE,
-                       -1);
-    gtk_list_store_append(list_store, &iter);
-    gtk_list_store_set(list_store, &iter,
-                       ACCOUNT_NUMBER, "New",
-                       DESCRIPTION, "",
-                       CHECKBOX,
-                       FALSE,
-                       -1);
+    List_Builder_Struct list_builder;
+    list_builder.iter = iter;
+    list_builder.list_store = list_store;
+
+    g_slist_foreach (account_numbers, build_list_store, &list_builder);
 
     GtkWidget *tree;
 

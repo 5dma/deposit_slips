@@ -5,7 +5,6 @@
 
 int main(int argc, char *argv[]) {
 
-    printf("Here");
     GtkApplication *app = gtk_application_new(
         "net.lautman.DepositSlips",
         G_APPLICATION_FLAGS_NONE);
