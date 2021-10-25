@@ -7,14 +7,6 @@ static void on_button_clicked(GtkButton *btn, gpointer data) {
     gtk_button_set_label(btn, "Hello World");
 }
 
-
-enum {
-    ACCOUNT_NUMBER,
-    DESCRIPTION,
-    CHECKBOX,
-    N_COLUMNS
-};
-
 void last_row_cell_data_func(GtkTreeViewColumn *col,
                              GtkCellRenderer *renderer,
                              GtkTreeModel *model,
@@ -73,28 +65,6 @@ static void toggle_clicked(GtkCellRendererToggle *renderer,
         gtk_list_store_set(GTK_LIST_STORE(model), &iter, CHECKBOX, !value, -1);
         
     }
-}
-
-/* Adds a passed Account structure to the list store of accounts */
-static void build_list_store(gpointer account, gpointer list_builder_struct) {
-
-    GtkListStore *list_store = ((List_Builder_Struct *) list_builder_struct) -> list_store;
-    GtkTreeIter iter = ((List_Builder_Struct *) list_builder_struct) -> iter;
-    Account *local_account = (Account *) account;
-
-    /* Convert the passed integer account number to a string. */
-    char account_string[25];
-    sprintf(account_string, "%d", local_account -> number);
-    
-    gtk_list_store_append(list_store, &iter); 
-
-    gtk_list_store_set(list_store, &iter,
-                       ACCOUNT_NUMBER, account_string,
-                       DESCRIPTION, local_account -> description,
-                       CHECKBOX,
-                       FALSE,
-                       -1);
-
 }
 
 // callback function which is called when application is first started

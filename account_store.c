@@ -1,4 +1,5 @@
 #include <gtk/gtk.h>
+
 #include "headers.h"
 
 GSList *read_account_numbers() {
@@ -16,12 +17,12 @@ GSList *read_account_numbers() {
             int i = 0;
             while (account_records[i] != NULL && (strlen(account_records[i]) > 0)) {
                 gchar **single_account = g_strsplit(account_records[i], "\t", 1000);
-                Account * account_entry = g_malloc(sizeof(Account));
-                account_entry->number =  atoi(single_account[0]);
+                Account *account_entry = g_malloc(sizeof(Account));
+                strcpy(account_entry->number, single_account[0]);
                 strcpy(account_entry->description, single_account[1]);
 
-                g_print ("The account_entry-> number: %d %s\n",account_entry->number, account_entry->description);
-                local_struct_list = g_slist_append ( local_struct_list, account_entry);
+                g_print("The account_entry-> number: %s %s\n", account_entry->number, account_entry->description);
+                local_struct_list = g_slist_append(local_struct_list, account_entry);
                 g_strfreev(single_account);
                 i++;
             }
@@ -36,27 +37,27 @@ GSList *read_account_numbers() {
     }
     g_free(input_file);
 
+/* Add "New" entry to end of store. */
+    Account *account_entry = g_malloc(sizeof(Account));
+    strcpy(account_entry->number,"New");
+    strcpy(account_entry->description, "");
+
+    local_struct_list = g_slist_append(local_struct_list, account_entry);
     return local_struct_list;
 }
 
 /* Adds a passed Account structure to the list store of accounts */
 void build_list_store(gpointer account, gpointer list_builder_struct) {
+    GtkListStore *list_store = ((List_Builder_Struct *)list_builder_struct)->list_store;
+    GtkTreeIter iter = ((List_Builder_Struct *)list_builder_struct)->iter;
+    Account *local_account = (Account *)account;
 
-    GtkListStore *list_store = ((List_Builder_Struct *) list_builder_struct) -> list_store;
-    GtkTreeIter iter = ((List_Builder_Struct *) list_builder_struct) -> iter;
-    Account *local_account = (Account *) account;
-
-    /* Convert the passed integer account number to a string. */
-    char account_string[25];
-    sprintf(account_string, "%d", local_account -> number);
-    
-    gtk_list_store_append(list_store, &iter); 
+    gtk_list_store_append(list_store, &iter);
 
     gtk_list_store_set(list_store, &iter,
-                       ACCOUNT_NUMBER, account_string,
-                       DESCRIPTION, local_account -> description,
+                       ACCOUNT_NUMBER, local_account->number,
+                       DESCRIPTION, local_account->description,
                        CHECKBOX,
                        FALSE,
                        -1);
-
 }

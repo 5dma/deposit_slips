@@ -1,8 +1,17 @@
 #include <gtk/gtk.h>
 void on_app_activate(GApplication *app, gpointer data);
+void build_list_store(gpointer account, gpointer list_builder_struct);
+
+
+enum {
+    ACCOUNT_NUMBER,
+    DESCRIPTION,
+    CHECKBOX,
+    N_COLUMNS
+};
 
 typedef struct Accounts {
-    int number;
+    gchar number[100];
     gchar description[500];
 } Account;
 
