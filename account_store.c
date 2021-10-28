@@ -37,9 +37,9 @@ GSList *read_account_numbers() {
     }
     g_free(input_file);
 
-/* Add "New" entry to end of store. */
+    /* Add "New" entry to end of store. */
     Account *account_entry = g_malloc(sizeof(Account));
-    strcpy(account_entry->number,"New");
+    strcpy(account_entry->number, "New");
     strcpy(account_entry->description, "");
 
     local_struct_list = g_slist_append(local_struct_list, account_entry);
@@ -54,10 +54,19 @@ void build_list_store(gpointer account, gpointer list_builder_struct) {
 
     gtk_list_store_append(list_store, &iter);
 
+    GError *error = NULL;
+
+    GdkPixbuf * delete_icon =  gtk_icon_theme_load_icon (gtk_icon_theme_get_default(),"editdelete", GTK_ICON_SIZE_BUTTON, GTK_ICON_LOOKUP_USE_BUILTIN, NULL);
+
+    if (error == NULL) {
+        g_print("I have yes icon\n");
+    } else {
+        g_print("I have no icon\n");
+    }
+
     gtk_list_store_set(list_store, &iter,
                        ACCOUNT_NUMBER, local_account->number,
                        DESCRIPTION, local_account->description,
-                       CHECKBOX,
-                       FALSE,
+                       DELETE_ICON, delete_icon,
                        -1);
 }
