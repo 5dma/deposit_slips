@@ -1,5 +1,10 @@
 #include <gtk/gtk.h>
 
+static void add_row() {
+    gtk_show_about_dialog(NULL, "program-name", "ExampleCode", "title", "You will love this", NULL);
+}
+
+
 GtkWidget* make_accounts_buttons_hbox() {
     GtkWidget* local_hbox;
 
@@ -18,6 +23,12 @@ GtkWidget* make_accounts_buttons_hbox() {
     gtk_widget_set_tooltip_text(account_button_delete, "Delete selected accounts");
     gtk_widget_set_tooltip_text(account_button_revert, "Revert");
     gtk_widget_set_tooltip_text(account_button_save, "Save changes");
+
+    gtk_widget_set_sensitive (account_button_delete, FALSE);
+    gtk_widget_set_sensitive (account_button_revert, FALSE);
+    gtk_widget_set_sensitive (account_button_save, FALSE);
+
+    g_signal_connect(account_button_add,"clicked", G_CALLBACK(add_row),NULL);
 
     return local_hbox;
 }
