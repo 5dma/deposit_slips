@@ -29,13 +29,15 @@ void on_app_activate(GApplication *app, gpointer data) {
     list_builder.list_store = list_store;
 
     g_slist_foreach(account_numbers, build_list_store, &list_builder);
-    g_print("Go this far\n");
 
     GtkWidget * accounts_tab_tree = make_tree_view (list_store);
+
+    GtkWidget * accounts_buttons_hbox = make_accounts_buttons_hbox();
 
     GtkWidget *topBox = gtk_box_new(GTK_ORIENTATION_VERTICAL, 3);
 
     gtk_box_pack_start(GTK_BOX(vbox_accounts), accounts_tab_tree, FALSE, FALSE, 0);
+    gtk_box_pack_start(GTK_BOX(vbox_accounts), accounts_buttons_hbox, FALSE, FALSE, 0);
 
     gtk_container_add(GTK_CONTAINER(window), notebook);
 
