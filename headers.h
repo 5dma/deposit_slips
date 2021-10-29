@@ -6,7 +6,7 @@ void build_list_store(gpointer account, gpointer list_builder_struct);
 enum {
     ACCOUNT_NUMBER,
     DESCRIPTION,
-    DELETE_ICON,
+    CHECKBOX,
     N_COLUMNS
 };
 
