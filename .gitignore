@@ -1,2 +1,4 @@
 *.o
 deposit_slip
+.~lock.*.odg#
+*.swp

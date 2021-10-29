@@ -1,6 +1,7 @@
 #include <gtk/gtk.h>
 void on_app_activate(GApplication *app, gpointer data);
 void build_list_store(gpointer account, gpointer list_builder_struct);
+GtkWidget * make_tree_view(GtkListStore *list_store );
 
 
 enum {
