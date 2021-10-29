@@ -1,4 +1,5 @@
 #include <gtk/gtk.h>
+
 #include "headers.h"
 /* G_MESSAGES_DEBUG=all ./deposit_slip */
 // callback function which is called when button is clicked
@@ -52,24 +53,22 @@ static void description_edited(GtkCellRendererText *renderer,
     }
 }
 
-static void toggle_clicked(GtkCellRendererToggle *renderer,
-                           gchar *path,
-                           GtkTreeView *treeview) {
+static void remove_row(GtkCellRendererToggle *renderer,
+                       gchar *path,
+                       GtkTreeView *treeview) {
+    gtk_show_about_dialog (NULL, "program-name", "ExampleCode", "title", "You will love this", NULL);
     GtkTreeIter iter;
     GtkTreeModel *model;
-    GIcon * value;
+    GIcon *value;
     model = gtk_tree_view_get_model(treeview);
-    g_debug("Here\n");
+    g_print("Here\n");
     if (gtk_tree_model_get_iter_from_string(model, &iter, path)) {
-        gtk_tree_model_get(model, &iter, DELETE_ICON, &value, -1);
-        gtk_list_store_set(GTK_LIST_STORE(model), &iter, DELETE_ICON, !value, -1);
-        
+        gtk_list_store_remove(GTK_LIST_STORE(model), &iter);
     }
 }
 
 // callback function which is called when application is first started
 void on_app_activate(GApplication *app, gpointer data) {
-
     GtkWidget *window = gtk_application_window_new(GTK_APPLICATION(app));
 
     GtkWidget *notebook = gtk_notebook_new();
@@ -88,13 +87,13 @@ void on_app_activate(GApplication *app, gpointer data) {
     GtkTreeIter iter;
 
     /* Read account numbers from disk.*/
-    GSList * account_numbers = read_account_numbers();
+    GSList *account_numbers = read_account_numbers();
 
     List_Builder_Struct list_builder;
     list_builder.iter = iter;
     list_builder.list_store = list_store;
 
-    g_slist_foreach (account_numbers, build_list_store, &list_builder);
+    g_slist_foreach(account_numbers, build_list_store, &list_builder);
     g_print("Go this far\n");
     GtkWidget *tree;
 
@@ -131,11 +130,12 @@ void on_app_activate(GApplication *app, gpointer data) {
 
     columnDelete = gtk_tree_view_column_new_with_attributes("",
                                                             rendererDelete,
-                                                            "gicon", DELETE_ICON,
+                                                            "pixbuf", DELETE_ICON,
                                                             NULL);
 
-   // g_object_set(rendererDelete, "activatable", TRUE, "active", FALSE, NULL);
-  //  g_signal_connect(G_OBJECT(rendererDelete), "editing-started", G_CALLBACK(toggle_clicked), (gpointer)tree);
+    /* g_object_set sets a renderer's properties. */
+    g_object_set(rendererDelete, "cell-background", "#00CC00", "mode", GTK_CELL_RENDERER_MODE_EDITABLE, "sensitive", FALSE, NULL);
+    g_signal_connect(G_OBJECT(rendererDelete), "editing-started", G_CALLBACK(remove_row), (gpointer)tree);
 
     gtk_tree_view_append_column(GTK_TREE_VIEW(tree), columnAccount);
     gtk_tree_view_append_column(GTK_TREE_VIEW(tree), columnDescription);
