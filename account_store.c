@@ -36,12 +36,7 @@ GSList *read_account_numbers() {
     }
     g_free(input_file);
 
-    /* Add "New" entry to end of store. */
-    Account *account_entry = g_malloc(sizeof(Account));
-    strcpy(account_entry->number, "New");
-    strcpy(account_entry->description, "");
 
-    local_struct_list = g_slist_append(local_struct_list, account_entry);
     return local_struct_list;
 }
 

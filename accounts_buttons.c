@@ -1,7 +1,14 @@
 #include <gtk/gtk.h>
+#include "headers.h"
 
 static void add_row() {
     gtk_show_about_dialog(NULL, "program-name", "ExampleCode", "title", "You will love this", NULL);
+    /* Add "New" entry to end of store. */
+    Account *account_entry = g_malloc(sizeof(Account));
+    strcpy(account_entry->number, "New");
+    strcpy(account_entry->description, "");
+
+  //  local_struct_list = g_slist_append(local_struct_list, account_entry); 
 }
 
 

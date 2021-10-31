@@ -11,11 +11,7 @@ void last_row_cell_data_func(GtkTreeViewColumn *col,
     gtk_tree_model_get(model, iter, ACCOUNT_NUMBER, account_number, -1);
     g_print("Here is the account number after %s\n", *account_number);
 
-    if (g_ascii_strcasecmp("New", *account_number) == 0) {
-        g_object_set(renderer, "style", PANGO_STYLE_ITALIC, NULL);
-    } else {
-        g_object_set(renderer, "style", PANGO_STYLE_NORMAL, NULL);
-    }
+    g_object_set(renderer, "style", PANGO_STYLE_NORMAL, NULL);
     g_object_set(renderer, "text", *account_number, NULL);
 }
 
