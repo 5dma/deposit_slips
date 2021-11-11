@@ -31,9 +31,9 @@ GtkWidget* make_accounts_buttons_hbox() {
     gtk_widget_set_tooltip_text(account_button_revert, "Revert");
     gtk_widget_set_tooltip_text(account_button_save, "Save changes");
 
-    gtk_widget_set_sensitive (account_button_delete, FALSE);
-    gtk_widget_set_sensitive (account_button_revert, FALSE);
-    gtk_widget_set_sensitive (account_button_save, FALSE);
+    gtk_widget_set_sensitive (account_button_delete, TRUE);
+    gtk_widget_set_sensitive (account_button_revert, TRUE);
+    gtk_widget_set_sensitive (account_button_save, TRUE);
 
     g_signal_connect(account_button_add,"clicked", G_CALLBACK(add_row),NULL);
 

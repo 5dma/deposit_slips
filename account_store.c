@@ -1,4 +1,5 @@
 #include <gtk/gtk.h>
+#include <string.h>
 #include "headers.h"
 
 GSList *read_account_numbers() {
@@ -36,7 +37,6 @@ GSList *read_account_numbers() {
     }
     g_free(input_file);
 
-
     return local_struct_list;
 }
 
@@ -53,4 +53,17 @@ void build_list_store(gpointer account, gpointer list_builder_struct) {
                        DESCRIPTION, local_account->description,
                        CHECKBOX, FALSE,
                        -1);
+}
+
+/* Adds a passed Account structure to the list store of accounts */
+gpointer build_temporary_list(gpointer item, gpointer user_data) {
+
+    Account *master_account = item;
+
+    /* Copy master account into a new temporary account */
+    Account* temp_account = g_new (Account, 1);
+    strcpy(temp_account->number, master_account->number);
+    strcpy(temp_account->description, master_account->description);
+
+    return temp_account;
 }
