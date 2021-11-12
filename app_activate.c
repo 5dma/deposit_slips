@@ -1,6 +1,6 @@
 #include <gtk/gtk.h>
-
 #include "headers.h"
+
 /* G_MESSAGES_DEBUG=all ./deposit_slip */
 
 // callback function which is called when application is first started
@@ -22,26 +22,20 @@ void on_app_activate(GApplication *app, gpointer data) {
 
     /* Read account numbers from disk.*/
     GSList *master_account_list = read_account_numbers();
+
+    GSList *temporary_account_list = g_slist_copy_deep(master_account_list, (GCopyFunc) build_temporary_list, NULL);
+
     GtkTreeIter iter;
 
     List_Builder_Struct list_builder;
     list_builder.iter = iter;
     list_builder.list_store = list_store;
 
-    g_slist_foreach(master_account_list, build_list_store, &list_builder);
-
-    //GSList *temporary_account_list = NULL;
-
-  //  temporary_account_list = g_slist_copy_deep(master_account_list, (GCopyFunc) build_temporary_list, temporary_account_list);
-    GSList *temporary_account_list = g_slist_copy_deep(master_account_list, (GCopyFunc) build_temporary_list, NULL);
-
-    gpointer test = g_slist_nth(temporary_account_list, 1);
-    Account * testptr = (Account *)test;
-    g_print("Second temporary record: %s %s\n", testptr->number, testptr->description);
+    g_slist_foreach(temporary_account_list, build_list_store, &list_builder);
 
     GtkWidget *accounts_tab_tree = make_tree_view(list_store);
 
-    GtkWidget *accounts_buttons_hbox = make_accounts_buttons_hbox();
+    GtkWidget *accounts_buttons_hbox = make_accounts_buttons_hbox(list_store);
 
     GtkWidget *topBox = gtk_box_new(GTK_ORIENTATION_VERTICAL, 3);
 

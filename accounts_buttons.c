@@ -1,18 +1,25 @@
 #include <gtk/gtk.h>
+
 #include "headers.h"
 
-static void add_row() {
-    gtk_show_about_dialog(NULL, "program-name", "ExampleCode", "title", "You will love this", NULL);
-    /* Add "New" entry to end of store. */
-    Account *account_entry = g_malloc(sizeof(Account));
-    strcpy(account_entry->number, "New");
-    strcpy(account_entry->description, "");
+static void add_row(gpointer * data) {
+   GtkListStore * list_store = (GtkListStore *) data;
 
-  //  local_struct_list = g_slist_append(local_struct_list, account_entry); 
+   GtkTreeIter iter;
+    gtk_list_store_append(list_store, &iter);
+    gtk_list_store_set(list_store, &iter,
+                       ACCOUNT_NUMBER, "Ocl",
+                       DESCRIPTION, "P<G",
+                       CHECKBOX, FALSE,
+                       -1);
+
+
+
+    // gtk_show_about_dialog(NULL, "program-name", "ExampleCode", "title", "You will love this", NULL);
+    /* Add "New" entry to end of store. */
 }
 
-
-GtkWidget* make_accounts_buttons_hbox() {
+GtkWidget* make_accounts_buttons_hbox(GtkListStore* list_store) {
     GtkWidget* local_hbox;
 
     GtkWidget* account_button_add = gtk_button_new_from_icon_name("gtk-add", GTK_ICON_SIZE_BUTTON);
@@ -31,11 +38,12 @@ GtkWidget* make_accounts_buttons_hbox() {
     gtk_widget_set_tooltip_text(account_button_revert, "Revert");
     gtk_widget_set_tooltip_text(account_button_save, "Save changes");
 
-    gtk_widget_set_sensitive (account_button_delete, TRUE);
-    gtk_widget_set_sensitive (account_button_revert, TRUE);
-    gtk_widget_set_sensitive (account_button_save, TRUE);
+    gtk_widget_set_sensitive(account_button_add, TRUE);
+    gtk_widget_set_sensitive(account_button_delete, TRUE);
+    gtk_widget_set_sensitive(account_button_revert, TRUE);
+    gtk_widget_set_sensitive(account_button_save, TRUE);
 
-    g_signal_connect(account_button_add,"clicked", G_CALLBACK(add_row),NULL);
+    g_signal_connect(account_button_add, "clicked", G_CALLBACK(add_row), list_store);
 
     return local_hbox;
 }
