@@ -23,6 +23,8 @@ void on_app_activate(GApplication *app, gpointer data) {
     /* Read account numbers from disk.*/
     GSList *master_account_list = read_account_numbers();
 
+
+
     GSList *temporary_account_list = g_slist_copy_deep(master_account_list, (GCopyFunc) build_temporary_list, NULL);
 
     GtkTreeIter iter;

@@ -2,18 +2,16 @@
 
 #include "headers.h"
 
-static void add_row(gpointer * data) {
-   GtkListStore * list_store = (GtkListStore *) data;
+static void add_row(GtkWidget *widget, gpointer* data) {
+    GtkListStore* list_store = (GtkListStore*)data;
 
-   GtkTreeIter iter;
+    GtkTreeIter iter;
     gtk_list_store_append(list_store, &iter);
     gtk_list_store_set(list_store, &iter,
-                       ACCOUNT_NUMBER, "Ocl",
-                       DESCRIPTION, "P<G",
+                       ACCOUNT_NUMBER, "(Number)",
+                       DESCRIPTION, "(Description)",
                        CHECKBOX, FALSE,
                        -1);
-
-
 
     // gtk_show_about_dialog(NULL, "program-name", "ExampleCode", "title", "You will love this", NULL);
     /* Add "New" entry to end of store. */
