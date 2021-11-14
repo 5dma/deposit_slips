@@ -1,5 +1,8 @@
 {
     "files.associations": {
         "headers.h": "c"
-    }
+    },
+    "cSpell.words": [
+        "gchararray"
+    ]
 }

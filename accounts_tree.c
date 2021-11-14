@@ -1,19 +1,40 @@
 #include <gtk/gtk.h>
+
 #include "headers.h"
+#include "constants.h"
 
-
-void last_row_cell_data_func(GtkTreeViewColumn *col,
+void account_column_formatter(GtkTreeViewColumn *col,
                              GtkCellRenderer *renderer,
                              GtkTreeModel *model,
                              GtkTreeIter *iter,
                              gpointer user_data) {
     gchararray account_number[500];
     gtk_tree_model_get(model, iter, ACCOUNT_NUMBER, account_number, -1);
-//    g_print("Here is the account number after %s\n", *account_number);
-
-    g_object_set(renderer, "style", PANGO_STYLE_NORMAL, NULL);
+    g_print("Here is the account number after %s\n", *account_number);
     g_object_set(renderer, "text", *account_number, NULL);
+    if (strcmp(*account_number, NEW_NUMBER) == 0) {
+        g_object_set(renderer, "style", PANGO_STYLE_ITALIC, NULL);
+    } else {
+        g_object_set(renderer, "style", PANGO_STYLE_NORMAL, NULL);
+    }
 }
+
+void description_column_formatter(GtkTreeViewColumn *col,
+                             GtkCellRenderer *renderer,
+                             GtkTreeModel *model,
+                             GtkTreeIter *iter,
+                             gpointer user_data) {
+    gchararray description[500];
+    gtk_tree_model_get(model, iter, DESCRIPTION, description, -1);
+    g_object_set(renderer, "text", *description, NULL);
+    if (strcmp(*description, NEW_DESCRIPTION) == 0) {
+        g_object_set(renderer, "style", PANGO_STYLE_ITALIC, NULL);
+    } else {
+        g_object_set(renderer, "style", PANGO_STYLE_NORMAL, NULL);
+    }
+}
+
+
 
 static void account_number_edited(GtkCellRendererText *renderer,
                                   gchar *path,
@@ -68,12 +89,10 @@ static void toggle_clicked(GtkCellRendererToggle *renderer,
     if (gtk_tree_model_get_iter_from_string(model, &iter, path)) {
         gtk_tree_model_get(model, &iter, CHECKBOX, &value, -1);
         gtk_list_store_set(GTK_LIST_STORE(model), &iter, CHECKBOX, !value, -1);
-        
     }
 }
 
-GtkWidget * make_tree_view(GtkListStore *list_store ) {
-
+GtkWidget *make_tree_view(GtkListStore *list_store) {
     GtkTreeIter iter;
     GtkWidget *tree;
 
@@ -121,10 +140,11 @@ GtkWidget * make_tree_view(GtkListStore *list_store ) {
     gtk_tree_view_append_column(GTK_TREE_VIEW(tree), columnDescription);
     gtk_tree_view_append_column(GTK_TREE_VIEW(tree), columnToggle);
 
-    gtk_tree_view_column_set_cell_data_func(columnAccount, rendererAccount, last_row_cell_data_func, NULL, NULL);
+    gtk_tree_view_column_set_cell_data_func(columnAccount, rendererAccount, account_column_formatter, NULL, NULL);
+    gtk_tree_view_column_set_cell_data_func(columnDescription, rendererDescription, description_column_formatter, NULL, NULL);
+
 
     g_object_unref(list_store); /* destroy model automatically with view */
 
     return tree;
-
 }

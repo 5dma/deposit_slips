@@ -1,6 +1,6 @@
 #include <gtk/gtk.h>
-
 #include "headers.h"
+#include "constants.h"
 
 static void add_row(GtkWidget *widget, gpointer* data) {
     GtkListStore* list_store = (GtkListStore*)data;
@@ -8,13 +8,10 @@ static void add_row(GtkWidget *widget, gpointer* data) {
     GtkTreeIter iter;
     gtk_list_store_append(list_store, &iter);
     gtk_list_store_set(list_store, &iter,
-                       ACCOUNT_NUMBER, "(Number)",
-                       DESCRIPTION, "(Description)",
+                       ACCOUNT_NUMBER, NEW_NUMBER,
+                       DESCRIPTION, NEW_DESCRIPTION,
                        CHECKBOX, FALSE,
                        -1);
-
-    // gtk_show_about_dialog(NULL, "program-name", "ExampleCode", "title", "You will love this", NULL);
-    /* Add "New" entry to end of store. */
 }
 
 GtkWidget* make_accounts_buttons_hbox(GtkListStore* list_store) {
