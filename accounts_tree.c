@@ -25,7 +25,7 @@ void name_column_formatter(GtkTreeViewColumn *col,
                              GtkTreeIter *iter,
                              gpointer user_data) {
     gchararray name[500];
-    gtk_tree_model_get(model, iter, DESCRIPTION, name, -1);
+    gtk_tree_model_get(model, iter, ACCOUNT_NAME, name, -1);
     g_object_set(renderer, "text", *name, NULL);
     if (strcmp(*name, NEW_NAME) == 0) {
         g_object_set(renderer, "style", PANGO_STYLE_ITALIC, NULL);
@@ -151,9 +151,7 @@ GtkWidget *make_tree_view(GtkListStore *list_store) {
                                                              NULL);
     g_object_set(rendererName, "editable", TRUE, "editable-set", TRUE, NULL);
 
-    g_signal_connect(G_OBJECT(rendererAccount), "edited", G_CALLBACK(name_edited), (gpointer)tree);
-
-
+    g_signal_connect(G_OBJECT(rendererName), "edited", G_CALLBACK(name_edited), (gpointer)tree);
 
 
     GtkCellRenderer *rendererDescription;
@@ -182,6 +180,7 @@ GtkWidget *make_tree_view(GtkListStore *list_store) {
     g_signal_connect(G_OBJECT(rendererToggle), "toggled", G_CALLBACK(toggle_clicked), (gpointer)tree);
 
     gtk_tree_view_append_column(GTK_TREE_VIEW(tree), columnAccount);
+    gtk_tree_view_append_column(GTK_TREE_VIEW(tree), columnName);
     gtk_tree_view_append_column(GTK_TREE_VIEW(tree), columnDescription);
     gtk_tree_view_append_column(GTK_TREE_VIEW(tree), columnToggle);
 
