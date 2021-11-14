@@ -2,6 +2,9 @@
 #include <string.h>
 #include "headers.h"
 
+/*
+Reads account number, name, and description from the user's data file.
+*/
 GSList *read_account_numbers() {
     GSList *local_struct_list = NULL;
     GError *error = NULL;
@@ -13,13 +16,16 @@ GSList *read_account_numbers() {
         if (g_file_get_contents(input_file, &content, NULL, &error)) {
             g_print("%s\n", content);
             gchar **lines[1000];
+            /* Split input string a newlines */
             gchar **account_records = g_strsplit(content, "\n", 1000);
             int i = 0;
+            /* For each line, instantiate an account structure and add it to the GSList of structures */
             while (account_records[i] != NULL && (strlen(account_records[i]) > 0)) {
                 gchar **single_account = g_strsplit(account_records[i], "\t", 1000);
                 Account *account_entry = g_malloc(sizeof(Account));
                 strcpy(account_entry->number, single_account[0]);
-                strcpy(account_entry->description, single_account[1]);
+                strcpy(account_entry->name, single_account[1]);
+                strcpy(account_entry->description, single_account[2]);
 
                 g_print("The account_entry-> number: %s %s\n", account_entry->number, account_entry->description);
                 local_struct_list = g_slist_append(local_struct_list, account_entry);
@@ -50,6 +56,7 @@ void build_list_store(gpointer account, gpointer list_builder_struct) {
 
     gtk_list_store_set(list_store, &iter,
                        ACCOUNT_NUMBER, local_account->number,
+                       ACCOUNT_NAME, local_account->name,
                        DESCRIPTION, local_account->description,
                        CHECKBOX, FALSE,
                        -1);
@@ -63,6 +70,7 @@ gpointer build_temporary_list(gpointer item, gpointer user_data) {
     /* Copy master account into a new temporary account */
     Account* temp_account = g_new (Account, 1);
     strcpy(temp_account->number, master_account->number);
+    strcpy(temp_account->name, master_account->name);
     strcpy(temp_account->description, master_account->description);
 
     return temp_account;

@@ -8,6 +8,7 @@ GtkWidget * make_accounts_buttons_hbox(GtkListStore *list_store);
 
 enum {
     ACCOUNT_NUMBER,
+    ACCOUNT_NAME,
     DESCRIPTION,
     CHECKBOX,
     N_COLUMNS
@@ -15,6 +16,7 @@ enum {
 
 typedef struct Accounts {
     gchar number[100];
+    gchar name[100];
     gchar description[500];
 } Account;
 

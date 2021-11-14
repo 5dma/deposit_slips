@@ -18,14 +18,13 @@ void on_app_activate(GApplication *app, gpointer data) {
     gtk_notebook_append_page(GTK_NOTEBOOK(notebook), vbox_slip, label_slip);
     gtk_notebook_append_page(GTK_NOTEBOOK(notebook), vbox_accounts, label_account);
 
-    GtkListStore *list_store = gtk_list_store_new(N_COLUMNS, G_TYPE_STRING, G_TYPE_STRING, G_TYPE_BOOLEAN);
+    GtkListStore *list_store = gtk_list_store_new(N_COLUMNS, G_TYPE_STRING,  G_TYPE_STRING, G_TYPE_STRING, G_TYPE_BOOLEAN);
 
     /* Read account numbers from disk.*/
     GSList *master_account_list = read_account_numbers();
 
-
-
     GSList *temporary_account_list = g_slist_copy_deep(master_account_list, (GCopyFunc) build_temporary_list, NULL);
+
 
     GtkTreeIter iter;
 

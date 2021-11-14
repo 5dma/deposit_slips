@@ -9,6 +9,7 @@ static void add_row(GtkWidget *widget, gpointer* data) {
     gtk_list_store_append(list_store, &iter);
     gtk_list_store_set(list_store, &iter,
                        ACCOUNT_NUMBER, NEW_NUMBER,
+                       ACCOUNT_NUMBER, NEW_NAME,
                        DESCRIPTION, NEW_DESCRIPTION,
                        CHECKBOX, FALSE,
                        -1);

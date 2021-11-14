@@ -19,6 +19,21 @@ void account_column_formatter(GtkTreeViewColumn *col,
     }
 }
 
+void name_column_formatter(GtkTreeViewColumn *col,
+                             GtkCellRenderer *renderer,
+                             GtkTreeModel *model,
+                             GtkTreeIter *iter,
+                             gpointer user_data) {
+    gchararray name[500];
+    gtk_tree_model_get(model, iter, DESCRIPTION, name, -1);
+    g_object_set(renderer, "text", *name, NULL);
+    if (strcmp(*name, NEW_NAME) == 0) {
+        g_object_set(renderer, "style", PANGO_STYLE_ITALIC, NULL);
+    } else {
+        g_object_set(renderer, "style", PANGO_STYLE_NORMAL, NULL);
+    }
+}
+
 void description_column_formatter(GtkTreeViewColumn *col,
                              GtkCellRenderer *renderer,
                              GtkTreeModel *model,
@@ -36,7 +51,7 @@ void description_column_formatter(GtkTreeViewColumn *col,
 
 
 
-static void account_number_edited(GtkCellRendererText *renderer,
+static void number_edited(GtkCellRendererText *renderer,
                                   gchar *path,
                                   gchar *new_account_number,
                                   GtkTreeView *treeview) {
@@ -49,6 +64,21 @@ static void account_number_edited(GtkCellRendererText *renderer,
         }
     }
 }
+
+static void name_edited(GtkCellRendererText *renderer,
+                                  gchar *path,
+                                  gchar *new_account_name,
+                                  GtkTreeView *treeview) {
+    GtkTreeIter iter;
+    GtkTreeModel *model;
+    if (g_ascii_strcasecmp(new_account_name, "") != 0) {
+        model = gtk_tree_view_get_model(treeview);
+        if (gtk_tree_model_get_iter_from_string(model, &iter, path)) {
+            gtk_list_store_set(GTK_LIST_STORE(model), &iter, ACCOUNT_NAME, new_account_name, -1);
+        }
+    }
+}
+
 
 static void description_edited(GtkCellRendererText *renderer,
                                gchar *path,
@@ -109,7 +139,22 @@ GtkWidget *make_tree_view(GtkListStore *list_store) {
                                                              NULL);
     g_object_set(rendererAccount, "editable", TRUE, "editable-set", TRUE, NULL);
 
-    g_signal_connect(G_OBJECT(rendererAccount), "edited", G_CALLBACK(account_number_edited), (gpointer)tree);
+    g_signal_connect(G_OBJECT(rendererAccount), "edited", G_CALLBACK(number_edited), (gpointer)tree);
+
+    GtkCellRenderer *rendererName;
+    GtkTreeViewColumn *columnName;
+
+    rendererName = gtk_cell_renderer_text_new();
+    columnName = gtk_tree_view_column_new_with_attributes("Name",
+                                                             rendererName,
+                                                             "text", ACCOUNT_NAME,
+                                                             NULL);
+    g_object_set(rendererName, "editable", TRUE, "editable-set", TRUE, NULL);
+
+    g_signal_connect(G_OBJECT(rendererAccount), "edited", G_CALLBACK(name_edited), (gpointer)tree);
+
+
+
 
     GtkCellRenderer *rendererDescription;
     GtkTreeViewColumn *columnDescription;
@@ -141,6 +186,7 @@ GtkWidget *make_tree_view(GtkListStore *list_store) {
     gtk_tree_view_append_column(GTK_TREE_VIEW(tree), columnToggle);
 
     gtk_tree_view_column_set_cell_data_func(columnAccount, rendererAccount, account_column_formatter, NULL, NULL);
+    gtk_tree_view_column_set_cell_data_func(columnName, rendererName, name_column_formatter, NULL, NULL);
     gtk_tree_view_column_set_cell_data_func(columnDescription, rendererDescription, description_column_formatter, NULL, NULL);
 
 
