@@ -21,6 +21,26 @@ static void add_row(GtkWidget* widget, gpointer* data) {
     gtk_widget_set_sensitive(account_button_save, TRUE);
 }
 
+
+static void delete_row(GtkWidget* widget, gpointer* data) {
+    GtkListStore* list_store = (GtkListStore*)data;
+
+    GtkTreeIter iter;
+    gtk_list_store_append(list_store, &iter);
+    gtk_list_store_set(list_store, &iter,
+                       ACCOUNT_NUMBER, NEW_NUMBER,
+                       ACCOUNT_NAME, NEW_NAME,
+                       DESCRIPTION, NEW_DESCRIPTION,
+                       CHECKBOX, FALSE,
+                       -1);
+    GtkWidget* accounts_buttons_hbox = gtk_widget_get_parent(widget);
+    GtkWidget* account_button_revert = get_child_from_parent(accounts_buttons_hbox, "btnAccountsRevert");
+    gtk_widget_set_sensitive(account_button_revert, TRUE);
+    GtkWidget* account_button_save = get_child_from_parent(accounts_buttons_hbox, "btnAccountsSave");
+    gtk_widget_set_sensitive(account_button_save, TRUE);
+}
+
+
 GtkWidget* make_accounts_buttons_hbox(GtkListStore* list_store) {
     GtkWidget* local_hbox;
 
@@ -51,6 +71,7 @@ GtkWidget* make_accounts_buttons_hbox(GtkListStore* list_store) {
     gtk_widget_set_sensitive(account_button_save, FALSE);
 
     g_signal_connect(account_button_add, "clicked", G_CALLBACK(add_row), list_store);
+    g_signal_connect(account_button_delete, "clicked", G_CALLBACK(delete_row), list_store);
 
     return local_hbox;
 }
