@@ -15,9 +15,9 @@ static void add_row(GtkWidget* widget, gpointer* data) {
                        CHECKBOX, FALSE,
                        -1);
     GtkWidget* accounts_buttons_hbox = gtk_widget_get_parent(widget);
-    GtkWidget* account_button_revert = get_child_from_parent(accounts_buttons_hbox, "btnAccountsRevert");
+    GtkWidget* account_button_revert = get_child_from_parent(accounts_buttons_hbox, "BUTTON_NAME_REVERT");
     gtk_widget_set_sensitive(account_button_revert, TRUE);
-    GtkWidget* account_button_save = get_child_from_parent(accounts_buttons_hbox, "btnAccountsSave");
+    GtkWidget* account_button_save = get_child_from_parent(accounts_buttons_hbox, "BUTTON_NAME_SAVE");
     gtk_widget_set_sensitive(account_button_save, TRUE);
 }
 
@@ -34,9 +34,9 @@ static void delete_row(GtkWidget* widget, gpointer* data) {
                        CHECKBOX, FALSE,
                        -1);
     GtkWidget* accounts_buttons_hbox = gtk_widget_get_parent(widget);
-    GtkWidget* account_button_revert = get_child_from_parent(accounts_buttons_hbox, "btnAccountsRevert");
+    GtkWidget* account_button_revert = get_child_from_parent(accounts_buttons_hbox, "BUTTON_NAME_REVERT");
     gtk_widget_set_sensitive(account_button_revert, TRUE);
-    GtkWidget* account_button_save = get_child_from_parent(accounts_buttons_hbox, "btnAccountsSave");
+    GtkWidget* account_button_save = get_child_from_parent(accounts_buttons_hbox, "BUTTON_NAME_SAVE");
     gtk_widget_set_sensitive(account_button_save, TRUE);
 }
 
@@ -49,10 +49,10 @@ GtkWidget* make_accounts_buttons_hbox(GtkListStore* list_store) {
     GtkWidget* account_button_revert = gtk_button_new_from_icon_name("gtk-refresh", GTK_ICON_SIZE_BUTTON);
     GtkWidget* account_button_save = gtk_button_new_from_icon_name("gtk-save", GTK_ICON_SIZE_BUTTON);
 
-    gtk_widget_set_name(account_button_add, "btnAccountsAdd");
-    gtk_widget_set_name(account_button_delete, "btnAccountsDelete");
-    gtk_widget_set_name(account_button_revert, "btnAccountsRevert");
-    gtk_widget_set_name(account_button_save, "btnAccountsSave");
+    gtk_widget_set_name(account_button_add, "BUTTON_NAME_ADD");
+    gtk_widget_set_name(account_button_delete, "BUTTON_NAME_DELETE");
+    gtk_widget_set_name(account_button_revert, "BUTTON_NAME_REVERT");
+    gtk_widget_set_name(account_button_save, "BUTTON_NAME_SAVE");
 
     local_hbox = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 5);
     gtk_box_pack_start(GTK_BOX(local_hbox), account_button_add, TRUE, TRUE, 0);
@@ -66,7 +66,7 @@ GtkWidget* make_accounts_buttons_hbox(GtkListStore* list_store) {
     gtk_widget_set_tooltip_text(account_button_save, "Save changes");
 
     gtk_widget_set_sensitive(account_button_add, TRUE);
-    gtk_widget_set_sensitive(account_button_delete, TRUE);
+    gtk_widget_set_sensitive(account_button_delete, FALSE);
     gtk_widget_set_sensitive(account_button_revert, FALSE);
     gtk_widget_set_sensitive(account_button_save, FALSE);
 
