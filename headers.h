@@ -4,6 +4,7 @@ void build_list_store(gpointer account, gpointer list_builder_struct);
 GtkWidget * make_tree_view(GtkListStore *list_store );
 gpointer build_temporary_list(gpointer master_account, gpointer temporary_account);
 GtkWidget * make_accounts_buttons_hbox(GtkListStore *list_store);
+GtkWidget * get_child_from_parent (GtkWidget * parent, const gchar * child_name);
 
 
 enum {
