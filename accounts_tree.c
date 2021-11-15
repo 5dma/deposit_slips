@@ -114,6 +114,20 @@ static void remove_row(GtkCellRendererToggle *renderer,
     }
 }
 
+gboolean examine_all_checkboxes (GtkTreeModel *model,
+                                    GtkTreePath *path,
+                                    GtkTreeIter *iter,
+                                    gpointer data) {
+    gboolean value;
+    gboolean * checkbox_checked = (gboolean *) data;
+    gtk_tree_model_get(model, iter, CHECKBOX, &value, -1);
+    if (value == TRUE) {
+        *checkbox_checked = TRUE;
+        return TRUE;
+    }
+  return FALSE;
+}
+
 static void toggle_clicked(GtkCellRendererToggle *renderer,
                            gchar *path,
                            GtkTreeView *treeview) {
@@ -126,7 +140,23 @@ static void toggle_clicked(GtkCellRendererToggle *renderer,
         gtk_tree_model_get(model, &iter, CHECKBOX, &value, -1);
         gtk_list_store_set(GTK_LIST_STORE(model), &iter, CHECKBOX, !value, -1);
     }
+
+    gboolean at_least_one_checkbox_set = FALSE;
+
+    gtk_tree_model_foreach(model,  examine_all_checkboxes , &at_least_one_checkbox_set);
+
+    GtkWidget * accounts_tab = gtk_widget_get_parent (GTK_WIDGET(treeview));
+    GtkWidget * accounts_hbox = get_child_from_parent(accounts_tab, HBOX_ACCOUNT_BUTTONS);
+    GtkWidget * account_button_delete =  get_child_from_parent(accounts_hbox, BUTTON_NAME_DELETE);
+
+    if (at_least_one_checkbox_set == TRUE) {
+            gtk_widget_set_sensitive(account_button_delete, TRUE);
+    } else {
+            gtk_widget_set_sensitive(account_button_delete, FALSE);
+
+    }
 }
+
 
 GtkWidget *make_tree_view(GtkListStore *list_store) {
     GtkTreeIter iter;
@@ -193,7 +223,7 @@ GtkWidget *make_tree_view(GtkListStore *list_store) {
     gtk_tree_view_column_set_cell_data_func(columnName, rendererName, name_column_formatter, NULL, NULL);
     gtk_tree_view_column_set_cell_data_func(columnDescription, rendererDescription, description_column_formatter, NULL, NULL);
 
-    gtk_list_box_set_selection_mode ( GTK_LIST_BOX(tree) , GTK_SELECTION_SINGLE);
+    gtk_list_box_set_selection_mode(GTK_LIST_BOX(tree), GTK_SELECTION_SINGLE);
 
     g_object_unref(list_store); /* destroy model automatically with view */
 

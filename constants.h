@@ -8,4 +8,6 @@ static const char BUTTON_NAME_REVERT[] = "btnAccountsRevert";
 static const char BUTTON_NAME_ADD[] = "btnAccountsAdd";
 static const char BUTTON_NAME_DELETE[] = "btnAccountsDelete";
 static const char BUTTON_NAME_SAVE[] = "btnAccountsSave";
+static const char HBOX_ACCOUNT_BUTTONS[] = "hboxAccountButtons";
+
 
