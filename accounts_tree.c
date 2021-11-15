@@ -1,60 +1,67 @@
+#include <gdk/gdk.h>
 #include <gtk/gtk.h>
 
-#include "headers.h"
 #include "constants.h"
+#include "headers.h"
 
 void account_column_formatter(GtkTreeViewColumn *col,
-                             GtkCellRenderer *renderer,
-                             GtkTreeModel *model,
-                             GtkTreeIter *iter,
-                             gpointer user_data) {
+                              GtkCellRenderer *renderer,
+                              GtkTreeModel *model,
+                              GtkTreeIter *iter,
+                              gpointer user_data) {
     gchararray account_number[500];
     gtk_tree_model_get(model, iter, ACCOUNT_NUMBER, account_number, -1);
     g_print("Here is the account number after %s\n", *account_number);
     g_object_set(renderer, "text", *account_number, NULL);
     if (strcmp(*account_number, NEW_NUMBER) == 0) {
+        g_object_set(renderer, "foreground-rgba", &NEW_ACCOUNT_FOREGROUND, NULL);
         g_object_set(renderer, "style", PANGO_STYLE_ITALIC, NULL);
+
     } else {
+        g_object_set(renderer, "foreground-rgba", &EXISTING_ACCOUNT_FOREGROUND, NULL);
         g_object_set(renderer, "style", PANGO_STYLE_NORMAL, NULL);
     }
 }
 
 void name_column_formatter(GtkTreeViewColumn *col,
-                             GtkCellRenderer *renderer,
-                             GtkTreeModel *model,
-                             GtkTreeIter *iter,
-                             gpointer user_data) {
+                           GtkCellRenderer *renderer,
+                           GtkTreeModel *model,
+                           GtkTreeIter *iter,
+                           gpointer user_data) {
     gchararray name[500];
     gtk_tree_model_get(model, iter, ACCOUNT_NAME, name, -1);
     g_object_set(renderer, "text", *name, NULL);
     if (strcmp(*name, NEW_NAME) == 0) {
+        g_object_set(renderer, "foreground-rgba", &NEW_ACCOUNT_FOREGROUND, NULL);
         g_object_set(renderer, "style", PANGO_STYLE_ITALIC, NULL);
+
     } else {
+        g_object_set(renderer, "foreground-rgba", &EXISTING_ACCOUNT_FOREGROUND, NULL);
         g_object_set(renderer, "style", PANGO_STYLE_NORMAL, NULL);
     }
 }
 
 void description_column_formatter(GtkTreeViewColumn *col,
-                             GtkCellRenderer *renderer,
-                             GtkTreeModel *model,
-                             GtkTreeIter *iter,
-                             gpointer user_data) {
+                                  GtkCellRenderer *renderer,
+                                  GtkTreeModel *model,
+                                  GtkTreeIter *iter,
+                                  gpointer user_data) {
     gchararray description[500];
     gtk_tree_model_get(model, iter, DESCRIPTION, description, -1);
     g_object_set(renderer, "text", *description, NULL);
     if (strcmp(*description, NEW_DESCRIPTION) == 0) {
+        g_object_set(renderer, "foreground-rgba", &NEW_ACCOUNT_FOREGROUND, NULL);
         g_object_set(renderer, "style", PANGO_STYLE_ITALIC, NULL);
     } else {
+        g_object_set(renderer, "foreground-rgba", &EXISTING_ACCOUNT_FOREGROUND, NULL);
         g_object_set(renderer, "style", PANGO_STYLE_NORMAL, NULL);
     }
 }
 
-
-
 static void number_edited(GtkCellRendererText *renderer,
-                                  gchar *path,
-                                  gchar *new_account_number,
-                                  GtkTreeView *treeview) {
+                          gchar *path,
+                          gchar *new_account_number,
+                          GtkTreeView *treeview) {
     GtkTreeIter iter;
     GtkTreeModel *model;
     if (g_ascii_strcasecmp(new_account_number, "") != 0) {
@@ -66,9 +73,9 @@ static void number_edited(GtkCellRendererText *renderer,
 }
 
 static void name_edited(GtkCellRendererText *renderer,
-                                  gchar *path,
-                                  gchar *new_account_name,
-                                  GtkTreeView *treeview) {
+                        gchar *path,
+                        gchar *new_account_name,
+                        GtkTreeView *treeview) {
     GtkTreeIter iter;
     GtkTreeModel *model;
     if (g_ascii_strcasecmp(new_account_name, "") != 0) {
@@ -78,7 +85,6 @@ static void name_edited(GtkCellRendererText *renderer,
         }
     }
 }
-
 
 static void description_edited(GtkCellRendererText *renderer,
                                gchar *path,
@@ -146,13 +152,12 @@ GtkWidget *make_tree_view(GtkListStore *list_store) {
 
     rendererName = gtk_cell_renderer_text_new();
     columnName = gtk_tree_view_column_new_with_attributes("Name",
-                                                             rendererName,
-                                                             "text", ACCOUNT_NAME,
-                                                             NULL);
+                                                          rendererName,
+                                                          "text", ACCOUNT_NAME,
+                                                          NULL);
     g_object_set(rendererName, "editable", TRUE, "editable-set", TRUE, NULL);
 
     g_signal_connect(G_OBJECT(rendererName), "edited", G_CALLBACK(name_edited), (gpointer)tree);
-
 
     GtkCellRenderer *rendererDescription;
     GtkTreeViewColumn *columnDescription;
@@ -187,7 +192,6 @@ GtkWidget *make_tree_view(GtkListStore *list_store) {
     gtk_tree_view_column_set_cell_data_func(columnAccount, rendererAccount, account_column_formatter, NULL, NULL);
     gtk_tree_view_column_set_cell_data_func(columnName, rendererName, name_column_formatter, NULL, NULL);
     gtk_tree_view_column_set_cell_data_func(columnDescription, rendererDescription, description_column_formatter, NULL, NULL);
-
 
     g_object_unref(list_store); /* destroy model automatically with view */
 
