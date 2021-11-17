@@ -100,20 +100,6 @@ static void description_edited(GtkCellRendererText *renderer,
     }
 }
 
-static void remove_row(GtkCellRendererToggle *renderer,
-                       gchar *path,
-                       GtkTreeView *treeview) {
-    gtk_show_about_dialog(NULL, "program-name", "ExampleCode", "title", "You will love this", NULL);
-    GtkTreeIter iter;
-    GtkTreeModel *model;
-    GIcon *value;
-    model = gtk_tree_view_get_model(treeview);
-    g_print("Here\n");
-    if (gtk_tree_model_get_iter_from_string(model, &iter, path)) {
-        gtk_list_store_remove(GTK_LIST_STORE(model), &iter);
-    }
-}
-
 gboolean examine_all_checkboxes (GtkTreeModel *model,
                                     GtkTreePath *path,
                                     GtkTreeIter *iter,
@@ -223,7 +209,7 @@ GtkWidget *make_tree_view(GtkListStore *list_store) {
     gtk_tree_view_column_set_cell_data_func(columnName, rendererName, name_column_formatter, NULL, NULL);
     gtk_tree_view_column_set_cell_data_func(columnDescription, rendererDescription, description_column_formatter, NULL, NULL);
 
-    gtk_list_box_set_selection_mode(GTK_LIST_BOX(tree), GTK_SELECTION_SINGLE);
+    //gtk_list_box_set_selection_mode(GTK_LIST_BOX(tree), GTK_SELECTION_SINGLE);
 
     g_object_unref(list_store); /* destroy model automatically with view */
 
