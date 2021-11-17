@@ -1,10 +1,15 @@
 #include <gtk/gtk.h>
+/**
+ * @file headers.h
+ * @brief C headers.
+*/
 void on_app_activate(GApplication *app, gpointer data);
 void build_list_store(gpointer account, gpointer list_builder_struct);
 GtkWidget * make_tree_view(GtkListStore *list_store );
 gpointer build_temporary_list(gpointer master_account, gpointer temporary_account);
 GtkWidget * make_accounts_buttons_hbox(GtkListStore *list_store);
 GtkWidget * get_child_from_parent (GtkWidget * parent, const gchar * child_name);
+GSList *read_account_numbers();
 
 /**
  * Enum for declaring a list store of accounts.
@@ -35,6 +40,6 @@ typedef struct list_builder_struct {
     GtkListStore *list_store; /**< Pointer to the passed GS_List. */
 } List_Builder_Struct;
 
-GSList *read_account_numbers();
+
 
 

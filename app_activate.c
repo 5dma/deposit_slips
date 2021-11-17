@@ -1,9 +1,18 @@
 #include <gtk/gtk.h>
 #include "headers.h"
 
+/**
+ * @file app_activate.c
+ * @brief Builds the view.
+*/
+
 /* G_MESSAGES_DEBUG=all ./deposit_slip */
 
-// callback function which is called when application is first started
+/**
+ * Function that starts the Gtk loop.
+ * @param app Pointer to the GTK application
+ * @param data Pointer to passed data, `NULL` in this case.
+*/
 void on_app_activate(GApplication *app, gpointer data) {
     GtkWidget *window = gtk_application_window_new(GTK_APPLICATION(app));
 
