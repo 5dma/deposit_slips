@@ -3,6 +3,9 @@
 #include "constants.h"
 #include "headers.h"
 
+/*
+Adds a row to the tree model after user clicks the Add button.
+*/
 static void add_row(GtkWidget* widget, gpointer* data) {
     GtkListStore* list_store = (GtkListStore*)data;
 
@@ -21,6 +24,11 @@ static void add_row(GtkWidget* widget, gpointer* data) {
     gtk_widget_set_sensitive(account_button_save, TRUE);
 }
 
+/*
+Deletes a checked row from the model (and reflected in the treeview). Inspiration for
+this loop is from https://www.kksou.com/php-gtk2/sample-codes/iterate-through-a-GtkListStore-Part-2.php.
+Would be more elegant to use gtk_tree_model_foreach() 
+*/
 static void delete_row(GtkWidget* widget, gpointer* data) {
     GtkListStore* list_store = (GtkListStore*)data;
     GtkTreeModel * treemodel = (GtkTreeModel *)data;

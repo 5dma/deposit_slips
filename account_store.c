@@ -2,8 +2,14 @@
 #include <string.h>
 #include "headers.h"
 
-/*
-Reads account number, name, and description from the user's data file.
+/**
+ * @file account_store.c
+ * @brief Sets up the store for accounts.
+*/
+/** 
+ * Reads a CSV file in `~/.deposit_slip/deposit_slips.csv` into a `GSList`.
+ * 
+ * @return Returns a `GSList *` of account numbers read from disk.
 */
 GSList *read_account_numbers() {
     GSList *local_struct_list = NULL;
@@ -12,7 +18,6 @@ GSList *read_account_numbers() {
     gboolean input_file_exists = g_file_test(input_file, G_FILE_TEST_EXISTS);
     if (input_file_exists) {
         gchar *content;
-        g_print("Found\n");
         if (g_file_get_contents(input_file, &content, NULL, &error)) {
             g_print("%s\n", content);
             gchar **lines[1000];
@@ -46,7 +51,9 @@ GSList *read_account_numbers() {
     return local_struct_list;
 }
 
-/* Adds a passed Account structure to the list store of accounts */
+/**
+ *  Adds a passed Account structure to the list store of accounts
+ */
 void build_list_store(gpointer account, gpointer list_builder_struct) {
     GtkListStore *list_store = ((List_Builder_Struct *)list_builder_struct)->list_store;
     GtkTreeIter iter = ((List_Builder_Struct *)list_builder_struct)->iter;
@@ -62,7 +69,11 @@ void build_list_store(gpointer account, gpointer list_builder_struct) {
                        -1);
 }
 
-/* Adds a passed Account structure to the list store of accounts */
+/**
+ Adds a passed Account structure to the list store of accounts. This function
+ is a callback passed from a `g_slist_copy_deep`.
+ @return A malloced pointer to a copy of the passed master account record.
+*/
 gpointer build_temporary_list(gpointer item, gpointer user_data) {
 
     Account *master_account = item;

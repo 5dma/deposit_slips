@@ -40,7 +40,9 @@ void on_app_activate(GApplication *app, gpointer data) {
 
     GtkWidget *topBox = gtk_box_new(GTK_ORIENTATION_VERTICAL, 3);
 
-    gtk_box_pack_start(GTK_BOX(vbox_accounts), accounts_tab_tree, FALSE, FALSE, 0);
+    /* The TRUE parameter ensures the treeview maintains its initial height, even after 
+        deleting rows. */
+    gtk_box_pack_start(GTK_BOX(vbox_accounts), accounts_tab_tree, TRUE, FALSE, 0);
     gtk_box_pack_start(GTK_BOX(vbox_accounts), accounts_buttons_hbox, FALSE, FALSE, 0);
 
     gtk_container_add(GTK_CONTAINER(window), notebook);
