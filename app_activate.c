@@ -44,7 +44,12 @@ void on_app_activate(GApplication *app, gpointer data) {
 
     GtkWidget *accounts_tab_tree = make_tree_view(list_store);
 
-    GtkWidget *accounts_buttons_hbox = make_accounts_buttons_hbox(list_store);
+    List_Store_Struct list_store_struct;
+    list_store_struct.list_store_master = master_account_list;
+    list_store_struct.list_store_temporary = temporary_account_list;
+    list_store_struct.list_store = list_store;
+
+    GtkWidget *accounts_buttons_hbox = make_accounts_buttons_hbox(&list_store_struct);
 
     GtkWidget *topBox = gtk_box_new(GTK_ORIENTATION_VERTICAL, 3);
 

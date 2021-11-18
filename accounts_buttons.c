@@ -29,13 +29,13 @@ static void add_row(GtkWidget* widget, gpointer* data) {
 }
 
 /**
-Deletes a checked row from the model (and reflected in the treeview). Inspiration for
+    Deletes a checked row from the model (and reflected in the treeview) after user clicks the Delete button. Inspiration for
 this loop is from https://www.kksou.com/php-gtk2/sample-codes/iterate-through-a-GtkListStore-Part-2.php.
-Would be more elegant to use gtk_tree_model_foreach() 
+    @param widget Pointer to the clicked Delete button.
+    @param data Void pointer to the temporary list store.
 */
 static void delete_row(GtkWidget* widget, gpointer* data) {
     GtkListStore* list_store = (GtkListStore*)data;
-    GtkTreeModel * treemodel = (GtkTreeModel *)data;
     GtkTreeIter iter;
     GValue * gvalue;
     gboolean still_in_list = TRUE;
@@ -60,12 +60,24 @@ static void delete_row(GtkWidget* widget, gpointer* data) {
 }
 
 /**
+    Reverts the account listing in the Accounts tab to the last saved listing after user clicks the Revert button.
+    @param widget Pointer to the clicked button.
+    @param data Void pointer to the structure holding both stores, master and temporary.
+*/
+static void revert_listing(GtkWidget* widget, gpointer* data) {
+    List_Store_Struct* list_store = (List_Store_Struct*)data;
+    g_print("OMGBARF\n");
+   
+}
+
+
+/**
     Constructs the view for the four buttons in the Accounts tab.
     @param list_store GtkListStore passed in from the main view. This parameter
     is passed to the callbacks for adding, deleting, reverting, and saving changes.
     @return An HBox containing the four buttons and associated callbacks.
 */
-GtkWidget* make_accounts_buttons_hbox(GtkListStore* list_store) {
+GtkWidget* make_accounts_buttons_hbox(List_Store_Struct* list_store_struct) {
     GtkWidget* local_hbox;
 
     GtkWidget* account_button_add = gtk_button_new_from_icon_name("gtk-add", GTK_ICON_SIZE_BUTTON);
@@ -95,8 +107,10 @@ GtkWidget* make_accounts_buttons_hbox(GtkListStore* list_store) {
     gtk_widget_set_sensitive(account_button_revert, FALSE);
     gtk_widget_set_sensitive(account_button_save, FALSE);
 
-    g_signal_connect(account_button_add, "clicked", G_CALLBACK(add_row), list_store);
-    g_signal_connect(account_button_delete, "clicked", G_CALLBACK(delete_row), list_store);
+    g_signal_connect(account_button_add, "clicked", G_CALLBACK(add_row), list_store_struct -> list_store);
+    g_signal_connect(account_button_delete, "clicked", G_CALLBACK(delete_row), list_store_struct -> list_store);
+    g_signal_connect(account_button_revert, "clicked", G_CALLBACK(revert_listing), list_store_struct);
+
 
     return local_hbox;
 }
