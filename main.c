@@ -2,6 +2,10 @@
 #include <stdlib.h>
 #include "headers.h"
 
+/*! \mainpage Main Page
+ * This small GTK 3.0 application prints deposit slips.
+ */
+
 int main(int argc, char *argv[]) {
 
     GtkApplication *app = gtk_application_new(

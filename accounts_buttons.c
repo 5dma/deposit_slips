@@ -2,8 +2,12 @@
 
 #include "constants.h"
 #include "headers.h"
+/**
+ * @file accounts_buttons.c
+ * @brief Builds the view and controller for the four buttons in the Accounts tab.
+*/
 
-/*
+/**
 Adds a row to the tree model after user clicks the Add button.
 */
 static void add_row(GtkWidget* widget, gpointer* data) {
@@ -24,7 +28,7 @@ static void add_row(GtkWidget* widget, gpointer* data) {
     gtk_widget_set_sensitive(account_button_save, TRUE);
 }
 
-/*
+/**
 Deletes a checked row from the model (and reflected in the treeview). Inspiration for
 this loop is from https://www.kksou.com/php-gtk2/sample-codes/iterate-through-a-GtkListStore-Part-2.php.
 Would be more elegant to use gtk_tree_model_foreach() 
@@ -55,6 +59,12 @@ static void delete_row(GtkWidget* widget, gpointer* data) {
     gtk_widget_set_sensitive(account_button_save, TRUE);
 }
 
+/**
+    Constructs the view for the four buttons in the Accounts tab.
+    @param list_store GtkListStore passed in from the main view. This parameter
+    is passed to the callbacks for adding, deleting, reverting, and saving changes.
+    @return An HBox containing the four buttons and associated callbacks.
+*/
 GtkWidget* make_accounts_buttons_hbox(GtkListStore* list_store) {
     GtkWidget* local_hbox;
 

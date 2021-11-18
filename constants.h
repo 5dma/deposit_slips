@@ -1,3 +1,7 @@
+/**
+ * @file constants.h
+ * @brief Constants used in multiple files.
+*/
 static const char NEW_NUMBER[] = "(Number)";
 static const char NEW_DESCRIPTION[] = "(Description)";
 static const char NEW_NAME[] = "(Name)";

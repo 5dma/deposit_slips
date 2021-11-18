@@ -2,3 +2,5 @@
 deposit_slip
 .~lock.*.odg#
 *.swp
+html/**
+latex/**

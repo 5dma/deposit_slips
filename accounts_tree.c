@@ -4,6 +4,19 @@
 #include "constants.h"
 #include "headers.h"
 
+/**
+ * @file accounts_tree.c
+ * @brief Constructs the tree view in the Accounts tab.
+*/
+
+/**
+ * Formats the account column in the tree view.
+ * @param col Pointer to the account's column.
+ * @param renderer Pointer to the account's cell renderer.
+ * @param model Pointer to model associated with the tree view.
+ * @param iter Pointer to iterator associated with the model.
+ * @param user_data Void pointer to passed user data.
+*/
 void account_column_formatter(GtkTreeViewColumn *col,
                               GtkCellRenderer *renderer,
                               GtkTreeModel *model,
@@ -23,6 +36,14 @@ void account_column_formatter(GtkTreeViewColumn *col,
     }
 }
 
+/**
+ * Formats the name column in the tree view.
+ * @param col Pointer to the name's column.
+ * @param renderer Pointer to the name's cell renderer.
+ * @param model Pointer to model associated with the tree view.
+ * @param iter Pointer to iterator associated with the model.
+ * @param user_data Void pointer to passed user data.
+*/
 void name_column_formatter(GtkTreeViewColumn *col,
                            GtkCellRenderer *renderer,
                            GtkTreeModel *model,
@@ -41,6 +62,14 @@ void name_column_formatter(GtkTreeViewColumn *col,
     }
 }
 
+/**
+ * Formats the description column in the tree view.
+ * @param col Pointer to the description's column.
+ * @param renderer Pointer to the description's cell renderer.
+ * @param model Pointer to model associated with the tree view.
+ * @param iter Pointer to iterator associated with the model.
+ * @param user_data Void pointer to passed user data.
+*/
 void description_column_formatter(GtkTreeViewColumn *col,
                                   GtkCellRenderer *renderer,
                                   GtkTreeModel *model,
@@ -58,6 +87,14 @@ void description_column_formatter(GtkTreeViewColumn *col,
     }
 }
 
+/**
+ * Callback fired after a cell in the account number column is edited. The function
+ * replaces the account number in the model with the one passed to the callback.
+ * @param renderer Pointer to the number's cell renderer.
+ * @param path Pointer to the model's path where the editing took place.
+ * @param new_account_number Pointer to the new account number.
+ * @param treeview Pointer to the tree view.
+*/
 static void number_edited(GtkCellRendererText *renderer,
                           gchar *path,
                           gchar *new_account_number,
@@ -72,6 +109,14 @@ static void number_edited(GtkCellRendererText *renderer,
     }
 }
 
+/**
+ * Callback fired after a cell in the name  column is edited. The function
+ * replaces the name in the model with the one passed to the callback.
+ * @param renderer Pointer to the name's cell renderer.
+ * @param path Pointer to the model's path where the editing took place.
+ * @param new_account_name Pointer to the new account name.
+ * @param treeview Pointer to the tree view.
+*/
 static void name_edited(GtkCellRendererText *renderer,
                         gchar *path,
                         gchar *new_account_name,
@@ -86,6 +131,14 @@ static void name_edited(GtkCellRendererText *renderer,
     }
 }
 
+/**
+ * Callback fired after a cell in the description column is edited. The function
+ * replaces the description in the model with the one passed to the callback.
+ * @param renderer Pointer to the description's cell renderer.
+ * @param path Pointer to the model's path where the editing took place.
+ * @param new_description Pointer to the new account description.
+ * @param treeview Pointer to the tree view.
+*/
 static void description_edited(GtkCellRendererText *renderer,
                                gchar *path,
                                gchar *new_description,
@@ -100,6 +153,16 @@ static void description_edited(GtkCellRendererText *renderer,
     }
 }
 
+/**
+ * Callback fired during a `gtk_tree_model_foreach`. The function
+ * examines the checkbox in the model's passed iteration, and returns true or false depending
+ * if the checkbox is marked.
+ * @param model Pointer to the model being iterated.
+ * @param path Pointer to the path associated with the current iteration.
+ * @param iter Pointer to the iterator associated with the current iteration.
+ * @param data Void pointer to user data.
+ * @return `TRUE` if at least one of the checkboxes in the delete column is checked, `FALSE` otherwise.
+*/
 gboolean examine_all_checkboxes (GtkTreeModel *model,
                                     GtkTreePath *path,
                                     GtkTreeIter *iter,
@@ -114,6 +177,14 @@ gboolean examine_all_checkboxes (GtkTreeModel *model,
   return FALSE;
 }
 
+
+/**
+ * Callback fired if one of the checkboxes in the Delete column is toggled on or off. The function
+ * changes the view to marked or cleared depending on the checkboxes previous state.
+ * @param renderer Pointer to the checkbox's cell renderer.
+ * @param path Pointer to the path associated with the current iteration.
+ * @param treeview Pointer to associated treeview.
+*/
 static void toggle_clicked(GtkCellRendererToggle *renderer,
                            gchar *path,
                            GtkTreeView *treeview) {
@@ -143,7 +214,11 @@ static void toggle_clicked(GtkCellRendererToggle *renderer,
     }
 }
 
-
+/**
+ * Function that creates the tree view for the account listing in the Accounts tab.
+ * @param list_store Pointer to the `GtkListStore` associated with the tree view this function creates.
+ * @return A pointer to the tree view.
+*/
 GtkWidget *make_tree_view(GtkListStore *list_store) {
     GtkTreeIter iter;
     GtkWidget *tree;

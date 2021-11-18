@@ -6,7 +6,6 @@
  * @brief Builds the view.
 */
 
-/* G_MESSAGES_DEBUG=all ./deposit_slip */
 
 /**
  * Function that starts the Gtk loop.
