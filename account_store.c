@@ -4,7 +4,7 @@
 
 /**
  * @file account_store.c
- * @brief Sets up the store for accounts.
+ * Sets up the store for accounts.
 */
 /** 
  * Reads a CSV file in `~/.deposit_slip/deposit_slips.csv` into a `GSList`.

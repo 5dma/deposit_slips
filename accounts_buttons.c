@@ -1,5 +1,5 @@
 #include <gtk/gtk.h>
-
+#include <string.h>
 #include "constants.h"
 #include "headers.h"
 /**
@@ -8,9 +8,11 @@
 */
 
 /**
-Adds a row to the tree model after user clicks the Add button.
+    Adds a row to the tree model after user clicks the Add button.
+    @param widget Pointer to the clicked Add button.
+    @param data Void pointer to the temporary list store.
 */
-static void add_row(GtkWidget* widget, gpointer* data) {
+static void add_row(GtkWidget* widget, gpointer data) {
     GtkListStore* list_store = (GtkListStore*)data;
 
     GtkTreeIter iter;
@@ -34,7 +36,7 @@ this loop is from https://www.kksou.com/php-gtk2/sample-codes/iterate-through-a-
     @param widget Pointer to the clicked Delete button.
     @param data Void pointer to the temporary list store.
 */
-static void delete_row(GtkWidget* widget, gpointer* data) {
+static void delete_row(GtkWidget* widget, gpointer data) {
     GtkListStore* list_store = (GtkListStore*)data;
     GtkTreeIter iter;
     GValue * gvalue;
@@ -64,8 +66,16 @@ static void delete_row(GtkWidget* widget, gpointer* data) {
     @param widget Pointer to the clicked button.
     @param data Void pointer to the structure holding both stores, master and temporary.
 */
-static void revert_listing(GtkWidget* widget, gpointer* data) {
-    List_Store_Struct* list_store = (List_Store_Struct*)data;
+static void revert_listing(GtkWidget *widget, gpointer data) {
+    List_Store_Struct *list_store_struct = (List_Store_Struct *) data;
+   
+    GtkListStore *list_store = (list_store_struct->list_builder_struct)->list_store;
+
+    GSList *list_store_master = list_store_struct->list_store_master;
+    GSList *list_store_temporary = list_store_struct->list_store_temporary; 
+
+    list_store_temporary = g_slist_copy_deep(list_store_master, (GCopyFunc) build_temporary_list, NULL);
+    g_slist_foreach(list_store_temporary, build_list_store, list_store);
     g_print("OMGBARF\n");
    
 }
@@ -107,8 +117,8 @@ GtkWidget* make_accounts_buttons_hbox(List_Store_Struct* list_store_struct) {
     gtk_widget_set_sensitive(account_button_revert, FALSE);
     gtk_widget_set_sensitive(account_button_save, FALSE);
 
-    g_signal_connect(account_button_add, "clicked", G_CALLBACK(add_row), list_store_struct -> list_store);
-    g_signal_connect(account_button_delete, "clicked", G_CALLBACK(delete_row), list_store_struct -> list_store);
+    g_signal_connect(account_button_add, "clicked", G_CALLBACK(add_row), (list_store_struct->list_builder_struct)->list_store );
+    g_signal_connect(account_button_delete, "clicked", G_CALLBACK(delete_row), (list_store_struct->list_builder_struct)->list_store);
     g_signal_connect(account_button_revert, "clicked", G_CALLBACK(revert_listing), list_store_struct);
 
 

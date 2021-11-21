@@ -47,7 +47,7 @@ void on_app_activate(GApplication *app, gpointer data) {
     List_Store_Struct list_store_struct;
     list_store_struct.list_store_master = master_account_list;
     list_store_struct.list_store_temporary = temporary_account_list;
-    list_store_struct.list_store = list_store;
+    list_store_struct.list_builder_struct = &list_builder;
 
     GtkWidget *accounts_buttons_hbox = make_accounts_buttons_hbox(&list_store_struct);
 

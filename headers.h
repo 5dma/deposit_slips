@@ -36,11 +36,12 @@ typedef struct list_builder_struct {
 /**
  * Structure holding two list stores: master and temporary. This structure
  * is used to pass both list stores to various functions.
+ * \sa list_builder_struct
  */
 typedef struct List_Stores {
     GSList * list_store_master; /**< Master list (the one stored on disk) */
     GSList * list_store_temporary; /**< Temporary list (the one stored in memory) */
-    GtkListStore *list_store; /**< List store associated with the tree view */
+    List_Builder_Struct * list_builder_struct; /**< List builder structure associated with the tree view */
 } List_Store_Struct;
 
 void on_app_activate(GApplication *app, gpointer data);
