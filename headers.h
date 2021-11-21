@@ -1,4 +1,7 @@
 #include <gtk/gtk.h>
+#ifndef __HEADER
+#define __HEADER
+
 /**
  * @file headers.h
  * @brief C headers.
@@ -53,5 +56,5 @@ GtkWidget * get_child_from_parent (GtkWidget * parent, const gchar * child_name)
 GSList *read_account_numbers();
 GtkWidget * make_accounts_buttons_hbox(List_Store_Struct* list_store_struct);
 
-
+#endif
 

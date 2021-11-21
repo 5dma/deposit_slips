@@ -1,7 +1,7 @@
 #include <gtk/gtk.h>
 #include <string.h>
-#include "constants.h"
-#include "headers.h"
+#include "../constants.h"
+#include "../headers.h"
 /**
  * @file accounts_buttons.c
  * @brief Builds the view and controller for the four buttons in the Accounts tab.

@@ -2,6 +2,8 @@
  * @file constants.h
  * @brief Constants used in multiple files.
 */
+#ifndef __CONSTANTS
+#define __CONSTANTS
 
 static const char NEW_NUMBER[] = "(Number)"; /**< Dummy account number string for the new account row. */
 static const char NEW_DESCRIPTION[] = "(Description)"; /**< Dummy description string for the new account row. */
@@ -15,4 +17,4 @@ static const char BUTTON_NAME_DELETE[] = "btnAccountsDelete";  /**< Name for the
 static const char BUTTON_NAME_SAVE[] = "btnAccountsSave";  /**< Name for the Save button. */
 static const char HBOX_ACCOUNT_BUTTONS[] = "hboxAccountButtons";  /**< Name for the hbox containing the above buttons. */
 
-
+#endif

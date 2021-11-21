@@ -1,5 +1,8 @@
 #include <gtk/gtk.h>
 #include "headers.h"
+#include "accounts/account_store.c"
+#include "accounts/accounts_tree.c"
+#include "accounts/accounts_buttons.c"
 
 /**
  * @file app_activate.c

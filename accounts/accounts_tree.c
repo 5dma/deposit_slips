@@ -1,8 +1,8 @@
 #include <gdk/gdk.h>
 #include <gtk/gtk.h>
 
-#include "constants.h"
-#include "headers.h"
+#include "../constants.h"
+#include "../headers.h"
 
 /**
  * @file accounts_tree.c
