@@ -20,5 +20,7 @@ static const char HBOX_ACCOUNT_BUTTONS[] = "hboxAccountButtons";  /**< Name for 
 static const char BUTTON_CHECK_ADD[] = "btnChecksAdd"; /**< Name for the Add Check button. */
 static const char BUTTON_CHECK_DELETE[] = "btnChecksDelete";  /**< Name for the Delete Checks button. */
 static const char BUTTON_SLIP_PRINT[] = "btnSlipPrint";  /**< Name for the Print Slip button. */
+static const char LABEL_ACCOUNT_DESCRIPTION[] = "lblAccountDescription";  /**< Name for the account description label. */
+
 
 #endif

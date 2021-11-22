@@ -153,6 +153,7 @@ static void description_edited(GtkCellRendererText *renderer,
     }
 }
 
+
 /**
  * Callback fired during a `gtk_tree_model_foreach`. The function
  * examines the checkbox in the model's passed iteration, and returns true or false depending
@@ -163,20 +164,19 @@ static void description_edited(GtkCellRendererText *renderer,
  * @param data Void pointer to user data.
  * @return `TRUE` if at least one of the checkboxes in the delete column is checked, `FALSE` otherwise.
 */
-gboolean examine_all_checkboxes (GtkTreeModel *model,
-                                    GtkTreePath *path,
-                                    GtkTreeIter *iter,
-                                    gpointer data) {
+gboolean examine_all_checkboxes(GtkTreeModel *model,
+                                GtkTreePath *path,
+                                GtkTreeIter *iter,
+                                gpointer data) {
     gboolean value;
-    gboolean * checkbox_checked = (gboolean *) data;
+    gboolean *checkbox_checked = (gboolean *)data;
     gtk_tree_model_get(model, iter, CHECKBOX, &value, -1);
     if (value == TRUE) {
         *checkbox_checked = TRUE;
         return TRUE;
     }
-  return FALSE;
+    return FALSE;
 }
-
 
 /**
  * Callback fired if one of the checkboxes in the Delete column is toggled on or off. The function
@@ -200,17 +200,16 @@ static void toggle_clicked(GtkCellRendererToggle *renderer,
 
     gboolean at_least_one_checkbox_set = FALSE;
 
-    gtk_tree_model_foreach(model,  examine_all_checkboxes , &at_least_one_checkbox_set);
+    gtk_tree_model_foreach(model, examine_all_checkboxes, &at_least_one_checkbox_set);
 
-    GtkWidget * accounts_tab = gtk_widget_get_parent (GTK_WIDGET(treeview));
-    GtkWidget * accounts_hbox = get_child_from_parent(accounts_tab, HBOX_ACCOUNT_BUTTONS);
-    GtkWidget * account_button_delete =  get_child_from_parent(accounts_hbox, BUTTON_NAME_DELETE);
+    GtkWidget *accounts_tab = gtk_widget_get_parent(GTK_WIDGET(treeview));
+    GtkWidget *accounts_hbox = get_child_from_parent(accounts_tab, HBOX_ACCOUNT_BUTTONS);
+    GtkWidget *account_button_delete = get_child_from_parent(accounts_hbox, BUTTON_NAME_DELETE);
 
     if (at_least_one_checkbox_set == TRUE) {
-            gtk_widget_set_sensitive(account_button_delete, TRUE);
+        gtk_widget_set_sensitive(account_button_delete, TRUE);
     } else {
-            gtk_widget_set_sensitive(account_button_delete, FALSE);
-
+        gtk_widget_set_sensitive(account_button_delete, FALSE);
     }
 }
 

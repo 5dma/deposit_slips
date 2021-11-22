@@ -63,12 +63,39 @@ static void check_toggle_clicked(GtkCellRendererToggle *renderer,
     }
 }
 
+/**
+ * Callback fired after changing the selection in the accounts listing in the Slips tab. 
+ * The function changes the label under the accounts list to show the selected
+ * account's name and description.
+ * @param tree_view Pointer to tree view whose selection was changed.
+ * @param user_data Pointer to passed user data (not used).
+*/
+void update_label(GtkTreeView *tree_view, gpointer user_data) {
+    GtkWidget *tree_parent = gtk_widget_get_parent(GTK_WIDGET(tree_view));
+    GtkTreeSelection *tree_selection = gtk_tree_view_get_selection(tree_view);
+    GtkTreeModel *model;
+    GtkTreeIter iter;
+
+    if (gtk_tree_selection_get_selected(tree_selection, &model, &iter)) {
+        GtkWidget *lbl_description = get_child_from_parent(tree_parent, LABEL_ACCOUNT_DESCRIPTION);
+        gchararray account_name;
+        gchararray description;
+        gtk_tree_model_get(model, &iter, ACCOUNT_NAME, &account_name,DESCRIPTION, &description, -1);
+        gchar *full_label = g_strdup_printf("%s (%s)",account_name, description);
+        g_print("%s\n",full_label);
+        gtk_label_set_label(GTK_LABEL(lbl_description), full_label);
+        g_free(full_label);
+    } else {
+        return;
+    }
+}
+
 GtkWidget *make_account_view(GtkListStore *list_store) {
     GtkTreeIter iter;
-    GtkWidget *tree;
+    GtkWidget *tree_view;
 
-    tree = gtk_tree_view_new_with_model(GTK_TREE_MODEL(list_store));
-    g_object_set(tree, "enable-grid-lines", GTK_TREE_VIEW_GRID_LINES_BOTH, NULL);
+    tree_view = gtk_tree_view_new_with_model(GTK_TREE_MODEL(list_store));
+    g_object_set(tree_view, "enable-grid-lines", GTK_TREE_VIEW_GRID_LINES_BOTH, NULL);
 
     GtkCellRenderer *rendererAccount;
     GtkTreeViewColumn *columnAccount;
@@ -78,13 +105,16 @@ GtkWidget *make_account_view(GtkListStore *list_store) {
                                                              rendererAccount,
                                                              "text", ACCOUNT_NUMBER,
                                                              NULL);
-    //g_signal_connect(G_OBJECT(rendererAccount), "edited", G_CALLBACK(number_edited), (gpointer)tree);
 
-    gtk_tree_view_append_column(GTK_TREE_VIEW(tree), columnAccount);
+    gtk_tree_view_append_column(GTK_TREE_VIEW(tree_view), columnAccount);
 
+    GtkTreeSelection *tree_selection = gtk_tree_view_get_selection(GTK_TREE_VIEW(tree_view));
+    gtk_tree_selection_set_mode(tree_selection, GTK_SELECTION_SINGLE);
+
+    g_signal_connect(G_OBJECT(tree_view), "cursor-changed", G_CALLBACK(update_label), NULL);
     //g_object_unref(list_store); /* destroy model automatically with view */
 
-    return tree;
+    return tree_view;
 }
 
 GtkWidget *make_slip_view(GtkListStore *list_store) {
@@ -100,6 +130,7 @@ GtkWidget *make_slip_view(GtkListStore *list_store) {
     gtk_widget_set_name(btnChecksAdd, BUTTON_CHECK_ADD);
     gtk_widget_set_name(btnChecksDelete, BUTTON_CHECK_DELETE);
     gtk_widget_set_name(btnSlipPrint, BUTTON_SLIP_PRINT);
+    gtk_widget_set_name(lblAccountDescription, LABEL_ACCOUNT_DESCRIPTION);
 
     GtkWidget *drawing_area = gtk_drawing_area_new();
 
@@ -109,8 +140,6 @@ GtkWidget *make_slip_view(GtkListStore *list_store) {
 
     GtkListStore *checks_store = make_checks_store();
     tree_checks = gtk_tree_view_new_with_model(GTK_TREE_MODEL(checks_store));
-
-    g_print("HEREOMG\n");
 
     GtkWidget *gridSlip = gtk_grid_new();
     /* First column of grid */
