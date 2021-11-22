@@ -1,14 +1,15 @@
 #include <gtk/gtk.h>
-#include "headers.h"
+
 #include "accounts/account_store.c"
-#include "accounts/accounts_tree.c"
 #include "accounts/accounts_buttons.c"
+#include "accounts/accounts_tree.c"
+#include "headers.h"
+#include "slips/slip_view.c"
 
 /**
  * @file app_activate.c
  * @brief Builds the view.
 */
-
 
 /**
  * Function that starts the Gtk loop.
@@ -29,13 +30,12 @@ void on_app_activate(GApplication *app, gpointer data) {
     gtk_notebook_append_page(GTK_NOTEBOOK(notebook), vbox_slip, label_slip);
     gtk_notebook_append_page(GTK_NOTEBOOK(notebook), vbox_accounts, label_account);
 
-    GtkListStore *list_store = gtk_list_store_new(N_COLUMNS, G_TYPE_STRING,  G_TYPE_STRING, G_TYPE_STRING, G_TYPE_BOOLEAN);
+    GtkListStore *list_store = gtk_list_store_new(N_COLUMNS, G_TYPE_STRING, G_TYPE_STRING, G_TYPE_STRING, G_TYPE_BOOLEAN);
 
     /* Read account numbers from disk.*/
     GSList *master_account_list = read_account_numbers();
 
-    GSList *temporary_account_list = g_slist_copy_deep(master_account_list, (GCopyFunc) build_temporary_list, NULL);
-
+    GSList *temporary_account_list = g_slist_copy_deep(master_account_list, (GCopyFunc)build_temporary_list, NULL);
 
     GtkTreeIter iter;
 
@@ -46,6 +46,7 @@ void on_app_activate(GApplication *app, gpointer data) {
     g_slist_foreach(temporary_account_list, build_list_store, &list_builder);
 
     GtkWidget *accounts_tab_tree = make_tree_view(list_store);
+    GtkWidget *slips_tab_tree = make_slip_view(list_store);
 
     List_Store_Struct list_store_struct;
     list_store_struct.list_store_master = master_account_list;
@@ -60,6 +61,7 @@ void on_app_activate(GApplication *app, gpointer data) {
         deleting rows. */
     gtk_box_pack_start(GTK_BOX(vbox_accounts), accounts_tab_tree, TRUE, FALSE, 0);
     gtk_box_pack_start(GTK_BOX(vbox_accounts), accounts_buttons_hbox, FALSE, FALSE, 0);
+    gtk_box_pack_start(GTK_BOX(vbox_slip), slips_tab_tree, FALSE, FALSE, 0);
 
     gtk_container_add(GTK_CONTAINER(window), notebook);
 

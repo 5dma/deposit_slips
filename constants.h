@@ -17,4 +17,8 @@ static const char BUTTON_NAME_DELETE[] = "btnAccountsDelete";  /**< Name for the
 static const char BUTTON_NAME_SAVE[] = "btnAccountsSave";  /**< Name for the Save button. */
 static const char HBOX_ACCOUNT_BUTTONS[] = "hboxAccountButtons";  /**< Name for the hbox containing the above buttons. */
 
+static const char BUTTON_CHECK_ADD[] = "btnChecksAdd"; /**< Name for the Add Check button. */
+static const char BUTTON_CHECK_DELETE[] = "btnChecksDelete";  /**< Name for the Delete Checks button. */
+static const char BUTTON_SLIP_PRINT[] = "btnSlipPrint";  /**< Name for the Print Slip button. */
+
 #endif

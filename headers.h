@@ -19,6 +19,16 @@ enum {
 };
 
 /**
+ * Enum for declaring a list store of checks (only one column in this store).
+*/
+enum {
+    SLIP, /**< 0 */
+    CHECK_CHECKBOX,  /**< 1 */
+    SLIP_COLUMNS /**< 2 */
+};
+
+
+/**
  * Structure of an account record.
  */
 typedef struct Accounts {
