@@ -50,6 +50,8 @@ GtkWidget *make_checks_view(GtkListStore *checks_store) {
                                                             NULL);
     g_object_set(rendererChecks, "editable", TRUE, "editable-set", TRUE, NULL);
 
+    g_signal_connect(G_OBJECT(rendererChecks), "edited", G_CALLBACK(amount_edited), tree);
+
 
     GtkCellRenderer *rendererToggle;
     GtkTreeViewColumn *columnToggle;
@@ -98,6 +100,7 @@ GtkWidget *make_slip_view(GtkListStore *list_store) {
     GtkListStore *checks_store = make_checks_store();
     GtkWidget *tree_checks = make_checks_view(checks_store);
     g_signal_connect(btnChecksAdd, "clicked", G_CALLBACK(add_check_row), checks_store);
+    g_signal_connect(btnChecksDelete, "clicked", G_CALLBACK(delete_check_row), checks_store);
 
     GtkWidget *gridSlip = gtk_grid_new();
     /* First column of grid */

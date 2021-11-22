@@ -112,3 +112,52 @@ static void add_check_row(GtkWidget* widget, gpointer data) {
     gtk_widget_set_sensitive(account_button_save, TRUE);  */
 }
 
+/**
+    Deletes a checked row from the model (and reflected in the treeview) after user clicks the Delete button. Inspiration for
+this loop is from https://www.kksou.com/php-gtk2/sample-codes/iterate-through-a-GtkListStore-Part-2.php.
+    @param widget Pointer to the clicked Delete button.
+    @param data Void pointer to the temporary list store.
+*/
+static void delete_check_row(GtkWidget* widget, gpointer data) {
+    GtkListStore* list_store = (GtkListStore*)data;
+    GtkTreeIter iter;
+    GValue * gvalue;
+    gboolean still_in_list = TRUE;
+    gtk_tree_model_get_iter_first(GTK_TREE_MODEL(data), &iter);
+
+    do {
+        gtk_tree_model_get_value(GTK_TREE_MODEL(data), &iter, CHECK_CHECKBOX, gvalue);
+        if (g_value_get_boolean(gvalue) == TRUE) {
+            gtk_list_store_remove(list_store, &iter);
+        } else {
+            still_in_list = gtk_tree_model_iter_next(GTK_TREE_MODEL(data), &iter);
+        }
+        g_value_unset(gvalue);
+
+    } while (still_in_list);
+
+}
+
+/**
+ * Callback fired after a cell in the amount column is edited. The function
+ * replaces the amount in the model with the one passed to the callback.
+ * @param renderer Pointer to the number's cell renderer.
+ * @param path Pointer to the model's path where the editing took place.
+ * @param new_account_number Pointer to the new account number.
+ * @param treeview Pointer to the tree view.
+*/
+static void amount_edited(GtkCellRendererText *renderer,
+                          gchar *path,
+                          gchar *new_amount,
+                          gpointer data) {
+
+    GtkTreeView *treeview = (GtkTreeView *)data;
+    GtkTreeIter iter;
+    GtkTreeModel *model;
+    if (g_ascii_strcasecmp(new_amount, "") != 0) {
+        model = gtk_tree_view_get_model(treeview);
+        if (gtk_tree_model_get_iter_from_string(model, &iter, path)) {
+            gtk_list_store_set(GTK_LIST_STORE(model), &iter, CHECK_AMOUNT, new_amount, -1);
+        }
+    }
+}
