@@ -62,30 +62,53 @@ void update_label(GtkTreeView *tree_view, gpointer user_data) {
 */
 static void check_toggle_clicked(GtkCellRendererToggle *renderer,
                                  gchar *path,
-                                 GtkTreeView *treeview) {
+                                 gpointer data) {
+    GtkTreeView *treeview = (GtkTreeView *)data;
     GtkTreeIter iter;
     GtkTreeModel *model;
     gboolean value;
     model = gtk_tree_view_get_model(treeview);
     g_debug("Here\n");
     if (gtk_tree_model_get_iter_from_string(model, &iter, path)) {
-        gtk_tree_model_get(model, &iter, CHECKBOX, &value, -1);
-        gtk_list_store_set(GTK_LIST_STORE(model), &iter, CHECKBOX, !value, -1);
+        gtk_tree_model_get(model, &iter, CHECK_CHECKBOX, &value, -1);
+        gtk_list_store_set(GTK_LIST_STORE(model), &iter, CHECK_CHECKBOX, !value, -1);
     }
 
     gboolean at_least_one_checkbox_set = FALSE;
 
     gtk_tree_model_foreach(model, examine_all_check_checkboxes, &at_least_one_checkbox_set);
 
-    GtkWidget *accounts_tab = gtk_widget_get_parent(GTK_WIDGET(treeview));
-    GtkWidget *accounts_hbox = get_child_from_parent(accounts_tab, HBOX_ACCOUNT_BUTTONS);
-    GtkWidget *account_button_delete = get_child_from_parent(accounts_hbox, BUTTON_NAME_DELETE);
+    GtkWidget *slip_tab = gtk_widget_get_parent(GTK_WIDGET(treeview));
+    GtkWidget *check_button_delete = get_child_from_parent(slip_tab, BUTTON_CHECK_DELETE);
 
     if (at_least_one_checkbox_set == TRUE) {
-        gtk_widget_set_sensitive(account_button_delete, TRUE);
+        gtk_widget_set_sensitive(check_button_delete, TRUE);
     } else {
-        gtk_widget_set_sensitive(account_button_delete, FALSE);
+        gtk_widget_set_sensitive(check_button_delete, FALSE);
     }
-}
+} 
 
+
+/**
+    Adds a row to the checks model after user clicks the Add button.
+    @param widget Pointer to the clicked Add button.
+    @param data Void pointer to the temporary list store.
+*/
+static void add_check_row(GtkWidget* widget, gpointer data) {
+
+    g_print("Clicked ADD\n");
+    GtkListStore *list_store = (GtkListStore*)data;
+
+    GtkTreeIter iter;
+    gtk_list_store_append(list_store, &iter);
+    gtk_list_store_set(list_store, &iter,
+                       CHECK_AMOUNT, NEW_AMOUNT,
+                       CHECK_CHECKBOX, FALSE,
+                       -1);
+   /*  GtkWidget* accounts_buttons_hbox = gtk_widget_get_parent(widget);
+    GtkWidget* account_button_revert = get_child_from_parent(accounts_buttons_hbox, BUTTON_NAME_REVERT);
+    gtk_widget_set_sensitive(account_button_revert, TRUE);
+    GtkWidget* account_button_save = get_child_from_parent(accounts_buttons_hbox, BUTTON_NAME_SAVE);
+    gtk_widget_set_sensitive(account_button_save, TRUE);  */
+}
 

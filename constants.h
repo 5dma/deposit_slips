@@ -21,6 +21,6 @@ static const char BUTTON_CHECK_ADD[] = "btnChecksAdd"; /**< Name for the Add Che
 static const char BUTTON_CHECK_DELETE[] = "btnChecksDelete";  /**< Name for the Delete Checks button. */
 static const char BUTTON_SLIP_PRINT[] = "btnSlipPrint";  /**< Name for the Print Slip button. */
 static const char LABEL_ACCOUNT_DESCRIPTION[] = "lblAccountDescription";  /**< Name for the account description label. */
-
+static const char NEW_AMOUNT[] = "0.00"; /**< Dummy amount string for the new check row. */
 
 #endif
