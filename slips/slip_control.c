@@ -105,11 +105,6 @@ static void add_check_row(GtkWidget* widget, gpointer data) {
                        CHECK_AMOUNT, NEW_AMOUNT,
                        CHECK_CHECKBOX, FALSE,
                        -1);
-   /*  GtkWidget* accounts_buttons_hbox = gtk_widget_get_parent(widget);
-    GtkWidget* account_button_revert = get_child_from_parent(accounts_buttons_hbox, BUTTON_NAME_REVERT);
-    gtk_widget_set_sensitive(account_button_revert, TRUE);
-    GtkWidget* account_button_save = get_child_from_parent(accounts_buttons_hbox, BUTTON_NAME_SAVE);
-    gtk_widget_set_sensitive(account_button_save, TRUE);  */
 }
 
 /**
@@ -118,10 +113,10 @@ this loop is from https://www.kksou.com/php-gtk2/sample-codes/iterate-through-a-
     @param widget Pointer to the clicked Delete button.
     @param data Void pointer to the temporary list store.
 */
-static void delete_check_row(GtkWidget* widget, gpointer data) {
-    GtkListStore* list_store = (GtkListStore*)data;
+static void delete_check_row(GtkWidget *widget, gpointer data) {
+    GtkListStore *list_store = (GtkListStore *)data;
     GtkTreeIter iter;
-    GValue * gvalue;
+    GValue *gvalue;
     gboolean still_in_list = TRUE;
     gtk_tree_model_get_iter_first(GTK_TREE_MODEL(data), &iter);
 
