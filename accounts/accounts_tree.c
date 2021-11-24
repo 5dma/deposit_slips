@@ -285,7 +285,5 @@ GtkWidget *make_tree_view(GtkListStore *list_store) {
 
     //gtk_list_box_set_selection_mode(GTK_LIST_BOX(tree), GTK_SELECTION_SINGLE);
 
-    g_object_unref(list_store); /* destroy model automatically with view */
-
     return tree;
 }

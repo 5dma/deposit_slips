@@ -11,6 +11,7 @@
  * @brief Builds the view.
 */
 
+
 /**
  * Function that starts the Gtk loop.
  * @param app Pointer to the GTK application
@@ -32,9 +33,11 @@ void on_app_activate(GApplication *app, gpointer data) {
 
     GtkListStore *list_store = gtk_list_store_new(N_COLUMNS, G_TYPE_STRING, G_TYPE_STRING, G_TYPE_STRING, G_TYPE_BOOLEAN);
 
-    /* Read account numbers from disk.*/
+
+    /* Read account numbers from disk. When is this freed? */
     GSList *master_account_list = read_account_numbers();
 
+    /* Copy the master list to the temporary list. When is this freed? */
     GSList *temporary_account_list = g_slist_copy_deep(master_account_list, (GCopyFunc)build_temporary_list, NULL);
 
     GtkTreeIter iter;
@@ -53,9 +56,17 @@ void on_app_activate(GApplication *app, gpointer data) {
     list_store_struct.list_store_temporary = temporary_account_list;
     list_store_struct.list_builder_struct = &list_builder;
 
+    /* Decrement reference count because we are creating references to
+    list_builder.list_store = list_store and
+    make_tree_view(GtkListStore *list_store) and 
+    make_slip_view(GtkListStore *list_store) */
+    g_object_unref (G_OBJECT(list_store));
+    g_signal_connect(window,"destroy",G_CALLBACK(free_memory), &list_store_struct);
+
+
     GtkWidget *accounts_buttons_hbox = make_accounts_buttons_hbox(&list_store_struct);
 
-    GtkWidget *topBox = gtk_box_new(GTK_ORIENTATION_VERTICAL, 3);
+    //GtkWidget *topBox = gtk_box_new(GTK_ORIENTATION_VERTICAL, 3);
 
     /* The TRUE parameter ensures the treeview maintains its initial height, even after 
         deleting rows. */
