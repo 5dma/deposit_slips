@@ -1,4 +1,5 @@
 #include <gtk/gtk.h>
+#include "headers.h"
 
 /**
  * @file utilities.c
@@ -23,3 +24,10 @@ GtkWidget* get_child_from_parent(GtkWidget* parent, const gchar* child_name) {
 
    
 }
+
+void free_memory (GtkWidget* window, gpointer user_data) {
+    g_print("All over\n");
+
+}
+
+

@@ -14,6 +14,8 @@
 GSList *read_account_numbers() {
     GSList *local_struct_list = NULL;
     GError *error = NULL;
+
+    /* Memory is freed at end of this function */
     gchar *input_file = g_build_filename(g_get_home_dir(), ".deposit_slip/deposit_slips.csv", NULL);
     gboolean input_file_exists = g_file_test(input_file, G_FILE_TEST_EXISTS);
     if (input_file_exists) {
@@ -21,13 +23,14 @@ GSList *read_account_numbers() {
         if (g_file_get_contents(input_file, &content, NULL, &error)) {
             g_print("%s\n", content);
             gchar **lines[1000];
-            /* Split input string a newlines */
+            /* Split input string a newlines, memory is freed below. */
             gchar **account_records = g_strsplit(content, "\n", 1000);
             int i = 0;
             /* For each line, instantiate an account structure and add it to the GSList of structures */
             while (account_records[i] != NULL && (strlen(account_records[i]) > 0)) {
                 gchar **single_account = g_strsplit(account_records[i], "\t", 1000);
-                Account *account_entry = g_malloc(sizeof(Account));
+                /* Memory is freed below */
+                Account *account_entry = g_new(Account,1);
                 strcpy(account_entry->number, single_account[0]);
                 strcpy(account_entry->name, single_account[1]);
                 strcpy(account_entry->description, single_account[2]);

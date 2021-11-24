@@ -56,8 +56,7 @@ void on_app_activate(GApplication *app, gpointer data) {
     list_store_struct.list_store_temporary = temporary_account_list;
     list_store_struct.list_builder_struct = &list_builder;
 
-    /* Decrement reference count because we are creating references to
-    list_builder.list_store = list_store and
+    /* Decrement reference count because we are created references to it in
     make_tree_view(GtkListStore *list_store) and 
     make_slip_view(GtkListStore *list_store) */
     g_object_unref (G_OBJECT(list_store));

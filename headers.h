@@ -65,6 +65,7 @@ gpointer build_temporary_list(gpointer master_account, gpointer temporary_accoun
 GtkWidget * get_child_from_parent (GtkWidget * parent, const gchar * child_name);
 GSList *read_account_numbers();
 GtkWidget * make_accounts_buttons_hbox(List_Store_Struct* list_store_struct);
+void free_memory (GtkWidget* window, gpointer user_data);
 
 #endif
 
