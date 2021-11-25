@@ -93,12 +93,13 @@ void description_column_formatter(GtkTreeViewColumn *col,
  * @param renderer Pointer to the number's cell renderer.
  * @param path Pointer to the model's path where the editing took place.
  * @param new_account_number Pointer to the new account number.
- * @param treeview Pointer to the tree view.
+ * @param user_data Void pointer to user data.
 */
 static void number_edited(GtkCellRendererText *renderer,
                           gchar *path,
                           gchar *new_account_number,
-                          GtkTreeView *treeview) {
+                          gpointer user_data) {
+    GtkTreeView *treeview = (GtkTreeView *) user_data;
     GtkTreeIter iter;
     GtkTreeModel *model;
     if (g_ascii_strcasecmp(new_account_number, "") != 0) {
@@ -120,7 +121,8 @@ static void number_edited(GtkCellRendererText *renderer,
 static void name_edited(GtkCellRendererText *renderer,
                         gchar *path,
                         gchar *new_account_name,
-                        GtkTreeView *treeview) {
+                       gpointer user_data) {
+    GtkTreeView *treeview = (GtkTreeView *) user_data;
     GtkTreeIter iter;
     GtkTreeModel *model;
     if (g_ascii_strcasecmp(new_account_name, "") != 0) {
@@ -142,7 +144,8 @@ static void name_edited(GtkCellRendererText *renderer,
 static void description_edited(GtkCellRendererText *renderer,
                                gchar *path,
                                gchar *new_description,
-                               GtkTreeView *treeview) {
+                               gpointer user_data) {
+        GtkTreeView *treeview = (GtkTreeView *) user_data;
     GtkTreeIter iter;
     GtkTreeModel *model;
     if (g_ascii_strcasecmp(new_description, "") != 0) {
@@ -235,7 +238,7 @@ GtkWidget *make_tree_view(GtkListStore *list_store) {
                                                              NULL);
     g_object_set(rendererAccount, "editable", TRUE, "editable-set", TRUE, NULL);
 
-    g_signal_connect(G_OBJECT(rendererAccount), "edited", G_CALLBACK(number_edited), (gpointer)tree);
+    g_signal_connect(G_OBJECT(rendererAccount), "edited", G_CALLBACK(number_edited), tree);
 
     GtkCellRenderer *rendererName;
     GtkTreeViewColumn *columnName;
@@ -247,7 +250,7 @@ GtkWidget *make_tree_view(GtkListStore *list_store) {
                                                           NULL);
     g_object_set(rendererName, "editable", TRUE, "editable-set", TRUE, NULL);
 
-    g_signal_connect(G_OBJECT(rendererName), "edited", G_CALLBACK(name_edited), (gpointer)tree);
+    g_signal_connect(G_OBJECT(rendererName), "edited", G_CALLBACK(name_edited), tree);
 
     GtkCellRenderer *rendererDescription;
     GtkTreeViewColumn *columnDescription;
@@ -259,7 +262,7 @@ GtkWidget *make_tree_view(GtkListStore *list_store) {
                                                                  NULL);
 
     g_object_set(rendererDescription, "editable", TRUE, "editable-set", TRUE, NULL);
-    g_signal_connect(G_OBJECT(rendererDescription), "edited", G_CALLBACK(description_edited), (gpointer)tree);
+    g_signal_connect(G_OBJECT(rendererDescription), "edited", G_CALLBACK(description_edited), tree);
 
     GtkCellRenderer *rendererToggle;
     GtkTreeViewColumn *columnToggle;
