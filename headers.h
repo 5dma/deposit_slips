@@ -27,7 +27,6 @@ enum {
     SLIP_COLUMNS /**< 2 */
 };
 
-
 /**
  * Structure of an account record.
  */
@@ -52,10 +51,20 @@ typedef struct list_builder_struct {
  * \sa list_builder_struct
  */
 typedef struct List_Stores {
-    GSList * list_store_master; /**< Master list (the one stored on disk) */
-    GSList * list_store_temporary; /**< Temporary list (the one stored in memory) */
-    List_Builder_Struct * list_builder_struct; /**< List builder structure associated with the tree view */
+    GSList *list_store_master; /**< Master list (the one stored on disk) */
+    GSList *list_store_temporary; /**< Temporary list (the one stored in memory) */
+    List_Builder_Struct *list_builder_struct; /**< List builder structure associated with the tree view */
 } List_Store_Struct;
+
+/**
+ * Enum for positions inside a List_Store_Struct. Used with g_ptr_array_index().
+*/
+enum {
+    POSITION_LIST_STORE_MASTER, /**< 0 */
+    POSITION_LIST_STORE_TEMPORARY,  /**< 1 */
+    POSITION_LIST_BUILDER_STRUCT /**< 2 */
+};
+
 
 void on_app_activate(GApplication *app, gpointer data);
 void build_list_store(gpointer account, gpointer list_builder_struct);
@@ -64,8 +73,8 @@ GtkWidget * make_tree_view(GtkListStore *list_store );
 gpointer build_temporary_list(gpointer master_account, gpointer temporary_account);
 GtkWidget * get_child_from_parent (GtkWidget * parent, const gchar * child_name);
 GSList *read_account_numbers();
-GtkWidget * make_accounts_buttons_hbox(List_Store_Struct* list_store_struct);
-void free_memory (GtkWidget* window, gpointer user_data);
+GtkWidget * make_accounts_buttons_hbox(GPtrArray *list_store_struct);
+void free_memory (GtkWidget *window, gpointer user_data);
 
 #endif
 

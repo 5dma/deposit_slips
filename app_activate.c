@@ -51,21 +51,20 @@ void on_app_activate(GApplication *app, gpointer data) {
     GtkWidget *accounts_tab_tree = make_tree_view(list_store);
     GtkWidget *slips_tab_tree = make_slip_view(list_store);
 
-    List_Store_Struct list_store_struct;
-    list_store_struct.list_store_master = master_account_list;
-    list_store_struct.list_store_temporary = temporary_account_list;
-    list_store_struct.list_builder_struct = &list_builder;
+    GPtrArray *list_store_struct = g_ptr_array_new ();
+    g_ptr_array_add (list_store_struct, master_account_list);
+    g_ptr_array_add (list_store_struct, temporary_account_list);
+    g_ptr_array_add (list_store_struct, &list_builder);
+    
 
-    /* Decrement reference count because we are created references to it in
+    /* Decrement reference count because we created references to it in
     make_tree_view(GtkListStore *list_store) and 
     make_slip_view(GtkListStore *list_store) */
     g_object_unref (G_OBJECT(list_store));
-    g_signal_connect(window,"destroy",G_CALLBACK(free_memory), &list_store_struct);
+    g_signal_connect(window,"destroy",G_CALLBACK(free_memory), list_store_struct);
 
 
-    GtkWidget *accounts_buttons_hbox = make_accounts_buttons_hbox(&list_store_struct);
-
-    //GtkWidget *topBox = gtk_box_new(GTK_ORIENTATION_VERTICAL, 3);
+    GtkWidget *accounts_buttons_hbox = make_accounts_buttons_hbox(list_store_struct);
 
     /* The TRUE parameter ensures the treeview maintains its initial height, even after 
         deleting rows. */

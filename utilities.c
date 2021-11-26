@@ -12,9 +12,9 @@
     @param child_name Name of the child node.
     @return A widget corresponding to the passed name of the child node.
 */
-GtkWidget* get_child_from_parent(GtkWidget* parent, const gchar* child_name) {
+GtkWidget *get_child_from_parent(GtkWidget *parent, const gchar* child_name) {
 
-    GList* children_list = gtk_container_get_children(GTK_CONTAINER(parent));
+    GList *children_list = gtk_container_get_children(GTK_CONTAINER(parent));
 
     do {
         if (g_strcmp0 ( gtk_widget_get_name(children_list->data),child_name) == 0) {
@@ -25,7 +25,9 @@ GtkWidget* get_child_from_parent(GtkWidget* parent, const gchar* child_name) {
    
 }
 
-void free_memory (GtkWidget* window, gpointer user_data) {
+void free_memory (GtkWidget *window, gpointer user_data) {
+     GPtrArray *list_store_struct = (GPtrArray *) user_data;
+   
     g_print("All over\n");
 
 }

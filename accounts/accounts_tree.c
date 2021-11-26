@@ -190,7 +190,8 @@ gboolean examine_all_checkboxes(GtkTreeModel *model,
 */
 static void toggle_clicked(GtkCellRendererToggle *renderer,
                            gchar *path,
-                           GtkTreeView *treeview) {
+                           gpointer user_data) {
+    GtkTreeView *treeview = (GtkTreeView *)user_data;
     GtkTreeIter iter;
     GtkTreeModel *model;
     gboolean value;
@@ -275,7 +276,7 @@ GtkWidget *make_tree_view(GtkListStore *list_store) {
 
     /* g_object_set sets a renderer's properties. */
     g_object_set(rendererToggle, "activatable", TRUE, "active", FALSE, NULL);
-    g_signal_connect(G_OBJECT(rendererToggle), "toggled", G_CALLBACK(toggle_clicked), (gpointer)tree);
+    g_signal_connect(G_OBJECT(rendererToggle), "toggled", G_CALLBACK(toggle_clicked), tree);
 
     gtk_tree_view_append_column(GTK_TREE_VIEW(tree), columnAccount);
     gtk_tree_view_append_column(GTK_TREE_VIEW(tree), columnName);

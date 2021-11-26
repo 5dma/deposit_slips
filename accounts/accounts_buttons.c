@@ -12,7 +12,7 @@
     @param widget Pointer to the clicked Add button.
     @param data Void pointer to the temporary list store.
 */
-static void add_row(GtkWidget* widget, gpointer data) {
+static void add_row(GtkWidget *widget, gpointer data) {
     GtkListStore* list_store = (GtkListStore*)data;
 
     GtkTreeIter iter;
@@ -23,10 +23,10 @@ static void add_row(GtkWidget* widget, gpointer data) {
                        DESCRIPTION, NEW_DESCRIPTION,
                        CHECKBOX, FALSE,
                        -1);
-    GtkWidget* accounts_buttons_hbox = gtk_widget_get_parent(widget);
-    GtkWidget* account_button_revert = get_child_from_parent(accounts_buttons_hbox, BUTTON_NAME_REVERT);
+    GtkWidget *accounts_buttons_hbox = gtk_widget_get_parent(widget);
+    GtkWidget *account_button_revert = get_child_from_parent(accounts_buttons_hbox, BUTTON_NAME_REVERT);
     gtk_widget_set_sensitive(account_button_revert, TRUE);
-    GtkWidget* account_button_save = get_child_from_parent(accounts_buttons_hbox, BUTTON_NAME_SAVE);
+    GtkWidget *account_button_save = get_child_from_parent(accounts_buttons_hbox, BUTTON_NAME_SAVE);
     gtk_widget_set_sensitive(account_button_save, TRUE);
 }
 
@@ -36,7 +36,7 @@ this loop is from https://www.kksou.com/php-gtk2/sample-codes/iterate-through-a-
     @param widget Pointer to the clicked Delete button.
     @param data Void pointer to the temporary list store.
 */
-static void delete_row(GtkWidget* widget, gpointer data) {
+static void delete_row(GtkWidget *widget, gpointer data) {
     GtkListStore* list_store = (GtkListStore*)data;
     GtkTreeIter iter;
     GValue * gvalue;
@@ -54,10 +54,10 @@ static void delete_row(GtkWidget* widget, gpointer data) {
 
     } while (still_in_list);
 
-    GtkWidget* accounts_buttons_hbox = gtk_widget_get_parent(widget);
-    GtkWidget* account_button_revert = get_child_from_parent(accounts_buttons_hbox, BUTTON_NAME_REVERT);
+    GtkWidget *accounts_buttons_hbox = gtk_widget_get_parent(widget);
+    GtkWidget *account_button_revert = get_child_from_parent(accounts_buttons_hbox, BUTTON_NAME_REVERT);
     gtk_widget_set_sensitive(account_button_revert, TRUE);
-    GtkWidget* account_button_save = get_child_from_parent(accounts_buttons_hbox, BUTTON_NAME_SAVE);
+    GtkWidget *account_button_save = get_child_from_parent(accounts_buttons_hbox, BUTTON_NAME_SAVE);
     gtk_widget_set_sensitive(account_button_save, TRUE);
 }
 
@@ -67,15 +67,16 @@ static void delete_row(GtkWidget* widget, gpointer data) {
     @param data Void pointer to the structure holding both stores, master and temporary.
 */
 static void revert_listing(GtkWidget *widget, gpointer data) {
-    List_Store_Struct *list_store_struct = (List_Store_Struct *) data;
-   
-    GtkListStore *list_store = (list_store_struct->list_builder_struct)->list_store;
+    GPtrArray *list_store_struct = (GPtrArray *) data;
+
+
+ /*    GtkListStore *list_store = (GtkListStore *list_store)(g_ptr_array_index(list_store_struct,2)->list_store);
 
     GSList *list_store_master = list_store_struct->list_store_master;
     GSList *list_store_temporary = list_store_struct->list_store_temporary; 
 
     list_store_temporary = g_slist_copy_deep(list_store_master, (GCopyFunc) build_temporary_list, NULL);
-    g_slist_foreach(list_store_temporary, build_list_store, list_store);
+    g_slist_foreach(list_store_temporary, build_list_store, list_store); */
     g_print("OMGBARF\n");
    
 }
@@ -87,13 +88,13 @@ static void revert_listing(GtkWidget *widget, gpointer data) {
     is passed to the callbacks for adding, deleting, reverting, and saving changes.
     @return An HBox containing the four buttons and associated callbacks.
 */
-GtkWidget* make_accounts_buttons_hbox(List_Store_Struct* list_store_struct) {
-    GtkWidget* local_hbox;
+GtkWidget *make_accounts_buttons_hbox(GPtrArray *list_store_struct) {
+    GtkWidget *local_hbox;
 
-    GtkWidget* account_button_add = gtk_button_new_from_icon_name("gtk-add", GTK_ICON_SIZE_BUTTON);
-    GtkWidget* account_button_delete = gtk_button_new_from_icon_name("gtk-delete", GTK_ICON_SIZE_BUTTON);
-    GtkWidget* account_button_revert = gtk_button_new_from_icon_name("gtk-refresh", GTK_ICON_SIZE_BUTTON);
-    GtkWidget* account_button_save = gtk_button_new_from_icon_name("gtk-save", GTK_ICON_SIZE_BUTTON);
+    GtkWidget *account_button_add = gtk_button_new_from_icon_name("gtk-add", GTK_ICON_SIZE_BUTTON);
+    GtkWidget *account_button_delete = gtk_button_new_from_icon_name("gtk-delete", GTK_ICON_SIZE_BUTTON);
+    GtkWidget *account_button_revert = gtk_button_new_from_icon_name("gtk-refresh", GTK_ICON_SIZE_BUTTON);
+    GtkWidget *account_button_save = gtk_button_new_from_icon_name("gtk-save", GTK_ICON_SIZE_BUTTON);
 
     gtk_widget_set_name(account_button_add, BUTTON_NAME_ADD);
     gtk_widget_set_name(account_button_delete, BUTTON_NAME_DELETE);
@@ -114,11 +115,11 @@ GtkWidget* make_accounts_buttons_hbox(List_Store_Struct* list_store_struct) {
 
     gtk_widget_set_sensitive(account_button_add, TRUE);
     gtk_widget_set_sensitive(account_button_delete, FALSE);
-    gtk_widget_set_sensitive(account_button_revert, FALSE);
+    gtk_widget_set_sensitive(account_button_revert, TRUE);
     gtk_widget_set_sensitive(account_button_save, FALSE);
 
-    g_signal_connect(account_button_add, "clicked", G_CALLBACK(add_row), (list_store_struct->list_builder_struct)->list_store );
-    g_signal_connect(account_button_delete, "clicked", G_CALLBACK(delete_row), (list_store_struct->list_builder_struct)->list_store);
+   // g_signal_connect(account_button_add, "clicked", G_CALLBACK(add_row), (g_ptr_array_index(array,index_) list_store_struct->list_builder_struct)->list_store );
+   // g_signal_connect(account_button_delete, "clicked", G_CALLBACK(delete_row), (list_store_struct->list_builder_struct)->list_store);
     g_signal_connect(account_button_revert, "clicked", G_CALLBACK(revert_listing), list_store_struct);
 
 

@@ -82,7 +82,7 @@ gpointer build_temporary_list(gpointer item, gpointer user_data) {
     Account *master_account = item;
 
     /* Copy master account into a new temporary account */
-    Account* temp_account = g_new (Account, 1);
+    Account *temp_account = g_new (Account, 1);
     strcpy(temp_account->number, master_account->number);
     strcpy(temp_account->name, master_account->name);
     strcpy(temp_account->description, master_account->description);
