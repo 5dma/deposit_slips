@@ -1,5 +1,6 @@
 #include <gtk/gtk.h>
 #include <string.h>
+
 #include "../constants.h"
 #include "../headers.h"
 /**
@@ -13,7 +14,7 @@
     @param data Void pointer to the temporary list store.
 */
 static void add_row(GtkWidget *widget, gpointer data) {
-    GtkListStore* list_store = (GtkListStore*)data;
+    GtkListStore *list_store = (GtkListStore *)data;
 
     GtkTreeIter iter;
     gtk_list_store_append(list_store, &iter);
@@ -37,9 +38,9 @@ this loop is from https://www.kksou.com/php-gtk2/sample-codes/iterate-through-a-
     @param data Void pointer to the temporary list store.
 */
 static void delete_row(GtkWidget *widget, gpointer data) {
-    GtkListStore* list_store = (GtkListStore*)data;
+    GtkListStore *list_store = (GtkListStore *)data;
     GtkTreeIter iter;
-    GValue * gvalue;
+    GValue *gvalue;
     gboolean still_in_list = TRUE;
     gtk_tree_model_get_iter_first(GTK_TREE_MODEL(data), &iter);
 
@@ -67,20 +68,18 @@ static void delete_row(GtkWidget *widget, gpointer data) {
     @param data Void pointer to the structure holding both stores, master and temporary.
 */
 static void revert_listing(GtkWidget *widget, gpointer data) {
-    GPtrArray *list_store_struct = (GPtrArray *) data;
+    GPtrArray *list_store_struct = (GPtrArray *)data;
+    GSList *master_account_list = g_ptr_array_index(list_store_struct, POSITION_LIST_STORE_MASTER);
 
+    GSList *temporary_account_list = g_ptr_array_index(list_store_struct, POSITION_LIST_STORE_TEMPORARY);
 
- /*    GtkListStore *list_store = (GtkListStore *list_store)(g_ptr_array_index(list_store_struct,2)->list_store);
+    temporary_account_list = g_slist_copy_deep(master_account_list, (GCopyFunc)build_temporary_list, NULL);
 
-    GSList *list_store_master = list_store_struct->list_store_master;
-    GSList *list_store_temporary = list_store_struct->list_store_temporary; 
-
-    list_store_temporary = g_slist_copy_deep(list_store_master, (GCopyFunc) build_temporary_list, NULL);
-    g_slist_foreach(list_store_temporary, build_list_store, list_store); */
+    List_Builder_Struct *list_builder_struct = g_ptr_array_index(list_store_struct, POSITION_LIST_BUILDER_STRUCT);
+    GtkListStore *list_store = list_builder_struct->list_store;
+    g_slist_foreach(temporary_account_list, build_list_store, list_store);
     g_print("OMGBARF\n");
-   
 }
-
 
 /**
     Constructs the view for the four buttons in the Accounts tab.
@@ -118,10 +117,12 @@ GtkWidget *make_accounts_buttons_hbox(GPtrArray *list_store_struct) {
     gtk_widget_set_sensitive(account_button_revert, TRUE);
     gtk_widget_set_sensitive(account_button_save, FALSE);
 
-   // g_signal_connect(account_button_add, "clicked", G_CALLBACK(add_row), (g_ptr_array_index(array,index_) list_store_struct->list_builder_struct)->list_store );
-   // g_signal_connect(account_button_delete, "clicked", G_CALLBACK(delete_row), (list_store_struct->list_builder_struct)->list_store);
-    g_signal_connect(account_button_revert, "clicked", G_CALLBACK(revert_listing), list_store_struct);
+    List_Builder_Struct *list_builder_struct = g_ptr_array_index(list_store_struct, POSITION_LIST_BUILDER_STRUCT);
+    GtkListStore *list_store =  list_builder_struct->list_store;
 
+    g_signal_connect(account_button_add, "clicked", G_CALLBACK(add_row), list_store);
+    g_signal_connect(account_button_delete, "clicked", G_CALLBACK(delete_row), list_store);
+    g_signal_connect(account_button_revert, "clicked", G_CALLBACK(revert_listing), list_store_struct);
 
     return local_hbox;
 }
