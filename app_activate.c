@@ -31,37 +31,27 @@ void on_app_activate(GApplication *app, gpointer data) {
     gtk_notebook_append_page(GTK_NOTEBOOK(notebook), vbox_slip, label_slip);
     gtk_notebook_append_page(GTK_NOTEBOOK(notebook), vbox_accounts, label_account);
 
-    GtkListStore *list_store = gtk_list_store_new(N_COLUMNS, G_TYPE_STRING, G_TYPE_STRING, G_TYPE_STRING, G_TYPE_BOOLEAN);
+    GtkListStore *list_store_master = gtk_list_store_new(N_COLUMNS, G_TYPE_STRING, G_TYPE_STRING, G_TYPE_STRING, G_TYPE_BOOLEAN);
 
+    GtkListStore *list_store_temporary = gtk_list_store_new(N_COLUMNS, G_TYPE_STRING, G_TYPE_STRING, G_TYPE_STRING, G_TYPE_BOOLEAN);
 
     /* Read account numbers from disk. When is this freed? */
-    GSList *master_account_list = read_account_numbers();
+    GSList *list_accounts_from_disk = read_account_numbers();
 
-    /* Copy the master list to the temporary list. When is this freed? */
-    GSList *temporary_account_list = g_slist_copy_deep(master_account_list, (GCopyFunc)build_temporary_list, NULL);
-
-    GtkTreeIter iter;
-
-    List_Builder_Struct list_builder;
-    list_builder.iter = iter;
-    list_builder.list_store = list_store;
 
     /* Place items in the temporary account list into list_builder. */
-    g_slist_foreach(temporary_account_list, build_list_store, &list_builder);
+    g_slist_foreach(list_accounts_from_disk, build_list_store, list_store_master);
+    g_slist_foreach(list_accounts_from_disk, build_list_store, list_store_temporary);
 
-    GtkWidget *accounts_tab_tree = make_tree_view(list_store);
-    GtkWidget *slips_tab_tree = make_slip_view(list_store);
 
-    GPtrArray *list_store_ptr_array = g_ptr_array_new ();
-    g_ptr_array_add (list_store_ptr_array, master_account_list);
-    g_ptr_array_add (list_store_ptr_array, temporary_account_list);
-    g_ptr_array_add (list_store_ptr_array, &list_builder);
+    GtkWidget *accounts_tab_tree = make_tree_view(list_store_temporary);
+    GtkWidget *slips_tab_tree = make_slip_view(list_store_temporary);
+
+    GPtrArray *list_store_ptr_array = g_ptr_array_new();
+    g_ptr_array_add (list_store_ptr_array, list_store_master);
+    g_ptr_array_add (list_store_ptr_array, list_store_temporary);
+
     
-
-    /* Decrement reference count because we created references to it in
-    make_tree_view(GtkListStore *list_store) and 
-    make_slip_view(GtkListStore *list_store) */
-    g_object_unref (G_OBJECT(list_store));
     g_signal_connect(window,"destroy",G_CALLBACK(free_memory), list_store_ptr_array);
 
 

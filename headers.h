@@ -45,24 +45,13 @@ typedef struct list_builder_struct {
     GtkListStore *list_store; /**< Pointer to the passed GS_List. */
 } List_Builder_Struct;
 
-/**
- * Structure holding two list stores: master and temporary. This structure
- * is used to pass both list stores to various functions.
- * \sa list_builder_struct
- */
-typedef struct List_Stores {
-    GSList *list_store_master; /**< Master list (the one stored on disk) */
-    GSList *list_store_temporary; /**< Temporary list (the one stored in memory) */
-    List_Builder_Struct *list_builder_struct; /**< List builder structure associated with the tree view */
-} List_Store_Struct;
 
 /**
  * Enum for positions inside a List_Store_Struct. Used with g_ptr_array_index().
 */
 enum {
     POSITION_LIST_STORE_MASTER, /**< 0 */
-    POSITION_LIST_STORE_TEMPORARY,  /**< 1 */
-    POSITION_LIST_BUILDER_STRUCT /**< 2 */
+    POSITION_LIST_STORE_TEMPORARY  /**< 1 */
 };
 
 

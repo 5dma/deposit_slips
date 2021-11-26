@@ -57,9 +57,10 @@ GSList *read_account_numbers() {
 /**
  *  Adds a passed Account structure to the list store of accounts
  */
-void build_list_store(gpointer account, gpointer list_builder_struct) {
-    GtkListStore *list_store = ((List_Builder_Struct *)list_builder_struct)->list_store;
-    GtkTreeIter iter = ((List_Builder_Struct *)list_builder_struct)->iter;
+void build_list_store(gpointer account, gpointer data) {
+    GtkListStore *list_store = GTK_LIST_STORE(data);
+    GtkTreeIter iter;
+
     Account *local_account = (Account *)account;
 
     gtk_list_store_append(list_store, &iter);

@@ -69,15 +69,39 @@ static void delete_row(GtkWidget *widget, gpointer data) {
 */
 static void revert_listing(GtkWidget *widget, gpointer data) {
     GPtrArray *list_store_ptr_array = (GPtrArray *)data;
-    GSList *master_account_list = g_ptr_array_index(list_store_ptr_array, POSITION_LIST_STORE_MASTER);
+
+    GtkListStore *list_store_master = g_ptr_array_index(list_store_ptr_array, POSITION_LIST_STORE_MASTER);
+
+    GtkListStore *list_store_temporary = g_ptr_array_index(list_store_ptr_array, POSITION_LIST_STORE_TEMPORARY);
+    gtk_list_store_clear(list_store_temporary);
 
     GSList *temporary_account_list = g_ptr_array_index(list_store_ptr_array, POSITION_LIST_STORE_TEMPORARY);
 
-    temporary_account_list = g_slist_copy_deep(master_account_list, (GCopyFunc)build_temporary_list, NULL);
+    GtkTreeIter iter_master;
+    GtkTreeIter iter_temporary;
 
-    List_Builder_Struct *list_builder_struct = g_ptr_array_index(list_store_ptr_array, POSITION_LIST_BUILDER_STRUCT);
-    GtkListStore *list_store = list_builder_struct->list_store;
-    g_slist_foreach(temporary_account_list, build_list_store, list_store);
+    gboolean found_first_iter_master = gtk_tree_model_get_iter_first(GTK_TREE_MODEL(list_store_master), &iter_master);
+
+    if (found_first_iter_master) {
+        Account master_account;
+
+        while (gtk_list_store_iter_is_valid(list_store_master, &iter_master)) {
+            gtk_tree_model_get(GTK_TREE_MODEL(list_store_master), &iter_master,
+                               ACCOUNT_NUMBER, master_account.number,
+                               ACCOUNT_NAME, master_account.name,
+                               DESCRIPTION, master_account.description,
+                               -1);
+            gtk_list_store_append(list_store_temporary, &iter_temporary);
+            gtk_list_store_set(list_store_temporary, &iter_temporary,
+                               ACCOUNT_NUMBER, master_account.number,
+                               ACCOUNT_NAME, master_account.name,
+                               DESCRIPTION, master_account.description,
+                               -1);
+        }
+    } else {
+        g_print("Could not find first iter for reverting the temporary list\n");
+    }
+
     g_print("OMGBARF\n");
 }
 
@@ -117,11 +141,10 @@ GtkWidget *make_accounts_buttons_hbox(GPtrArray *list_store_ptr_array) {
     gtk_widget_set_sensitive(account_button_revert, TRUE);
     gtk_widget_set_sensitive(account_button_save, FALSE);
 
-    List_Builder_Struct *list_builder_struct = g_ptr_array_index(list_store_ptr_array, POSITION_LIST_BUILDER_STRUCT);
-    GtkListStore *list_store =  list_builder_struct->list_store;
+    GtkListStore *list_store_temporary = g_ptr_array_index(list_store_ptr_array, POSITION_LIST_STORE_TEMPORARY);
 
-    g_signal_connect(account_button_add, "clicked", G_CALLBACK(add_row), list_store);
-    g_signal_connect(account_button_delete, "clicked", G_CALLBACK(delete_row), list_store);
+    g_signal_connect(account_button_add, "clicked", G_CALLBACK(add_row), list_store_temporary);
+    g_signal_connect(account_button_delete, "clicked", G_CALLBACK(delete_row), list_store_temporary);
     g_signal_connect(account_button_revert, "clicked", G_CALLBACK(revert_listing), list_store_ptr_array);
 
     return local_hbox;
