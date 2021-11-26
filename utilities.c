@@ -41,15 +41,15 @@ GDestroyNotify free_gslist_account(gpointer data) {
     @return A widget corresponding to the passed name of the child node.
 */
 void free_memory(GtkWidget *window, gpointer user_data) {
-    GPtrArray *list_store_struct = (GPtrArray *)user_data;
-    GSList *master_account_list = g_ptr_array_index(list_store_struct, POSITION_LIST_STORE_MASTER);
+    GPtrArray *list_store_ptr_array = (GPtrArray *)user_data;
+    GSList *master_account_list = g_ptr_array_index(list_store_ptr_array, POSITION_LIST_STORE_MASTER);
     g_slist_free_full(master_account_list, (GDestroyNotify)free_gslist_account);
-     GSList *temporary_account_list = g_ptr_array_index(list_store_struct, POSITION_LIST_STORE_TEMPORARY);
+     GSList *temporary_account_list = g_ptr_array_index(list_store_ptr_array, POSITION_LIST_STORE_TEMPORARY);
     g_slist_free_full(temporary_account_list, (GDestroyNotify)free_gslist_account);
 
     /* The following lines clear the list_store behind the store of the account tree. However
     it gives us a run-time error, it seems like the store no longer exists.
-    List_Builder_Struct *list_builder_struct = g_ptr_array_index(list_store_struct, POSITION_LIST_BUILDER_STRUCT);
+    List_Builder_Struct *list_builder_struct = g_ptr_array_index(list_store_ptr_array, POSITION_LIST_BUILDER_STRUCT);
     GtkListStore *list_store =  list_builder_struct->list_store;
     gtk_list_store_clear (list_store);
     */

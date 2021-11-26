@@ -46,25 +46,26 @@ void on_app_activate(GApplication *app, gpointer data) {
     list_builder.iter = iter;
     list_builder.list_store = list_store;
 
+    /* Place items in the temporary account list into list_builder. */
     g_slist_foreach(temporary_account_list, build_list_store, &list_builder);
 
     GtkWidget *accounts_tab_tree = make_tree_view(list_store);
     GtkWidget *slips_tab_tree = make_slip_view(list_store);
 
-    GPtrArray *list_store_struct = g_ptr_array_new ();
-    g_ptr_array_add (list_store_struct, master_account_list);
-    g_ptr_array_add (list_store_struct, temporary_account_list);
-    g_ptr_array_add (list_store_struct, &list_builder);
+    GPtrArray *list_store_ptr_array = g_ptr_array_new ();
+    g_ptr_array_add (list_store_ptr_array, master_account_list);
+    g_ptr_array_add (list_store_ptr_array, temporary_account_list);
+    g_ptr_array_add (list_store_ptr_array, &list_builder);
     
 
     /* Decrement reference count because we created references to it in
     make_tree_view(GtkListStore *list_store) and 
     make_slip_view(GtkListStore *list_store) */
     g_object_unref (G_OBJECT(list_store));
-    g_signal_connect(window,"destroy",G_CALLBACK(free_memory), list_store_struct);
+    g_signal_connect(window,"destroy",G_CALLBACK(free_memory), list_store_ptr_array);
 
 
-    GtkWidget *accounts_buttons_hbox = make_accounts_buttons_hbox(list_store_struct);
+    GtkWidget *accounts_buttons_hbox = make_accounts_buttons_hbox(list_store_ptr_array);
 
     /* The TRUE parameter ensures the treeview maintains its initial height, even after 
         deleting rows. */

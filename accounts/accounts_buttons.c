@@ -68,14 +68,14 @@ static void delete_row(GtkWidget *widget, gpointer data) {
     @param data Void pointer to the structure holding both stores, master and temporary.
 */
 static void revert_listing(GtkWidget *widget, gpointer data) {
-    GPtrArray *list_store_struct = (GPtrArray *)data;
-    GSList *master_account_list = g_ptr_array_index(list_store_struct, POSITION_LIST_STORE_MASTER);
+    GPtrArray *list_store_ptr_array = (GPtrArray *)data;
+    GSList *master_account_list = g_ptr_array_index(list_store_ptr_array, POSITION_LIST_STORE_MASTER);
 
-    GSList *temporary_account_list = g_ptr_array_index(list_store_struct, POSITION_LIST_STORE_TEMPORARY);
+    GSList *temporary_account_list = g_ptr_array_index(list_store_ptr_array, POSITION_LIST_STORE_TEMPORARY);
 
     temporary_account_list = g_slist_copy_deep(master_account_list, (GCopyFunc)build_temporary_list, NULL);
 
-    List_Builder_Struct *list_builder_struct = g_ptr_array_index(list_store_struct, POSITION_LIST_BUILDER_STRUCT);
+    List_Builder_Struct *list_builder_struct = g_ptr_array_index(list_store_ptr_array, POSITION_LIST_BUILDER_STRUCT);
     GtkListStore *list_store = list_builder_struct->list_store;
     g_slist_foreach(temporary_account_list, build_list_store, list_store);
     g_print("OMGBARF\n");
@@ -87,7 +87,7 @@ static void revert_listing(GtkWidget *widget, gpointer data) {
     is passed to the callbacks for adding, deleting, reverting, and saving changes.
     @return An HBox containing the four buttons and associated callbacks.
 */
-GtkWidget *make_accounts_buttons_hbox(GPtrArray *list_store_struct) {
+GtkWidget *make_accounts_buttons_hbox(GPtrArray *list_store_ptr_array) {
     GtkWidget *local_hbox;
 
     GtkWidget *account_button_add = gtk_button_new_from_icon_name("gtk-add", GTK_ICON_SIZE_BUTTON);
@@ -117,12 +117,12 @@ GtkWidget *make_accounts_buttons_hbox(GPtrArray *list_store_struct) {
     gtk_widget_set_sensitive(account_button_revert, TRUE);
     gtk_widget_set_sensitive(account_button_save, FALSE);
 
-    List_Builder_Struct *list_builder_struct = g_ptr_array_index(list_store_struct, POSITION_LIST_BUILDER_STRUCT);
+    List_Builder_Struct *list_builder_struct = g_ptr_array_index(list_store_ptr_array, POSITION_LIST_BUILDER_STRUCT);
     GtkListStore *list_store =  list_builder_struct->list_store;
 
     g_signal_connect(account_button_add, "clicked", G_CALLBACK(add_row), list_store);
     g_signal_connect(account_button_delete, "clicked", G_CALLBACK(delete_row), list_store);
-    g_signal_connect(account_button_revert, "clicked", G_CALLBACK(revert_listing), list_store_struct);
+    g_signal_connect(account_button_revert, "clicked", G_CALLBACK(revert_listing), list_store_ptr_array);
 
     return local_hbox;
 }
