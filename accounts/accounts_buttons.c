@@ -113,8 +113,75 @@ static void revert_listing(GtkWidget *widget, gpointer data) {
         g_free(account_number);
         g_free(account_name);
         g_free(account_description);
+        GtkWidget *accounts_buttons_hbox = gtk_widget_get_parent(widget);
+        GtkWidget *account_button_revert = get_child_from_parent(accounts_buttons_hbox, BUTTON_NAME_REVERT);
+        gtk_widget_set_sensitive(account_button_revert, FALSE);
+        GtkWidget *account_button_save = get_child_from_parent(accounts_buttons_hbox, BUTTON_NAME_SAVE);
+        gtk_widget_set_sensitive(account_button_save, FALSE);
+        GtkWidget *account_button_delete = get_child_from_parent(accounts_buttons_hbox, BUTTON_NAME_DELETE);
+        gtk_widget_set_sensitive(account_button_delete, FALSE);
     } else {
         g_print("Could not find first iter for reverting the temporary list\n");
+    }
+}
+
+/**
+    Saves the current listing of accounts (which is the listing in the temporary store) 
+    after user clicks the Save button. Also sets the master store to the listing in the
+    temporary store.
+    @param widget Pointer to the clicked Delete button.
+    @param data Void pointer to the temporary list store.
+*/
+static void save_listing(GtkWidget *widget, gpointer data) {
+    GPtrArray *list_store_ptr_array = (GPtrArray *)data;
+
+    GtkListStore *list_store_master = g_ptr_array_index(list_store_ptr_array, POSITION_LIST_STORE_MASTER);
+
+    GtkListStore *list_store_temporary = g_ptr_array_index(list_store_ptr_array, POSITION_LIST_STORE_TEMPORARY);
+
+    GtkTreeIter iter_master;
+    GtkTreeIter iter_temporary;
+
+    gboolean found_first_iter_temporary = gtk_tree_model_get_iter_first(GTK_TREE_MODEL(list_store_temporary), &iter_temporary);
+
+    if (found_first_iter_temporary) {
+        /* gchar pointers for reading the entries from the master store */
+        gchar *account_number = NULL;
+        gchar *account_name = NULL;
+        gchar *account_description = NULL;
+
+        gtk_list_store_clear(list_store_master);
+
+        while (gtk_list_store_iter_is_valid(list_store_temporary, &iter_temporary)) {
+            gtk_tree_model_get(GTK_TREE_MODEL(list_store_temporary), &iter_temporary,
+                               ACCOUNT_NUMBER, &account_number,
+                               ACCOUNT_NAME, &account_name,
+                               DESCRIPTION, &account_description,
+                               -1);
+
+            /* Add the entry from the master store to the temporary store */
+            gtk_list_store_append(list_store_master, &iter_master);
+
+            gtk_list_store_set(list_store_master, &iter_master,
+                               ACCOUNT_NUMBER, account_number,
+                               ACCOUNT_NAME, account_name,
+                               DESCRIPTION, account_description,
+                               -1);
+
+            gtk_tree_model_iter_next(GTK_TREE_MODEL(list_store_temporary), &iter_temporary);
+        }
+        g_free(account_number);
+        g_free(account_name);
+        g_free(account_description);
+        GtkWidget *accounts_buttons_hbox = gtk_widget_get_parent(widget);
+        GtkWidget *account_button_revert = get_child_from_parent(accounts_buttons_hbox, BUTTON_NAME_REVERT);
+        gtk_widget_set_sensitive(account_button_revert, FALSE);
+        GtkWidget *account_button_save = get_child_from_parent(accounts_buttons_hbox, BUTTON_NAME_SAVE);
+        gtk_widget_set_sensitive(account_button_save, FALSE);
+        GtkWidget *account_button_delete = get_child_from_parent(accounts_buttons_hbox, BUTTON_NAME_DELETE);
+        gtk_widget_set_sensitive(account_button_delete, FALSE);
+    } else {
+        g_print("Could not find first iter for saving the temporary list\n");
     }
 }
 
@@ -159,6 +226,7 @@ GtkWidget *make_accounts_buttons_hbox(GPtrArray *list_store_ptr_array) {
     g_signal_connect(account_button_add, "clicked", G_CALLBACK(add_row), list_store_temporary);
     g_signal_connect(account_button_delete, "clicked", G_CALLBACK(delete_row), list_store_temporary);
     g_signal_connect(account_button_revert, "clicked", G_CALLBACK(revert_listing), list_store_ptr_array);
+    g_signal_connect(account_button_save, "clicked", G_CALLBACK(save_listing), list_store_ptr_array);
 
     return local_hbox;
 }
