@@ -45,7 +45,7 @@ void on_app_activate(GApplication *app, gpointer data) {
 
 
     GtkWidget *accounts_tab_tree = make_tree_view(list_store_temporary);
-    GtkWidget *slips_tab_tree = make_slip_view(list_store_temporary);
+    GtkWidget *slips_tab_tree = make_slip_view(list_store_master);
 
     GPtrArray *list_store_ptr_array = g_ptr_array_new();
     g_ptr_array_add (list_store_ptr_array, list_store_master);
