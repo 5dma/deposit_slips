@@ -42,18 +42,20 @@ static void delete_row(GtkWidget *widget, gpointer data) {
     GtkTreeIter iter;
     GValue *gvalue;
     gboolean still_in_list = TRUE;
+    gboolean removed_last_row = FALSE;
     gtk_tree_model_get_iter_first(GTK_TREE_MODEL(data), &iter);
 
     do {
         gtk_tree_model_get_value(GTK_TREE_MODEL(data), &iter, CHECKBOX, gvalue);
         if (g_value_get_boolean(gvalue) == TRUE) {
-            gtk_list_store_remove(list_store, &iter);
-        } else {
-            still_in_list = gtk_tree_model_iter_next(GTK_TREE_MODEL(data), &iter);
+            removed_last_row = !gtk_list_store_remove(list_store, &iter);
         }
         g_value_unset(gvalue);
+        if (!removed_last_row) {
+            still_in_list = gtk_tree_model_iter_next(GTK_TREE_MODEL(data), &iter);
+        }
 
-    } while (still_in_list);
+    } while (still_in_list && !removed_last_row);
 
     GtkWidget *accounts_buttons_hbox = gtk_widget_get_parent(widget);
     GtkWidget *account_button_revert = get_child_from_parent(accounts_buttons_hbox, BUTTON_NAME_REVERT);
@@ -85,7 +87,6 @@ static void revert_listing(GtkWidget *widget, gpointer data) {
     gboolean found_first_iter_master = gtk_tree_model_get_iter_first(GTK_TREE_MODEL(list_store_master), &iter_master);
 
     if (found_first_iter_master) {
-
         /* gchar pointers for reading the entries from the master store */
         gchar *account_number = NULL;
         gchar *account_name = NULL;
