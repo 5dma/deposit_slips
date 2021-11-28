@@ -64,6 +64,10 @@ static void delete_row(GtkWidget *widget, gpointer data) {
 
 /**
     Reverts the account listing in the Accounts tab to the last saved listing after user clicks the Revert button.
+
+    The listing in the Accounts tab reflects what is in the temporary store. The master store retains
+    the listing that was read from disk or last written to disk. This function clears the temporary
+    store, and then copies the contents of the master store into the temporary store.
     @param widget Pointer to the clicked button.
     @param data Void pointer to the structure holding both stores, master and temporary.
 */
@@ -75,34 +79,42 @@ static void revert_listing(GtkWidget *widget, gpointer data) {
     GtkListStore *list_store_temporary = g_ptr_array_index(list_store_ptr_array, POSITION_LIST_STORE_TEMPORARY);
     gtk_list_store_clear(list_store_temporary);
 
-    GSList *temporary_account_list = g_ptr_array_index(list_store_ptr_array, POSITION_LIST_STORE_TEMPORARY);
-
     GtkTreeIter iter_master;
     GtkTreeIter iter_temporary;
 
     gboolean found_first_iter_master = gtk_tree_model_get_iter_first(GTK_TREE_MODEL(list_store_master), &iter_master);
 
     if (found_first_iter_master) {
-        Account master_account;
+
+        /* gchar pointers for reading the entries from the master store */
+        gchar *account_number = NULL;
+        gchar *account_name = NULL;
+        gchar *account_description = NULL;
 
         while (gtk_list_store_iter_is_valid(list_store_master, &iter_master)) {
             gtk_tree_model_get(GTK_TREE_MODEL(list_store_master), &iter_master,
-                               ACCOUNT_NUMBER, master_account.number,
-                               ACCOUNT_NAME, master_account.name,
-                               DESCRIPTION, master_account.description,
+                               ACCOUNT_NUMBER, &account_number,
+                               ACCOUNT_NAME, &account_name,
+                               DESCRIPTION, &account_description,
                                -1);
+
+            /* Add the entry from the master store to the temporary store */
             gtk_list_store_append(list_store_temporary, &iter_temporary);
+
             gtk_list_store_set(list_store_temporary, &iter_temporary,
-                               ACCOUNT_NUMBER, master_account.number,
-                               ACCOUNT_NAME, master_account.name,
-                               DESCRIPTION, master_account.description,
+                               ACCOUNT_NUMBER, account_number,
+                               ACCOUNT_NAME, account_name,
+                               DESCRIPTION, account_description,
                                -1);
+
+            gtk_tree_model_iter_next(GTK_TREE_MODEL(list_store_master), &iter_master);
         }
+        g_free(account_number);
+        g_free(account_name);
+        g_free(account_description);
     } else {
         g_print("Could not find first iter for reverting the temporary list\n");
     }
-
-    g_print("OMGBARF\n");
 }
 
 /**
@@ -138,7 +150,7 @@ GtkWidget *make_accounts_buttons_hbox(GPtrArray *list_store_ptr_array) {
 
     gtk_widget_set_sensitive(account_button_add, TRUE);
     gtk_widget_set_sensitive(account_button_delete, FALSE);
-    gtk_widget_set_sensitive(account_button_revert, TRUE);
+    gtk_widget_set_sensitive(account_button_revert, FALSE);
     gtk_widget_set_sensitive(account_button_save, FALSE);
 
     GtkListStore *list_store_temporary = g_ptr_array_index(list_store_ptr_array, POSITION_LIST_STORE_TEMPORARY);
