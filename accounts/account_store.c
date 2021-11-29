@@ -1,5 +1,6 @@
 #include <gtk/gtk.h>
 #include <string.h>
+
 #include "../headers.h"
 
 /**
@@ -30,7 +31,7 @@ GSList *read_account_numbers() {
             while (account_records[i] != NULL && (strlen(account_records[i]) > 0)) {
                 gchar **single_account = g_strsplit(account_records[i], "\t", 1000);
                 /* Memory is freed below */
-                Account *account_entry = g_new(Account,1);
+                Account *account_entry = g_new(Account, 1);
                 strcpy(account_entry->number, single_account[0]);
                 strcpy(account_entry->name, single_account[1]);
                 strcpy(account_entry->description, single_account[2]);
@@ -52,6 +53,30 @@ GSList *read_account_numbers() {
     g_free(input_file);
 
     return local_struct_list;
+}
+
+/** 
+ * Writes a string to `~/.deposit_slip/deposit_slips.csv`.
+ * @param string_to_save String to write.
+ */
+void save_account_numbers( GString *string_to_save) {
+    GError *error = NULL;
+    GtkTreeIter iter;
+
+    /* Establish directory where accounts are saved, and create it if necessary. */
+    gchar *save_directory = g_build_filename(g_get_home_dir(), ".deposit_slip/", NULL);
+    if (!g_file_test(save_directory, G_FILE_TEST_EXISTS)) {
+        g_mkdir_with_parents(save_directory, 755);
+    }
+    g_free(save_directory);
+
+    gchar *output_file = g_build_filename(g_get_home_dir(), ".deposit_slip/deposit_slips.csv", NULL);
+
+    gboolean write_successful = g_file_set_contents (output_file, string_to_save->str, -1, &error);
+    if (!write_successful) {
+        g_print ("Could not write the new list, so the previous master list is still will show when restarting this program.\n");
+    }
+    g_free(output_file);
 }
 
 /**
@@ -79,11 +104,10 @@ void build_list_store(gpointer account, gpointer data) {
  @return A malloced pointer to a copy of the passed master account record.
 */
 gpointer build_temporary_list(gpointer item, gpointer user_data) {
-
     Account *master_account = item;
 
     /* Copy master account into a new temporary account */
-    Account *temp_account = g_new (Account, 1);
+    Account *temp_account = g_new(Account, 1);
     strcpy(temp_account->number, master_account->number);
     strcpy(temp_account->name, master_account->name);
     strcpy(temp_account->description, master_account->description);

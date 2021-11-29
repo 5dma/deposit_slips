@@ -3,6 +3,7 @@
 
 #include "../constants.h"
 #include "../headers.h"
+
 /**
  * @file accounts_buttons.c
  * @brief Builds the view and controller for the four buttons in the Accounts tab.
@@ -133,8 +134,8 @@ static void revert_listing(GtkWidget *widget, gpointer data) {
     @param data Void pointer to the temporary list store.
 */
 static void save_listing(GtkWidget *widget, gpointer data) {
-    GPtrArray *list_store_ptr_array = (GPtrArray *)data;
 
+    GPtrArray *list_store_ptr_array = (GPtrArray *)data;
     GtkListStore *list_store_master = g_ptr_array_index(list_store_ptr_array, POSITION_LIST_STORE_MASTER);
 
     GtkListStore *list_store_temporary = g_ptr_array_index(list_store_ptr_array, POSITION_LIST_STORE_TEMPORARY);
@@ -149,6 +150,8 @@ static void save_listing(GtkWidget *widget, gpointer data) {
         gchar *account_number = NULL;
         gchar *account_name = NULL;
         gchar *account_description = NULL;
+
+        GString *string_to_save = g_string_new (NULL);
 
         gtk_list_store_clear(list_store_master);
 
@@ -168,11 +171,21 @@ static void save_listing(GtkWidget *widget, gpointer data) {
                                DESCRIPTION, account_description,
                                -1);
 
+            g_string_append_printf (string_to_save,"%s\t%s\t%s\n", account_number,account_name, account_description);
+
             gtk_tree_model_iter_next(GTK_TREE_MODEL(list_store_temporary), &iter_temporary);
         }
+
+
+        /* Remove last line beak character. */
+        glong length_string_to_save = g_utf8_strlen (string_to_save->str,-1) - 1;
+        string_to_save = g_string_truncate (string_to_save, length_string_to_save);
+        save_account_numbers(string_to_save);
+        
         g_free(account_number);
         g_free(account_name);
         g_free(account_description);
+
         GtkWidget *accounts_buttons_hbox = gtk_widget_get_parent(widget);
         GtkWidget *account_button_revert = get_child_from_parent(accounts_buttons_hbox, BUTTON_NAME_REVERT);
         gtk_widget_set_sensitive(account_button_revert, FALSE);
@@ -180,6 +193,9 @@ static void save_listing(GtkWidget *widget, gpointer data) {
         gtk_widget_set_sensitive(account_button_save, FALSE);
         GtkWidget *account_button_delete = get_child_from_parent(accounts_buttons_hbox, BUTTON_NAME_DELETE);
         gtk_widget_set_sensitive(account_button_delete, FALSE);
+        
+        /* The following statement gives an invalid pointer error. Don't we need to free string_to_save? */
+        //g_free(string_to_save);
     } else {
         g_print("Could not find first iter for saving the temporary list\n");
     }
