@@ -5,6 +5,7 @@
 #include "../headers.h"
 #include "checks_store.c"
 #include "slip_control.c"
+#include "draw_functions.c"
 
 GtkWidget *make_account_view(GtkListStore *list_store) {
     GtkTreeIter iter;
@@ -74,6 +75,12 @@ GtkWidget *make_checks_view(GtkListStore *checks_store) {
     return tree;
 }
 
+/**
+ * Creates a view for the deposit slip. The view contains a list of accounts,
+ * a list of checks to deposit (amount only), and a preview of the deposit slip.
+ * @param list_store The master List Store of accounts.
+ * @return A widget containing the three widgets described above.
+ */ 
 GtkWidget *make_slip_view(GtkListStore *list_store) {
     GtkWidget *lblAccount = gtk_label_new("Accounts");
     GtkWidget *lblChecks = gtk_label_new("Checks");
@@ -117,10 +124,17 @@ GtkWidget *make_slip_view(GtkListStore *list_store) {
     /* Third column of grid */
     gtk_grid_attach(GTK_GRID(gridSlip), drawing_area, 3, 1, 1, 1);
 
+    gtk_widget_set_size_request(drawing_area, 500, 100);
+    g_signal_connect (G_OBJECT(drawing_area), "draw",
+                    G_CALLBACK(draw_background), NULL);
+
+
     gtk_grid_attach(GTK_GRID(gridSlip), btnSlipPrint, 3, 2, 1, 1);
 
     gtk_grid_set_column_spacing(GTK_GRID(gridSlip), 20);
     gtk_grid_set_row_spacing(GTK_GRID(gridSlip), 20);
+
+    //gtk_grid_set_column_homogeneous (GTK_GRID(gridSlip), TRUE);
 
     return gridSlip;
 }
