@@ -65,5 +65,7 @@ GSList *read_account_numbers();
 GtkWidget * make_accounts_buttons_hbox(GPtrArray *list_store_ptr_array);
 void free_memory (GtkWidget *window, gpointer user_data);
 
+void draw_single_amount(GtkWidget *treeview, gchar *new_amount);
+
 #endif
 

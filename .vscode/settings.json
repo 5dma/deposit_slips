@@ -2,7 +2,8 @@
     "files.associations": {
         "headers.h": "c",
         "gtk.h": "c",
-        "typeinfo": "c"
+        "typeinfo": "c",
+        "constants.h": "c"
     },
     "cSpell.words": [
         "gchararray"

@@ -154,6 +154,7 @@ static void amount_edited(GtkCellRendererText *renderer,
         if (gtk_tree_model_get_iter_from_string(model, &iter, path)) {
             gtk_list_store_set(GTK_LIST_STORE(model), &iter, CHECK_AMOUNT, new_amount, -1);
         }
-        
+        g_print("I finished adding a number");
+        draw_single_amount(GTK_WIDGET(treeview), new_amount);
     }
 }

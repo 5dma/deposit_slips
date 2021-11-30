@@ -101,6 +101,7 @@ GtkWidget *make_slip_view(GtkListStore *list_store) {
     gtk_widget_set_sensitive(btnChecksDelete, FALSE);
 
     GtkWidget *drawing_area = gtk_drawing_area_new();
+    gtk_widget_set_name(drawing_area, LABEL_ACCOUNT_DESCRIPTION);
 
     GtkWidget *treeAccounts = make_account_view(list_store);
 
