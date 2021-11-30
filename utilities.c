@@ -1,6 +1,7 @@
 #include <gtk/gtk.h>
 
 #include "headers.h"
+#include "constants.h"
 
 /**
  * @file utilities.c
@@ -40,11 +41,12 @@ GDestroyNotify free_gslist_account(gpointer data) {
     @return A widget corresponding to the passed name of the child node.
 */
 void free_memory(GtkWidget *window, gpointer user_data) {
-    GPtrArray *list_store_ptr_array = (GPtrArray *)user_data;
 
-    GtkListStore *list_store_master = g_ptr_array_index(list_store_ptr_array, POSITION_LIST_STORE_MASTER);
+        GHashTable *pointer_passer = (GHashTable *)user_data;
+
+    GtkListStore *list_store_master = GTK_LIST_STORE( g_hash_table_lookup(pointer_passer, &KEY_LIST_STORE_MASTER));
+    GtkListStore *list_store_temporary = GTK_LIST_STORE( g_hash_table_lookup(pointer_passer, &KEY_LIST_STORE_TEMPORARY));
+
     gtk_list_store_clear(list_store_master);
-
-    GtkListStore *list_store_temporary = g_ptr_array_index(list_store_ptr_array, POSITION_LIST_STORE_TEMPORARY);
     gtk_list_store_clear(list_store_temporary);
 }

@@ -75,11 +75,11 @@ static void delete_row(GtkWidget *widget, gpointer data) {
     @param data Void pointer to the structure holding both stores, master and temporary.
 */
 static void revert_listing(GtkWidget *widget, gpointer data) {
-    GPtrArray *list_store_ptr_array = (GPtrArray *)data;
+    GHashTable *pointer_passer = (GHashTable *)data;
 
-    GtkListStore *list_store_master = g_ptr_array_index(list_store_ptr_array, POSITION_LIST_STORE_MASTER);
+    GtkListStore *list_store_master = GTK_LIST_STORE( g_hash_table_lookup(pointer_passer, &KEY_LIST_STORE_MASTER));
+    GtkListStore *list_store_temporary = GTK_LIST_STORE( g_hash_table_lookup(pointer_passer, &KEY_LIST_STORE_TEMPORARY));
 
-    GtkListStore *list_store_temporary = g_ptr_array_index(list_store_ptr_array, POSITION_LIST_STORE_TEMPORARY);
     gtk_list_store_clear(list_store_temporary);
 
     GtkTreeIter iter_master;
@@ -135,10 +135,10 @@ static void revert_listing(GtkWidget *widget, gpointer data) {
 */
 static void save_listing(GtkWidget *widget, gpointer data) {
 
-    GPtrArray *list_store_ptr_array = (GPtrArray *)data;
-    GtkListStore *list_store_master = g_ptr_array_index(list_store_ptr_array, POSITION_LIST_STORE_MASTER);
+    GHashTable *pointer_passer = (GHashTable *)data;
 
-    GtkListStore *list_store_temporary = g_ptr_array_index(list_store_ptr_array, POSITION_LIST_STORE_TEMPORARY);
+    GtkListStore *list_store_master = GTK_LIST_STORE( g_hash_table_lookup(pointer_passer, &KEY_LIST_STORE_MASTER));
+    GtkListStore *list_store_temporary = GTK_LIST_STORE( g_hash_table_lookup(pointer_passer, &KEY_LIST_STORE_TEMPORARY));
 
     GtkTreeIter iter_master;
     GtkTreeIter iter_temporary;
@@ -203,11 +203,11 @@ static void save_listing(GtkWidget *widget, gpointer data) {
 
 /**
     Constructs the view for the four buttons in the Accounts tab.
-    @param list_store GtkListStore passed in from the main view. This parameter
+    @param pointer_passer GtkListStore passed in from the main view. This parameter
     is passed to the callbacks for adding, deleting, reverting, and saving changes.
     @return An HBox containing the four buttons and associated callbacks.
 */
-GtkWidget *make_accounts_buttons_hbox(GPtrArray *list_store_ptr_array) {
+GtkWidget *make_accounts_buttons_hbox(GHashTable *pointer_passer) {
     GtkWidget *local_hbox;
 
     GtkWidget *account_button_add = gtk_button_new_from_icon_name("gtk-add", GTK_ICON_SIZE_BUTTON);
@@ -237,12 +237,16 @@ GtkWidget *make_accounts_buttons_hbox(GPtrArray *list_store_ptr_array) {
     gtk_widget_set_sensitive(account_button_revert, FALSE);
     gtk_widget_set_sensitive(account_button_save, FALSE);
 
-    GtkListStore *list_store_temporary = g_ptr_array_index(list_store_ptr_array, POSITION_LIST_STORE_TEMPORARY);
+    //GtkListStore *list_store_temporary = g_ptr_array_index(list_store_ptr_array, POSITION_LIST_STORE_TEMPORARY);
+
+
+    GtkListStore *list_store_temporary = GTK_LIST_STORE( g_hash_table_lookup(pointer_passer, &KEY_LIST_STORE_TEMPORARY));
+
 
     g_signal_connect(account_button_add, "clicked", G_CALLBACK(add_row), list_store_temporary);
     g_signal_connect(account_button_delete, "clicked", G_CALLBACK(delete_row), list_store_temporary);
-    g_signal_connect(account_button_revert, "clicked", G_CALLBACK(revert_listing), list_store_ptr_array);
-    g_signal_connect(account_button_save, "clicked", G_CALLBACK(save_listing), list_store_ptr_array);
+    g_signal_connect(account_button_revert, "clicked", G_CALLBACK(revert_listing), pointer_passer);
+    g_signal_connect(account_button_save, "clicked", G_CALLBACK(save_listing), pointer_passer);
 
     return local_hbox;
 }

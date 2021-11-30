@@ -23,4 +23,8 @@ static const char BUTTON_SLIP_PRINT[] = "btnSlipPrint";  /**< Name for the Print
 static const char LABEL_ACCOUNT_DESCRIPTION[] = "lblAccountDescription";  /**< Name for the account description label. */
 static const char NEW_AMOUNT[] = "0.00"; /**< Dummy amount string for the new check row. */
 
+static gint KEY_LIST_STORE_MASTER = 0;
+static gint KEY_LIST_STORE_TEMPORARY = 1;
+static gint KEY_CAIRO_CONTEXT = 2;
+
 #endif

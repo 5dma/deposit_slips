@@ -47,15 +47,16 @@ void on_app_activate(GApplication *app, gpointer data) {
     GtkWidget *accounts_tab_tree = make_tree_view(list_store_temporary);
     GtkWidget *slips_tab_tree = make_slip_view(list_store_master);
 
-    GPtrArray *list_store_ptr_array = g_ptr_array_new();
-    g_ptr_array_add (list_store_ptr_array, list_store_master);
-    g_ptr_array_add (list_store_ptr_array, list_store_temporary);
-
+    GHashTable *pointer_passer = g_hash_table_new(g_int_hash, g_int_equal);
+  
+    g_hash_table_insert(pointer_passer, &KEY_LIST_STORE_MASTER, list_store_master);
+    g_hash_table_insert(pointer_passer, &KEY_LIST_STORE_TEMPORARY, list_store_temporary);
     
-    g_signal_connect(window,"destroy",G_CALLBACK(free_memory), list_store_ptr_array);
+    
+    g_signal_connect(window,"destroy",G_CALLBACK(free_memory), pointer_passer);
 
 
-    GtkWidget *accounts_buttons_hbox = make_accounts_buttons_hbox(list_store_ptr_array);
+    GtkWidget *accounts_buttons_hbox = make_accounts_buttons_hbox(pointer_passer);
 
     /* The TRUE parameter ensures the treeview maintains its initial height, even after 
         deleting rows. */
