@@ -36,22 +36,14 @@ typedef struct Accounts {
     gchar description[500];  /**< Informal description of account */
 } Account;
 
-/**
- * Structure for copying the GS_List of accounts to another GS_List. The
- * instance of this struct is passed as user data to a function `build_list_store`.
-*/
-typedef struct list_builder_struct {
-    GtkTreeIter iter; /**< Iter of the passed GS_List. */
-    GtkListStore *list_store; /**< Pointer to the passed GS_List. */
-} List_Builder_Struct;
-
 
 /**
  * Enum for positions inside a List_Store_Struct. Used with g_ptr_array_index().
 */
 enum {
     POSITION_LIST_STORE_MASTER, /**< 0 */
-    POSITION_LIST_STORE_TEMPORARY  /**< 1 */
+    POSITION_LIST_STORE_TEMPORARY,  /**< 1 */
+    POSITION_CAIRO_CONTEXT /**< 2 */
 };
 
 
