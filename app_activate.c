@@ -43,14 +43,16 @@ void on_app_activate(GApplication *app, gpointer data) {
     g_slist_foreach(list_accounts_from_disk, build_list_store, list_store_master);
     g_slist_foreach(list_accounts_from_disk, build_list_store, list_store_temporary);
 
-
-    GtkWidget *accounts_tab_tree = make_tree_view(list_store_temporary);
-    GtkWidget *slips_tab_tree = make_slip_view(list_store_master);
-
+    /* A hash table for passing pointers to callbacks */
     GHashTable *pointer_passer = g_hash_table_new(g_int_hash, g_int_equal);
   
     g_hash_table_insert(pointer_passer, &KEY_LIST_STORE_MASTER, list_store_master);
     g_hash_table_insert(pointer_passer, &KEY_LIST_STORE_TEMPORARY, list_store_temporary);
+
+    GtkWidget *accounts_tab_tree = make_tree_view(list_store_temporary);
+    GtkWidget *slips_tab_tree = make_slip_view(pointer_passer);
+
+
     
     
     g_signal_connect(window,"destroy",G_CALLBACK(free_memory), pointer_passer);

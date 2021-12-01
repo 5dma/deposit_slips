@@ -1,4 +1,5 @@
 #include <gtk/gtk.h>
+
 #include "../constants.h"
 #include "../headers.h"
 
@@ -43,9 +44,9 @@ void update_label(GtkTreeView *tree_view, gpointer user_data) {
         GtkWidget *lbl_description = get_child_from_parent(tree_parent, LABEL_ACCOUNT_DESCRIPTION);
         gchararray account_name;
         gchararray description;
-        gtk_tree_model_get(model, &iter, ACCOUNT_NAME, &account_name,DESCRIPTION, &description, -1);
-        gchar *full_label = g_strdup_printf("%s (%s)",account_name, description);
-        g_print("%s\n",full_label);
+        gtk_tree_model_get(model, &iter, ACCOUNT_NAME, &account_name, DESCRIPTION, &description, -1);
+        gchar *full_label = g_strdup_printf("%s (%s)", account_name, description);
+        g_print("%s\n", full_label);
         gtk_label_set_label(GTK_LABEL(lbl_description), full_label);
         g_free(full_label);
     } else {
@@ -86,8 +87,7 @@ static void check_toggle_clicked(GtkCellRendererToggle *renderer,
     } else {
         gtk_widget_set_sensitive(check_button_delete, FALSE);
     }
-} 
-
+}
 
 /**
     Adds a row to the checks model after user clicks the Add button.
@@ -95,9 +95,8 @@ static void check_toggle_clicked(GtkCellRendererToggle *renderer,
     @param data Void pointer to the temporary list store.
 */
 static void add_check_row(GtkWidget *widget, gpointer data) {
-
     g_print("Clicked ADD\n");
-    GtkListStore *list_store = (GtkListStore*)data;
+    GtkListStore *list_store = (GtkListStore *)data;
 
     GtkTreeIter iter;
     gtk_list_store_append(list_store, &iter);
@@ -130,7 +129,6 @@ static void delete_check_row(GtkWidget *widget, gpointer data) {
         g_value_unset(gvalue);
 
     } while (still_in_list);
-
 }
 
 /**
@@ -145,8 +143,10 @@ static void amount_edited(GtkCellRendererText *renderer,
                           gchar *path,
                           gchar *new_amount,
                           gpointer data) {
+    GHashTable *pointer_passer = (GHashTable *)data;
 
-    GtkTreeView *treeview = (GtkTreeView *)data;
+    GtkTreeView *treeview = GTK_TREE_VIEW(g_hash_table_lookup(pointer_passer, &KEY_CHECK_TREE_VIEW));
+
     GtkTreeIter iter;
     GtkTreeModel *model;
     if (g_ascii_strcasecmp(new_amount, "") != 0) {
@@ -155,6 +155,6 @@ static void amount_edited(GtkCellRendererText *renderer,
             gtk_list_store_set(GTK_LIST_STORE(model), &iter, CHECK_AMOUNT, new_amount, -1);
         }
         g_print("I finished adding a number");
-        draw_single_amount(GTK_WIDGET(treeview), new_amount);
+        draw_single_amount(pointer_passer, new_amount);
     }
 }

@@ -4,14 +4,19 @@
 #include "../constants.h"
 #include "../headers.h"
 #include "checks_store.c"
-#include "slip_control.c"
 #include "draw_functions.c"
+#include "slip_control.c"
 
-GtkWidget *make_account_view(GtkListStore *list_store) {
+GtkWidget *make_account_view(GHashTable *pointer_passer) {
     GtkTreeIter iter;
     GtkWidget *tree_view;
 
-    tree_view = gtk_tree_view_new_with_model(GTK_TREE_MODEL(list_store));
+    GtkListStore *list_store_master = GTK_LIST_STORE(g_hash_table_lookup(pointer_passer, &KEY_LIST_STORE_MASTER));
+
+    tree_view = gtk_tree_view_new_with_model(GTK_TREE_MODEL(list_store_master));
+
+    g_hash_table_insert(pointer_passer, &KEY_CHECK_TREE_VIEW, tree_view);
+
     g_object_set(tree_view, "enable-grid-lines", GTK_TREE_VIEW_GRID_LINES_BOTH, NULL);
 
     GtkCellRenderer *rendererAccount;
@@ -34,7 +39,7 @@ GtkWidget *make_account_view(GtkListStore *list_store) {
     return tree_view;
 }
 
-GtkWidget *make_checks_view(GtkListStore *checks_store) {
+GtkWidget *make_checks_view(GtkListStore *checks_store, GHashTable *pointer_passer) {
     GtkTreeIter iter;
     GtkWidget *tree;
 
@@ -51,8 +56,7 @@ GtkWidget *make_checks_view(GtkListStore *checks_store) {
                                                             NULL);
     g_object_set(rendererChecks, "editable", TRUE, "editable-set", TRUE, NULL);
 
-    g_signal_connect(G_OBJECT(rendererChecks), "edited", G_CALLBACK(amount_edited), tree);
-
+    g_signal_connect(G_OBJECT(rendererChecks), "edited", G_CALLBACK(amount_edited), pointer_passer);
 
     GtkCellRenderer *rendererToggle;
     GtkTreeViewColumn *columnToggle;
@@ -80,8 +84,10 @@ GtkWidget *make_checks_view(GtkListStore *checks_store) {
  * a list of checks to deposit (amount only), and a preview of the deposit slip.
  * @param list_store The master List Store of accounts.
  * @return A widget containing the three widgets described above.
- */ 
-GtkWidget *make_slip_view(GtkListStore *list_store) {
+ */
+GtkWidget *make_slip_view(GHashTable *pointer_passer) {
+    GtkListStore *list_store_master = GTK_LIST_STORE(g_hash_table_lookup(pointer_passer, &KEY_LIST_STORE_MASTER));
+
     GtkWidget *lblAccount = gtk_label_new("Accounts");
     GtkWidget *lblChecks = gtk_label_new("Checks");
     GtkWidget *lblAccountDescription = gtk_label_new("Description");
@@ -96,17 +102,15 @@ GtkWidget *make_slip_view(GtkListStore *list_store) {
     gtk_widget_set_name(btnSlipPrint, BUTTON_SLIP_PRINT);
     gtk_widget_set_name(lblAccountDescription, LABEL_ACCOUNT_DESCRIPTION);
 
-
     gtk_widget_set_sensitive(btnChecksAdd, TRUE);
     gtk_widget_set_sensitive(btnChecksDelete, FALSE);
 
     GtkWidget *drawing_area = gtk_drawing_area_new();
-    gtk_widget_set_name(drawing_area, LABEL_ACCOUNT_DESCRIPTION);
 
-    GtkWidget *treeAccounts = make_account_view(list_store);
+    GtkWidget *treeAccounts = make_account_view(pointer_passer);
 
     GtkListStore *checks_store = make_checks_store();
-    GtkWidget *tree_checks = make_checks_view(checks_store);
+    GtkWidget *tree_checks = make_checks_view(checks_store, pointer_passer);
     g_signal_connect(btnChecksAdd, "clicked", G_CALLBACK(add_check_row), checks_store);
     g_signal_connect(btnChecksDelete, "clicked", G_CALLBACK(delete_check_row), checks_store);
 
@@ -126,9 +130,7 @@ GtkWidget *make_slip_view(GtkListStore *list_store) {
     gtk_grid_attach(GTK_GRID(gridSlip), drawing_area, 3, 1, 1, 1);
 
     gtk_widget_set_size_request(drawing_area, 500, 100);
-    g_signal_connect (G_OBJECT(drawing_area), "draw",
-                    G_CALLBACK(draw_background), NULL);
-
+    g_signal_connect(G_OBJECT(drawing_area), "draw", G_CALLBACK(draw_background), pointer_passer);
 
     gtk_grid_attach(GTK_GRID(gridSlip), btnSlipPrint, 3, 2, 1, 1);
 

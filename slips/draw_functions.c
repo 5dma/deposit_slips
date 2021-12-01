@@ -1,8 +1,15 @@
 #include <gtk/gtk.h>
 
+#include "../constants.h"
 #include "../headers.h"
 
 void draw_background(GtkWidget *widget, cairo_t *cr, gpointer data) {
+
+    GHashTable *pointer_passer = (GHashTable *)data;
+    g_hash_table_insert(pointer_passer, &KEY_CAIRO_CONTEXT, cr);
+
+    cr = cairo_reference (cr);
+
     guint width, height;
     GdkRGBA color;
     GtkStyleContext *context;
@@ -49,17 +56,15 @@ void draw_background(GtkWidget *widget, cairo_t *cr, gpointer data) {
     cairo_show_text(cr, "Date");
 }
 
-void draw_single_amount(GtkWidget *treeview, gchar *new_amount) {
-    GtkWidget *slipGrid = gtk_widget_get_parent(treeview);
+void draw_single_amount(GHashTable *pointer_passer, gchar *new_amount) {
 
-    GtkWidget *barf = gtk_grid_get_child_at(GTK_GRID(slipGrid), 3, 1);
-    GdkWindow *drawingArea = gtk_widget_get_window(barf);
+    GtkTreeView *treeview = GTK_TREE_VIEW(g_hash_table_lookup(pointer_passer, &KEY_CHECK_TREE_VIEW));
 
-    cairo_t *cr = gdk_drawing_context_get_cairo_context(GDK_DRAWING_CONTEXT(drawingArea));
+    cairo_t *cr = (cairo_t *)g_hash_table_lookup(pointer_passer, &KEY_CAIRO_CONTEXT);
 
     cairo_set_source_rgb(cr, 0.0, 0.0, 0.0);
-    cairo_select_font_face(cr, "DejaVuSans", CAIRO_FONT_SLANT_NORMAL, CAIRO_FONT_WEIGHT_NORMAL);
-    cairo_set_font_size(cr, 6);
+    cairo_select_font_face(cr, "DejaVuSans", CAIRO_FONT_SLANT_NORMAL, CAIRO_FONT_WEIGHT_BOLD);
+    cairo_set_font_size(cr, 16);
     cairo_move_to(cr, 104, 10);
     cairo_show_text(cr, new_amount);
 }
