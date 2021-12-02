@@ -107,6 +107,8 @@ GtkWidget *make_slip_view(GHashTable *pointer_passer) {
 
     GtkWidget *drawing_area = gtk_drawing_area_new();
 
+    g_hash_table_insert(pointer_passer, &KEY_DRAWING_AREA, drawing_area);
+
     GtkWidget *treeAccounts = make_account_view(pointer_passer);
 
     GtkListStore *checks_store = make_checks_store();

@@ -146,6 +146,7 @@ static void amount_edited(GtkCellRendererText *renderer,
     GHashTable *pointer_passer = (GHashTable *)data;
 
     GtkTreeView *treeview = GTK_TREE_VIEW(g_hash_table_lookup(pointer_passer, &KEY_CHECK_TREE_VIEW));
+    GtkWidget *drawing_area = GTK_WIDGET(g_hash_table_lookup(pointer_passer, &KEY_DRAWING_AREA));
 
     GtkTreeIter iter;
     GtkTreeModel *model;
@@ -155,6 +156,10 @@ static void amount_edited(GtkCellRendererText *renderer,
             gtk_list_store_set(GTK_LIST_STORE(model), &iter, CHECK_AMOUNT, new_amount, -1);
         }
         g_print("I finished adding a number");
-        draw_single_amount(pointer_passer, new_amount);
+
+        g_hash_table_replace (pointer_passer, &KEY_DRAWING_ACTION, &DRAWING_OPERATION_CHECKS);
+
+        gtk_widget_queue_draw(drawing_area);
+  
     }
 }
