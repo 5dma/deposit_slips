@@ -39,9 +39,11 @@ GtkWidget *make_account_view(GHashTable *pointer_passer) {
     return tree_view;
 }
 
-GtkWidget *make_checks_view(GtkListStore *checks_store, GHashTable *pointer_passer) {
+GtkWidget *make_checks_view(GHashTable *pointer_passer) {
     GtkTreeIter iter;
     GtkWidget *tree;
+
+    GtkListStore *checks_store = GTK_LIST_STORE(g_hash_table_lookup(pointer_passer, &KEY_CHECKS_STORE));
 
     tree = gtk_tree_view_new_with_model(GTK_TREE_MODEL(checks_store));
     g_object_set(tree, "enable-grid-lines", GTK_TREE_VIEW_GRID_LINES_BOTH, NULL);
@@ -86,8 +88,6 @@ GtkWidget *make_checks_view(GtkListStore *checks_store, GHashTable *pointer_pass
  * @return A widget containing the three widgets described above.
  */
 GtkWidget *make_slip_view(GHashTable *pointer_passer) {
-    GtkListStore *list_store_master = GTK_LIST_STORE(g_hash_table_lookup(pointer_passer, &KEY_LIST_STORE_MASTER));
-
     GtkWidget *lblAccount = gtk_label_new("Accounts");
     GtkWidget *lblChecks = gtk_label_new("Checks");
     GtkWidget *lblAccountDescription = gtk_label_new("Description");
@@ -112,7 +112,10 @@ GtkWidget *make_slip_view(GHashTable *pointer_passer) {
     GtkWidget *treeAccounts = make_account_view(pointer_passer);
 
     GtkListStore *checks_store = make_checks_store();
-    GtkWidget *tree_checks = make_checks_view(checks_store, pointer_passer);
+
+    g_hash_table_insert(pointer_passer, &KEY_CHECKS_STORE, checks_store);
+
+    GtkWidget *tree_checks = make_checks_view(pointer_passer);
     g_signal_connect(btnChecksAdd, "clicked", G_CALLBACK(add_check_row), checks_store);
     g_signal_connect(btnChecksDelete, "clicked", G_CALLBACK(delete_check_row), checks_store);
 
@@ -133,21 +136,6 @@ GtkWidget *make_slip_view(GHashTable *pointer_passer) {
 
     gtk_widget_set_size_request(drawing_area, 500, 100);
     g_signal_connect(G_OBJECT(drawing_area), "draw", G_CALLBACK(draw_background), pointer_passer);
-
-guint signal_id = g_signal_lookup ("draw", G_TYPE_FROM_INSTANCE(drawing_area) );
-
-gulong draw_handler = 
-g_signal_handler_find (
- G_OBJECT(drawing_area),
- G_SIGNAL_MATCH_FUNC || G_SIGNAL_MATCH_ID,
-  signal_id,
-  g_quark_from_string ("draw"),
-  NULL,
-G_CALLBACK(draw_background),
-  NULL
-);
-g_hash_table_insert(pointer_passer, &KEY_DRAW_HANDLER , &draw_handler);
-
 
     gtk_grid_attach(GTK_GRID(gridSlip), btnSlipPrint, 3, 2, 1, 1);
 

@@ -48,14 +48,9 @@ void on_app_activate(GApplication *app, gpointer data) {
   
     g_hash_table_insert(pointer_passer, &KEY_LIST_STORE_MASTER, list_store_master);
     g_hash_table_insert(pointer_passer, &KEY_LIST_STORE_TEMPORARY, list_store_temporary);
-    g_hash_table_insert(pointer_passer, &KEY_DRAWING_ACTION, &DRAWING_OPERATION_BACKGROUND);
-    
 
     GtkWidget *accounts_tab_tree = make_tree_view(list_store_temporary);
     GtkWidget *slips_tab_tree = make_slip_view(pointer_passer);
-
-
-    
     
     g_signal_connect(window,"destroy",G_CALLBACK(free_memory), pointer_passer);
 
