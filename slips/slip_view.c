@@ -134,6 +134,21 @@ GtkWidget *make_slip_view(GHashTable *pointer_passer) {
     gtk_widget_set_size_request(drawing_area, 500, 100);
     g_signal_connect(G_OBJECT(drawing_area), "draw", G_CALLBACK(draw_background), pointer_passer);
 
+guint signal_id = g_signal_lookup ("draw", G_TYPE_FROM_INSTANCE(drawing_area) );
+
+gulong draw_handler = 
+g_signal_handler_find (
+ G_OBJECT(drawing_area),
+ G_SIGNAL_MATCH_FUNC || G_SIGNAL_MATCH_ID,
+  signal_id,
+  g_quark_from_string ("draw"),
+  NULL,
+G_CALLBACK(draw_background),
+  NULL
+);
+g_hash_table_insert(pointer_passer, &KEY_DRAW_HANDLER , &draw_handler);
+
+
     gtk_grid_attach(GTK_GRID(gridSlip), btnSlipPrint, 3, 2, 1, 1);
 
     gtk_grid_set_column_spacing(GTK_GRID(gridSlip), 20);

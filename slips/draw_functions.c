@@ -53,18 +53,42 @@ void draw_background(GtkWidget *widget, cairo_t *cr, gpointer data) {
             cairo_set_font_size(cr, 5);
             cairo_move_to(cr, 27, 83);
             cairo_show_text(cr, "Date");
+
+            //cairo_save(cr);
+
+            //  g_hash_table_replace (pointer_passer, &KEY_DRAWING_ACTION, &DRAWING_OPERATION_NONE);
             break;
         case 1:
+
+            cairo_save(cr);
+
+            cairo_push_group(cr);
+            cairo_rectangle(cr, 0, 0, 1, 1);
+
+            cairo_clip(cr);
+
             g_print("I AM IN CASE 1\n");
-            cairo_set_source_rgb(cr, 0.0, 0.0, 0.0);
+
+            //    cairo_clip(cr);
+            //cairo_set_source_rgb(cr, 0.0, 0.0, 0.0);
             cairo_select_font_face(cr, "DejaVuSans", CAIRO_FONT_SLANT_NORMAL, CAIRO_FONT_WEIGHT_BOLD);
             cairo_set_font_size(cr, 16);
             cairo_move_to(cr, 104, 10);
             cairo_show_text(cr, "BARF");
+            //  cairo_reset_clip(cr);
+            cairo_pop_group_to_source(cr);
+
+            cairo_restore(cr);
+            g_hash_table_replace(pointer_passer, &KEY_DRAWING_ACTION, &DRAWING_OPERATION_NONE);
             break;
         default:
+            g_print("I AM IN DEFAULT\n");
             break;
     }
+    gulong draw_handler = *(gint *)(g_hash_table_lookup(pointer_passer, &KEY_DRAW_HANDLER));
+    GtkWidget *drawing_area = (GtkWidget *)(g_hash_table_lookup(pointer_passer, &KEY_DRAWING_AREA));
+
+  //  g_signal_handler_block(G_OBJECT(drawing_area), draw_handler);
 }
 
 /* void draw_single_amount(GHashTable *pointer_passer, gchar *new_amount) {

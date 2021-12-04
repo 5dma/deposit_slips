@@ -4,3 +4,5 @@ deposit_slip
 *.swp
 html/**
 latex/**
+cairo_test/**
+slips/**
