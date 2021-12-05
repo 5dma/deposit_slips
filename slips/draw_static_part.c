@@ -4,7 +4,6 @@
 #include "../headers.h"
 
 void draw_background(GHashTable *pointer_passer) {
-
     g_print("Starting the backgrouund\n");
 
     cairo_t *cr = (cairo_t *)g_hash_table_lookup(pointer_passer, &KEY_CAIRO_CONTEXT);
@@ -54,6 +53,18 @@ void draw_background(GHashTable *pointer_passer) {
     cairo_set_font_size(cr, 5);
     cairo_move_to(cr, 27, 83);
     cairo_show_text(cr, "Date");
+
+    /* Draw individual deposit lines */
+
+    GtkTreeView *treeview = GTK_TREE_VIEW(g_hash_table_lookup(pointer_passer, &KEY_CHECK_TREE_VIEW));
+    GtkTreeModel *model = gtk_tree_view_get_model(treeview);
+    //draw_background(pointer_passer);
+    gboolean checks_exist = gtk_tree_model_get_iter_first(model, &iter);
+    g_print("The value of checks_exist is %d\n", checks_exist);
+
+    if (checks_exist) {
+        gtk_tree_model_foreach(model, print_deposit_amounts, cr);
+    }
 }
 
 gboolean print_deposit_amounts(GtkTreeModel *model,

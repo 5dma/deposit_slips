@@ -159,7 +159,7 @@ static void amount_edited(GtkCellRendererText *renderer,
         }
         g_print("I finished adding a number\n");
 
-        draw_background(pointer_passer);
+        //draw_background(pointer_passer);
         gboolean checks_exist = gtk_tree_model_get_iter_first(model, &iter);
         g_print("The value of checks_exist is %d\n", checks_exist);
 
