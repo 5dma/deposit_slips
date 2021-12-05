@@ -15,8 +15,6 @@ GtkWidget *make_account_view(GHashTable *pointer_passer) {
 
     tree_view = gtk_tree_view_new_with_model(GTK_TREE_MODEL(list_store_master));
 
-    g_hash_table_insert(pointer_passer, &KEY_CHECK_TREE_VIEW, tree_view);
-
     g_object_set(tree_view, "enable-grid-lines", GTK_TREE_VIEW_GRID_LINES_BOTH, NULL);
 
     GtkCellRenderer *rendererAccount;
@@ -46,6 +44,8 @@ GtkWidget *make_checks_view(GHashTable *pointer_passer) {
     GtkListStore *checks_store = GTK_LIST_STORE(g_hash_table_lookup(pointer_passer, &KEY_CHECKS_STORE));
 
     tree = gtk_tree_view_new_with_model(GTK_TREE_MODEL(checks_store));
+
+    g_hash_table_insert(pointer_passer, &KEY_CHECK_TREE_VIEW, tree);
     g_object_set(tree, "enable-grid-lines", GTK_TREE_VIEW_GRID_LINES_BOTH, NULL);
 
     GtkCellRenderer *rendererChecks;
@@ -111,7 +111,7 @@ GtkWidget *make_slip_view(GHashTable *pointer_passer) {
 
     GtkWidget *treeAccounts = make_account_view(pointer_passer);
 
-    GtkListStore *checks_store = make_checks_store();
+    GtkListStore *checks_store = gtk_list_store_new(SLIP_COLUMNS, G_TYPE_STRING, G_TYPE_BOOLEAN);
 
     g_hash_table_insert(pointer_passer, &KEY_CHECKS_STORE, checks_store);
 
