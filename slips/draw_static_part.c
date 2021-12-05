@@ -3,13 +3,18 @@
 #include "../constants.h"
 #include "../headers.h"
 
-void draw_background(GHashTable *pointer_passer) {
-    g_print("Starting the backgrouund\n");
+void draw_background( GtkCellRendererText* self,
+  gchar* path,
+  gchar* new_text,
+  gpointer data) {
 
-    cairo_t *cr = (cairo_t *)g_hash_table_lookup(pointer_passer, &KEY_CAIRO_CONTEXT);
+
+    GHashTable *pointer_passer = (GHashTable *)data;
+
     GtkWidget *drawing_area = (GtkWidget *)g_hash_table_lookup(pointer_passer, &KEY_DRAWING_AREA);
 
-    GtkTreeIter iter;
+    g_print("HERE\n");
+    cairo_t *cr = (cairo_t *)g_hash_table_lookup(pointer_passer, &KEY_CAIRO_CONTEXT);
 
     //  GtkStyleContext *context;
 
@@ -58,6 +63,15 @@ void draw_background(GHashTable *pointer_passer) {
 
     GtkTreeView *treeview = GTK_TREE_VIEW(g_hash_table_lookup(pointer_passer, &KEY_CHECK_TREE_VIEW));
     GtkTreeModel *model = gtk_tree_view_get_model(treeview);
+    GtkTreeIter iter;
+
+    if (self != NULL) {
+        if (gtk_tree_model_get_iter_from_string(model, &iter, path)) {
+            gtk_list_store_set(GTK_LIST_STORE(model), &iter, CHECK_AMOUNT, new_text, -1);
+        }
+    }
+
+
     //draw_background(pointer_passer);
     gboolean checks_exist = gtk_tree_model_get_iter_first(model, &iter);
     g_print("The value of checks_exist is %d\n", checks_exist);
@@ -65,6 +79,7 @@ void draw_background(GHashTable *pointer_passer) {
     if (checks_exist) {
         gtk_tree_model_foreach(model, print_deposit_amounts, cr);
     }
+            gtk_widget_queue_draw(drawing_area);
 }
 
 gboolean print_deposit_amounts(GtkTreeModel *model,
@@ -75,7 +90,7 @@ gboolean print_deposit_amounts(GtkTreeModel *model,
     gchar *amount;
     gtk_tree_model_get(model, iter, CHECK_AMOUNT, &amount, -1);
     gchar *pathstring = gtk_tree_path_to_string(path);
-    g_print("The amount is %s and the string is %s\n", amount, pathstring);
+   
 
     gboolean not_at_end = gtk_tree_model_get_iter(model, iter, path);
 
@@ -94,8 +109,10 @@ gboolean print_deposit_amounts(GtkTreeModel *model,
         cairo_set_source_rgb(cr, 1.0, 0.0, 0.0);
         cairo_select_font_face(cr, "DejaVuSans", CAIRO_FONT_SLANT_NORMAL, CAIRO_FONT_WEIGHT_BOLD);
         cairo_set_font_size(cr, 16);
-        cairo_move_to(cr, 50, 50);
-        cairo_show_text(cr, "BARF");
+        cairo_move_to(cr, 50, (row_number * 10) + 50);
+         g_print("The amountddd is %s and the string is %s\n", amount, pathstring);
+        cairo_show_text(cr, amount);
+
         return FALSE;
     } else {
         //   g_print("There are NO more\n");

@@ -53,6 +53,7 @@ gboolean print_deposit_amounts(GtkTreeModel *model,
                                GtkTreeIter *iter,
                                gpointer data);
 
-void draw_background(GHashTable *pointer_passer);
+void draw_background( GtkCellRendererText* self, gchar* path, gchar* new_text, gpointer data);
+
 #endif
 
