@@ -3,12 +3,10 @@
 #include "../constants.h"
 #include "../headers.h"
 
-void draw_background( GtkCellRendererText* self,
-  gchar* path,
-  gchar* new_text,
-  gpointer data) {
-
-
+void draw_background(GtkCellRendererText *self,
+                     gchar *path,
+                     gchar *new_text,
+                     gpointer data) {
     GHashTable *pointer_passer = (GHashTable *)data;
 
     GtkWidget *drawing_area = (GtkWidget *)g_hash_table_lookup(pointer_passer, &KEY_DRAWING_AREA);
@@ -16,14 +14,8 @@ void draw_background( GtkCellRendererText* self,
     g_print("HERE\n");
     cairo_t *cr = (cairo_t *)g_hash_table_lookup(pointer_passer, &KEY_CAIRO_CONTEXT);
 
-    //  GtkStyleContext *context;
-
-    //  context = gtk_widget_get_style_context(widget);
-
     guint width = gtk_widget_get_allocated_width(drawing_area);
     guint height = 0.45 * width;
-
-    //  gtk_render_background(context, cr, 0, 0, width, height);
 
     cairo_rectangle(cr, 0.0, 0.0, width, height);
     cairo_set_line_width(cr, 5.0);
@@ -71,15 +63,13 @@ void draw_background( GtkCellRendererText* self,
         }
     }
 
-
-    //draw_background(pointer_passer);
     gboolean checks_exist = gtk_tree_model_get_iter_first(model, &iter);
     g_print("The value of checks_exist is %d\n", checks_exist);
 
     if (checks_exist) {
         gtk_tree_model_foreach(model, print_deposit_amounts, cr);
     }
-            gtk_widget_queue_draw(drawing_area);
+    gtk_widget_queue_draw(drawing_area);
 }
 
 gboolean print_deposit_amounts(GtkTreeModel *model,
@@ -90,32 +80,22 @@ gboolean print_deposit_amounts(GtkTreeModel *model,
     gchar *amount;
     gtk_tree_model_get(model, iter, CHECK_AMOUNT, &amount, -1);
     gchar *pathstring = gtk_tree_path_to_string(path);
-   
-
-    gboolean not_at_end = gtk_tree_model_get_iter(model, iter, path);
 
     guint64 row_number;
     GError *gerror = NULL;
 
-    if (not_at_end) {
-        gboolean string_to_int = g_ascii_string_to_unsigned(
-            pathstring,  /* path of the current row */
-            10,          /* Base 10 */
-            0,           /* minimum value */
-            100,         /* maximum value */
-            &row_number, /* returned row number */
-            &gerror);    /* pointer for GError *. */
+    gboolean string_to_int = g_ascii_string_to_unsigned(
+        pathstring,  /* path of the current row */
+        10,          /* Base 10 */
+        0,           /* minimum value */
+        100,         /* maximum value */
+        &row_number, /* returned row number */
+        &gerror);    /* pointer for GError *. */
 
-        cairo_set_source_rgb(cr, 1.0, 0.0, 0.0);
-        cairo_select_font_face(cr, "DejaVuSans", CAIRO_FONT_SLANT_NORMAL, CAIRO_FONT_WEIGHT_BOLD);
-        cairo_set_font_size(cr, 16);
-        cairo_move_to(cr, 50, (row_number * 10) + 50);
-         g_print("The amountddd is %s and the string is %s\n", amount, pathstring);
-        cairo_show_text(cr, amount);
-
-        return FALSE;
-    } else {
-        //   g_print("There are NO more\n");
-        return TRUE;
-    }
+    cairo_set_source_rgb(cr, 1.0, 0.0, 0.0);
+    cairo_select_font_face(cr, "DejaVuSans", CAIRO_FONT_SLANT_NORMAL, CAIRO_FONT_WEIGHT_BOLD);
+    cairo_set_font_size(cr, 16);
+    cairo_move_to(cr, 50, (row_number * 10) + 50);
+    g_print("The amountddd is %s and the string is %s\n", amount, pathstring);
+    cairo_show_text(cr, amount);
 }
