@@ -135,7 +135,7 @@ GtkWidget *make_slip_view(GHashTable *pointer_passer) {
     gtk_grid_attach(GTK_GRID(gridSlip), drawing_area, 3, 1, 1, 1);
 
     gtk_widget_set_size_request(drawing_area, 500, 100);
-   g_signal_connect(G_OBJECT(drawing_area), "draw", G_CALLBACK(draw_background), pointer_passer);
+   g_signal_connect(G_OBJECT(drawing_area), "draw", G_CALLBACK(draw_preview), pointer_passer);
 
     gtk_grid_attach(GTK_GRID(gridSlip), btnSlipPrint, 3, 2, 1, 1);
 

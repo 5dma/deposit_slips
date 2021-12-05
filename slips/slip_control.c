@@ -2,6 +2,7 @@
 
 #include "../constants.h"
 #include "../headers.h"
+#include "draw_static_part.c"
 
 /**
  * Callback fired during a `gtk_tree_model_foreach`. The function
@@ -143,23 +144,27 @@ static void amount_edited(GtkCellRendererText *renderer,
                           gchar *path,
                           gchar *new_amount,
                           gpointer data) {
-
-                                     g_print("I am in about edited!\n");
+    g_print("I am in about edited!\n");
     GHashTable *pointer_passer = (GHashTable *)data;
 
+    cairo_t *cr = (cairo_t *)(g_hash_table_lookup(pointer_passer, &KEY_CAIRO_CONTEXT));
     GtkTreeView *treeview = GTK_TREE_VIEW(g_hash_table_lookup(pointer_passer, &KEY_CHECK_TREE_VIEW));
     GtkWidget *drawing_area = GTK_WIDGET(g_hash_table_lookup(pointer_passer, &KEY_DRAWING_AREA));
-
+    GtkTreeModel *model = gtk_tree_view_get_model(treeview);
     GtkTreeIter iter;
-    GtkTreeModel *model;
+
     if (g_ascii_strcasecmp(new_amount, "") != 0) {
-        model = gtk_tree_view_get_model(treeview);
         if (gtk_tree_model_get_iter_from_string(model, &iter, path)) {
             gtk_list_store_set(GTK_LIST_STORE(model), &iter, CHECK_AMOUNT, new_amount, -1);
         }
         g_print("I finished adding a number\n");
 
-        gtk_widget_queue_draw(drawing_area);
-  
+        draw_background(pointer_passer);
+        gboolean checks_exist = gtk_tree_model_get_iter_first(model, &iter);
+        g_print("The value of checks_exist is %d\n", checks_exist);
+
+        if (checks_exist) {
+            gtk_tree_model_foreach(model, print_deposit_amounts, cr);
+        }
     }
 }
