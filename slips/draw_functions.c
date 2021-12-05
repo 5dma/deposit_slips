@@ -13,10 +13,12 @@ gboolean print_deposit_amounts(GtkTreeModel *model,
     gchar *pathstring = gtk_tree_path_to_string(path);
     g_print("The amount is %s and the string is %s\n", amount, pathstring);
 
-    gboolean not_at_end = gtk_tree_model_iter_next(model, iter);
+   // gboolean not_at_end = gtk_tree_model_iter_next(model, iter);
+
+    gboolean not_at_end = gtk_tree_model_get_iter (model, iter, path);
 
     if (not_at_end) {
-        g_print("There are more\n");
+       // g_print("There are more\n");
         cairo_set_source_rgb(cr, 0.0, 0.0, 0.0);
         cairo_select_font_face(cr, "DejaVuSans", CAIRO_FONT_SLANT_NORMAL, CAIRO_FONT_WEIGHT_BOLD);
         cairo_set_font_size(cr, 16);
@@ -24,7 +26,7 @@ gboolean print_deposit_amounts(GtkTreeModel *model,
         cairo_show_text(cr, "BARF");
         return FALSE;
     } else {
-        g_print("There are NO more\n");
+     //   g_print("There are NO more\n");
         return TRUE;
     }
 }
@@ -81,6 +83,7 @@ void draw_background(GtkWidget *widget, cairo_t *cr, gpointer data) {
     cairo_show_text(cr, "Date");
 
     gboolean checks_exist = gtk_tree_model_get_iter_first(GTK_TREE_MODEL(checks_store), &iter);
+    g_print("The value of checks_exist is %d\n", checks_exist);
 
     if (checks_exist) {
         gtk_tree_model_foreach(GTK_TREE_MODEL(checks_store), print_deposit_amounts, cr);
