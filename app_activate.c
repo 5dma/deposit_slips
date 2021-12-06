@@ -65,5 +65,8 @@ void on_app_activate(GApplication *app, gpointer data) {
 
     gtk_container_add(GTK_CONTAINER(window), notebook);
 
+    gfloat total_deposit = 0;
+     g_hash_table_insert(pointer_passer, &KEY_TOTAL_DEPOSIT, &total_deposit);
+
     gtk_widget_show_all(GTK_WIDGET(window));
 }

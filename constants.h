@@ -31,6 +31,7 @@ static gint KEY_DRAWING_AREA = 4; /**< Hash key for the pointer to the drawing a
 static gint KEY_DRAWING_ACTION = 5; /**< Hash key for the drawing action to take. One of the  */
 static gint KEY_DRAW_HANDLER = 6; /**< Hash key for the drawing action to take. One of the  */
 static gint KEY_CHECKS_STORE = 7; /**< Hash key for the list store of the checks  */
+static gint KEY_TOTAL_DEPOSIT = 8; /**< Hash key for the sum of all checks deposited.  */
 
 
 static gint DRAWING_OPERATION_BACKGROUND = 0; /**< Indicates redrawing the background */

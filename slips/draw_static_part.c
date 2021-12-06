@@ -11,7 +11,6 @@ void draw_background(GtkCellRendererText *self,
 
     GtkWidget *drawing_area = (GtkWidget *)g_hash_table_lookup(pointer_passer, &KEY_DRAWING_AREA);
 
-    g_print("HERE\n");
     cairo_t *cr = (cairo_t *)g_hash_table_lookup(pointer_passer, &KEY_CAIRO_CONTEXT);
 
     guint width = gtk_widget_get_allocated_width(drawing_area);
@@ -67,8 +66,18 @@ void draw_background(GtkCellRendererText *self,
     g_print("The value of checks_exist is %d\n", checks_exist);
 
     if (checks_exist) {
-        gtk_tree_model_foreach(model, print_deposit_amounts, cr);
+        gtk_tree_model_foreach(model, print_deposit_amounts, pointer_passer);
     }
+
+    /* Write Date */
+    gfloat *current_total = (gfloat *)g_hash_table_lookup(pointer_passer, &KEY_TOTAL_DEPOSIT);
+    gchar current_total_string[10];
+    g_snprintf(current_total_string,11, "%.2f", *current_total);
+
+    cairo_set_font_size(cr, 15);
+    cairo_move_to(cr, 270, 83);
+    cairo_show_text(cr, current_total_string);
+
     gtk_widget_queue_draw(drawing_area);
 }
 
@@ -76,7 +85,8 @@ gboolean print_deposit_amounts(GtkTreeModel *model,
                                GtkTreePath *path,
                                GtkTreeIter *iter,
                                gpointer data) {
-    cairo_t *cr = (cairo_t *)data;
+    GHashTable *pointer_passer = (GHashTable *)data;
+    cairo_t *cr = (cairo_t *)g_hash_table_lookup(pointer_passer, &KEY_CAIRO_CONTEXT);
     gchar *amount;
     gtk_tree_model_get(model, iter, CHECK_AMOUNT, &amount, -1);
     gchar *pathstring = gtk_tree_path_to_string(path);
@@ -98,4 +108,13 @@ gboolean print_deposit_amounts(GtkTreeModel *model,
     cairo_move_to(cr, 50, (row_number * 10) + 50);
     g_print("The amountddd is %s and the string is %s\n", amount, pathstring);
     cairo_show_text(cr, amount);
+
+    gfloat *current_total = (gfloat *)g_hash_table_lookup(pointer_passer, &KEY_TOTAL_DEPOSIT);
+
+    float amount_float = atof((char *)amount);
+    *current_total += amount_float;
+
+    g_print("The total amount is %.2f\n", *current_total);
+
+    g_hash_table_replace(pointer_passer, &KEY_TOTAL_DEPOSIT, current_total);
 }

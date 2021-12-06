@@ -8,6 +8,7 @@
     "cSpell.words": [
         "gchararray",
         "gint",
-        "guint"
+        "guint",
+        "gfloat"
     ]
 }
