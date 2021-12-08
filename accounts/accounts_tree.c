@@ -24,7 +24,7 @@ void account_column_formatter(GtkTreeViewColumn *col,
                               gpointer user_data) {
     gchararray account_number[500];
     gtk_tree_model_get(model, iter, ACCOUNT_NUMBER, account_number, -1);
-    g_print("Here is the account number after %s\n", *account_number);
+
     g_object_set(renderer, "text", *account_number, NULL);
     if (strcmp(*account_number, NEW_NUMBER) == 0) {
         g_object_set(renderer, "foreground-rgba", &NEW_ACCOUNT_FOREGROUND, NULL);

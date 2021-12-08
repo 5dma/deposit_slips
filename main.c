@@ -4,6 +4,10 @@
 
 /*! \mainpage Main Page
  * This small GTK 3.0 application prints deposit slips.
+ *
+ * To generate this 
+ * code documentation, run doxygen Doxyfile. The output is in the `html/` 
+ * directory of this source code.
  */
 
 

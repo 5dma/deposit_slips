@@ -63,22 +63,23 @@ void draw_background(GtkCellRendererText *self,
     }
 
     gboolean checks_exist = gtk_tree_model_get_iter_first(model, &iter);
-    g_print("The value of checks_exist is %d\n", checks_exist);
+
 
     if (checks_exist) {
         gtk_tree_model_foreach(model, print_deposit_amounts, pointer_passer);
+        /* Write total of checks deposited */
+        gfloat *current_total = (gfloat *)g_hash_table_lookup(pointer_passer, &KEY_TOTAL_DEPOSIT);
+        gchar current_total_string[10];
+        g_snprintf(current_total_string, 11, "%.2f", *current_total);
+
+        cairo_set_font_size(cr, 15);
+        cairo_move_to(cr, 270, 83);
+        cairo_show_text(cr, current_total_string);
+
+            gtk_widget_queue_draw(drawing_area);
     }
 
-    /* Write Date */
-    gfloat *current_total = (gfloat *)g_hash_table_lookup(pointer_passer, &KEY_TOTAL_DEPOSIT);
-    gchar current_total_string[10];
-    g_snprintf(current_total_string,11, "%.2f", *current_total);
 
-    cairo_set_font_size(cr, 15);
-    cairo_move_to(cr, 270, 83);
-    cairo_show_text(cr, current_total_string);
-
-    gtk_widget_queue_draw(drawing_area);
 }
 
 gboolean print_deposit_amounts(GtkTreeModel *model,

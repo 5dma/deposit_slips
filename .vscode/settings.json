@@ -3,7 +3,8 @@
         "headers.h": "c",
         "gtk.h": "c",
         "typeinfo": "c",
-        "constants.h": "c"
+        "constants.h": "c",
+        "slip_headers.h": "c"
     },
     "cSpell.words": [
         "gchararray",

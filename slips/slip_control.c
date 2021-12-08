@@ -132,39 +132,3 @@ static void delete_check_row(GtkWidget *widget, gpointer data) {
     } while (still_in_list);
 }
 
-/**
- * Callback fired after a cell in the amount column is edited. The function
- * replaces the amount in the model with the one passed to the callback.
- * @param renderer Pointer to the number's cell renderer.
- * @param path Pointer to the model's path where the editing took place.
- * @param new_account_number Pointer to the new account number.
- * @param treeview Pointer to the tree view.
-*/
-static void amount_edited(GtkCellRendererText *renderer,
-                          gchar *path,
-                          gchar *new_amount,
-                          gpointer data) {
-    g_print("I am in about edited!\n");
-    GHashTable *pointer_passer = (GHashTable *)data;
-
-    cairo_t *cr = (cairo_t *)(g_hash_table_lookup(pointer_passer, &KEY_CAIRO_CONTEXT));
-    GtkTreeView *treeview = GTK_TREE_VIEW(g_hash_table_lookup(pointer_passer, &KEY_CHECK_TREE_VIEW));
-    GtkWidget *drawing_area = GTK_WIDGET(g_hash_table_lookup(pointer_passer, &KEY_DRAWING_AREA));
-    GtkTreeModel *model = gtk_tree_view_get_model(treeview);
-    GtkTreeIter iter;
-
-    if (g_ascii_strcasecmp(new_amount, "") != 0) {
-        if (gtk_tree_model_get_iter_from_string(model, &iter, path)) {
-            gtk_list_store_set(GTK_LIST_STORE(model), &iter, CHECK_AMOUNT, new_amount, -1);
-        }
-        g_print("I finished adding a number\n");
-
-        //draw_background(pointer_passer);
-        gboolean checks_exist = gtk_tree_model_get_iter_first(model, &iter);
-        g_print("The value of checks_exist is %d\n", checks_exist);
-
-        if (checks_exist) {
-            gtk_tree_model_foreach(model, print_deposit_amounts, cr);
-        }
-    }
-}

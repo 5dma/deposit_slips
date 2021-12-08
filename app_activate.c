@@ -13,7 +13,7 @@
 
 
 /**
- * Function that starts the Gtk loop.
+ * Function that starts the GTK loop.
  * @param app Pointer to the GTK application
  * @param data Pointer to passed data, `NULL` in this case.
 */

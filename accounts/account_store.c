@@ -36,7 +36,6 @@ GSList *read_account_numbers() {
                 strcpy(account_entry->name, single_account[1]);
                 strcpy(account_entry->description, single_account[2]);
 
-                g_print("The account_entry-> number: %s %s\n", account_entry->number, account_entry->description);
                 local_struct_list = g_slist_append(local_struct_list, account_entry);
                 g_strfreev(single_account);
                 i++;
@@ -59,7 +58,7 @@ GSList *read_account_numbers() {
  * Writes a string to `~/.deposit_slip/deposit_slips.csv`.
  * @param string_to_save String to write.
  */
-void save_account_numbers( GString *string_to_save) {
+void save_account_numbers(GString *string_to_save) {
     GError *error = NULL;
     GtkTreeIter iter;
 
@@ -72,9 +71,9 @@ void save_account_numbers( GString *string_to_save) {
 
     gchar *output_file = g_build_filename(g_get_home_dir(), ".deposit_slip/deposit_slips.csv", NULL);
 
-    gboolean write_successful = g_file_set_contents (output_file, string_to_save->str, -1, &error);
+    gboolean write_successful = g_file_set_contents(output_file, string_to_save->str, -1, &error);
     if (!write_successful) {
-        g_print ("Could not write the new list, so the previous master list is still will show when restarting this program.\n");
+        g_print("Could not write the new list, so the previous master list is still will show when restarting this program.\n");
     }
     g_free(output_file);
 }

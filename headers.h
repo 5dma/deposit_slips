@@ -31,7 +31,8 @@ enum {
  * Structure of an account record.
  */
 typedef struct Accounts {
-    gchar number[100]; /**< Account number */
+    /** Account number */
+    gchar number[100]; 
     gchar name[100]; /**< Name of account holder */
     gchar description[500];  /**< Informal description of account */
 } Account;
