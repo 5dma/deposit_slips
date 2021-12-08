@@ -22,6 +22,7 @@ void draw_background(GtkCellRendererText *self,
                      gchar *path,
                      gchar *new_text,
                      gpointer data) {
+
     GHashTable *pointer_passer = (GHashTable *)data;
 
     GtkWidget *drawing_area = (GtkWidget *)g_hash_table_lookup(pointer_passer, &KEY_DRAWING_AREA);

@@ -90,6 +90,36 @@ void description_column_formatter(GtkTreeViewColumn *col,
     }
 }
 
+
+/**
+ * Callback fired to format each row in the Description column in the Accounts tab. The callback
+ * retrieves the text associated with the passed `iter`. If the text is `(Description)`, the text is formatted in light gray and italic; otherwise the text is formatted as normal and black.
+ * @param col Pointer to the description's column.
+ * @param renderer Pointer to the description's cell renderer.
+ * @param model Pointer to model associated with the tree view.
+ * @param iter Pointer to iterator associated with the model.
+ * @param user_data Void pointer to passed user data, `NULL` in this case.
+*/
+void routing_column_formatter(GtkTreeViewColumn *col,
+                                  GtkCellRenderer *renderer,
+                                  GtkTreeModel *model,
+                                  GtkTreeIter *iter,
+                                  gpointer user_data) {
+    gchararray routing[500];
+    gtk_tree_model_get(model, iter, ROUTING_NUMBER, routing, -1);
+    g_object_set(renderer, "text", *routing, NULL);
+    if (strcmp(*routing, NEW_ROUTING) == 0) {
+        g_object_set(renderer, "foreground-rgba", &NEW_ACCOUNT_FOREGROUND, NULL);
+        g_object_set(renderer, "style", PANGO_STYLE_ITALIC, NULL);
+    } else {
+        g_object_set(renderer, "foreground-rgba", &EXISTING_ACCOUNT_FOREGROUND, NULL);
+        g_object_set(renderer, "style", PANGO_STYLE_NORMAL, NULL);
+    }
+
+}
+
+
+
 /**
  * Callback fired after a cell in the account number column is edited. The function
  * replaces the account number in the model with the one passed to the callback.
@@ -158,6 +188,31 @@ static void description_edited(GtkCellRendererText *renderer,
         }
     }
 }
+
+
+/**
+ * Callback fired after a cell in the name  column is edited. The function
+ * replaces the name in the model with the one passed to the callback.
+ * @param renderer Pointer to the name's cell renderer.
+ * @param path Pointer to the model's path where the editing took place.
+ * @param new_routing_number Pointer to the new account name.
+ * @param user_data Void pointer to the tree view.
+*/
+static void routing_edited(GtkCellRendererText *renderer,
+                        gchar *path,
+                        gchar *new_routing_number,
+                       gpointer user_data) {
+    GtkTreeView *treeview = (GtkTreeView *) user_data;
+    GtkTreeIter iter;
+    GtkTreeModel *model;
+    if (g_ascii_strcasecmp(new_routing_number, "") != 0) {
+        model = gtk_tree_view_get_model(treeview);
+        if (gtk_tree_model_get_iter_from_string(model, &iter, path)) {
+            gtk_list_store_set(GTK_LIST_STORE(model), &iter, ROUTING_NUMBER, new_routing_number, -1);
+        }
+    }
+}
+
 
 
 /**
@@ -270,6 +325,22 @@ GtkWidget *make_tree_view(GtkListStore *list_store) {
     g_object_set(rendererDescription, "editable", TRUE, "editable-set", TRUE, NULL);
     g_signal_connect(G_OBJECT(rendererDescription), "edited", G_CALLBACK(description_edited), tree);
 
+
+    GtkCellRenderer *rendererRouting;
+    GtkTreeViewColumn *columnRouting;
+
+    rendererRouting = gtk_cell_renderer_text_new();
+    columnRouting = gtk_tree_view_column_new_with_attributes("Routing No.",
+                                                             rendererRouting,
+                                                             "text", ROUTING_NUMBER,
+                                                             NULL);
+    g_object_set(rendererRouting, "editable", TRUE, "editable-set", TRUE, NULL);
+
+    g_signal_connect(G_OBJECT(rendererRouting), "edited", G_CALLBACK(routing_edited), tree);
+
+
+
+
     GtkCellRenderer *rendererToggle;
     GtkTreeViewColumn *columnToggle;
     rendererToggle = gtk_cell_renderer_toggle_new();
@@ -286,11 +357,13 @@ GtkWidget *make_tree_view(GtkListStore *list_store) {
     gtk_tree_view_append_column(GTK_TREE_VIEW(tree), columnAccount);
     gtk_tree_view_append_column(GTK_TREE_VIEW(tree), columnName);
     gtk_tree_view_append_column(GTK_TREE_VIEW(tree), columnDescription);
+    gtk_tree_view_append_column(GTK_TREE_VIEW(tree), columnRouting);
     gtk_tree_view_append_column(GTK_TREE_VIEW(tree), columnToggle);
 
     gtk_tree_view_column_set_cell_data_func(columnAccount, rendererAccount, account_column_formatter, NULL, NULL);
     gtk_tree_view_column_set_cell_data_func(columnName, rendererName, name_column_formatter, NULL, NULL);
     gtk_tree_view_column_set_cell_data_func(columnDescription, rendererDescription, description_column_formatter, NULL, NULL);
+    gtk_tree_view_column_set_cell_data_func(columnRouting, rendererRouting,  routing_column_formatter, NULL, NULL);
 
     return tree;
 }

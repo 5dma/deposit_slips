@@ -23,6 +23,7 @@ static void add_row(GtkWidget *widget, gpointer data) {
                        ACCOUNT_NUMBER, NEW_NUMBER,
                        ACCOUNT_NAME, NEW_NAME,
                        DESCRIPTION, NEW_DESCRIPTION,
+                       ROUTING_NUMBER,NEW_ROUTING,
                        CHECKBOX, FALSE,
                        -1);
     GtkWidget *accounts_buttons_hbox = gtk_widget_get_parent(widget);
@@ -91,12 +92,14 @@ static void revert_listing(GtkWidget *widget, gpointer data) {
         gchar *account_number = NULL;
         gchar *account_name = NULL;
         gchar *account_description = NULL;
+        gchar *routing_number = NULL;
 
         while (gtk_list_store_iter_is_valid(list_store_master, &iter_master)) {
             gtk_tree_model_get(GTK_TREE_MODEL(list_store_master), &iter_master,
                                ACCOUNT_NUMBER, &account_number,
                                ACCOUNT_NAME, &account_name,
                                DESCRIPTION, &account_description,
+                               ROUTING_NUMBER,&routing_number,
                                -1);
 
             /* Add the entry from the master store to the temporary store */
@@ -106,6 +109,7 @@ static void revert_listing(GtkWidget *widget, gpointer data) {
                                ACCOUNT_NUMBER, account_number,
                                ACCOUNT_NAME, account_name,
                                DESCRIPTION, account_description,
+                               ROUTING_NUMBER, routing_number,
                                -1);
 
             gtk_tree_model_iter_next(GTK_TREE_MODEL(list_store_master), &iter_master);
@@ -113,6 +117,7 @@ static void revert_listing(GtkWidget *widget, gpointer data) {
         g_free(account_number);
         g_free(account_name);
         g_free(account_description);
+        g_free(routing_number);
         GtkWidget *accounts_buttons_hbox = gtk_widget_get_parent(widget);
         GtkWidget *account_button_revert = get_child_from_parent(accounts_buttons_hbox, BUTTON_NAME_REVERT);
         gtk_widget_set_sensitive(account_button_revert, FALSE);
@@ -149,6 +154,7 @@ static void save_listing(GtkWidget *widget, gpointer data) {
         gchar *account_number = NULL;
         gchar *account_name = NULL;
         gchar *account_description = NULL;
+        gchar *routing_number = NULL;
 
         GString *string_to_save = g_string_new (NULL);
 
@@ -159,6 +165,7 @@ static void save_listing(GtkWidget *widget, gpointer data) {
                                ACCOUNT_NUMBER, &account_number,
                                ACCOUNT_NAME, &account_name,
                                DESCRIPTION, &account_description,
+                               ROUTING_NUMBER, &routing_number,
                                -1);
 
             /* Add the entry from the master store to the temporary store */
@@ -168,6 +175,7 @@ static void save_listing(GtkWidget *widget, gpointer data) {
                                ACCOUNT_NUMBER, account_number,
                                ACCOUNT_NAME, account_name,
                                DESCRIPTION, account_description,
+                               ROUTING_NUMBER, routing_number,
                                -1);
 
             g_string_append_printf (string_to_save,"%s\t%s\t%s\n", account_number,account_name, account_description);
@@ -184,6 +192,7 @@ static void save_listing(GtkWidget *widget, gpointer data) {
         g_free(account_number);
         g_free(account_name);
         g_free(account_description);
+        g_free(routing_number);
 
         GtkWidget *accounts_buttons_hbox = gtk_widget_get_parent(widget);
         GtkWidget *account_button_revert = get_child_from_parent(accounts_buttons_hbox, BUTTON_NAME_REVERT);

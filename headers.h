@@ -14,8 +14,9 @@ enum {
     ACCOUNT_NUMBER, /**< 0 */
     ACCOUNT_NAME,  /**< 1 */
     DESCRIPTION,  /**< 2 */
-    CHECKBOX,  /**< 3 */
-    N_COLUMNS  /**< 4 */
+    ROUTING_NUMBER, /**< 3 */
+    CHECKBOX,  /**< 4 */
+    N_COLUMNS  /**< 5 */
 };
 
 /**
@@ -35,6 +36,7 @@ typedef struct Accounts {
     gchar number[100]; 
     gchar name[100]; /**< Name of account holder */
     gchar description[500];  /**< Informal description of account */
+    gchar routing[100];  /**< Routing number associated with bank account */
 } Account;
 
 void on_app_activate(GApplication *app, gpointer data);

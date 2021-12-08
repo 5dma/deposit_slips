@@ -17,6 +17,7 @@
  * @return A tree view of account numbers.
 */
 GtkWidget *make_account_view(GHashTable *pointer_passer) {
+    
     GtkTreeIter iter;
     GtkWidget *tree_view;
 
@@ -42,7 +43,6 @@ GtkWidget *make_account_view(GHashTable *pointer_passer) {
 
     g_signal_connect(G_OBJECT(tree_view), "cursor-changed", G_CALLBACK(update_label), NULL);
 
-
     return tree_view;
 }
 
@@ -52,6 +52,7 @@ GtkWidget *make_account_view(GHashTable *pointer_passer) {
  * @return A tree view with two columns: one for amounts, another a checkbox to delete an amount.
 */
 GtkWidget *make_checks_view(GHashTable *pointer_passer) {
+    
     GtkTreeIter iter;
     GtkWidget *tree;
 
@@ -105,6 +106,7 @@ GtkWidget *make_checks_view(GHashTable *pointer_passer) {
  * @return A widget containing the three widgets described above.
  */
 GtkWidget *make_slip_view(GHashTable *pointer_passer) {
+
     GtkWidget *lblAccount = gtk_label_new("Accounts");
     GtkWidget *lblChecks = gtk_label_new("Checks");
     GtkWidget *lblAccountDescription = gtk_label_new("Description");
@@ -158,6 +160,8 @@ GtkWidget *make_slip_view(GHashTable *pointer_passer) {
     /* When the draw signal is fired on the drawing area (which can happen billions of time)
     from GTKs internal messaging), go redraw the deposit slip preview. */
     g_signal_connect(G_OBJECT(drawing_area), "draw", G_CALLBACK(draw_preview), pointer_passer);
+
+
 
     gtk_grid_attach(GTK_GRID(gridSlip), btnSlipPrint, 3, 2, 1, 1);
 

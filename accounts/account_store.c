@@ -34,6 +34,7 @@ GSList *read_account_numbers() {
                 strcpy(account_entry->number, single_account[0]);
                 strcpy(account_entry->name, single_account[1]);
                 strcpy(account_entry->description, single_account[2]);
+                strcpy(account_entry->routing, single_account[3]);
 
                 local_struct_list = g_slist_append(local_struct_list, account_entry);
                 g_strfreev(single_account);
@@ -95,6 +96,7 @@ void build_list_store(gpointer account, gpointer data) {
                        ACCOUNT_NUMBER, local_account->number,
                        ACCOUNT_NAME, local_account->name,
                        DESCRIPTION, local_account->description,
+                       ROUTING_NUMBER, local_account->routing,
                        CHECKBOX, FALSE,
                        -1);
 }

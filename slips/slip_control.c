@@ -101,7 +101,9 @@ static void check_toggle_clicked(GtkCellRendererToggle *renderer,
     @param widget Pointer to the clicked Add button.
     @param data Void pointer to the temporary list store.
 */
+
 static void add_check_row(GtkWidget *widget, gpointer data) {
+
     g_print("Clicked ADD\n");
     GtkListStore *list_store = (GtkListStore *)data;
 

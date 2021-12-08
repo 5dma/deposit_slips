@@ -11,6 +11,8 @@ static const char NEW_NUMBER[] = "(Number)";
 static const char NEW_DESCRIPTION[] = "(Description)"; 
  /** Dummy name string for the new account row. */
 static const char NEW_NAME[] = "(Name)";
+ /** Dummy routing string for the new account row. */
+static const char NEW_ROUTING[] = "(Routing No)";
  /** Soft gray text color for rendering the new account row. */
 static const struct _GdkRGBA NEW_ACCOUNT_FOREGROUND = {0.35,0.35,0.35,1}; 
 /** Black text color for rendering the new account row. */
