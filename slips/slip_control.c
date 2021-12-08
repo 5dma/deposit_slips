@@ -5,6 +5,12 @@
 #include "draw_static_part.c"
 
 /**
+ * @file slip_control.c
+ * @brief Contains code for managing interactions with the controls in the deposit slip view.
+*/
+
+
+/**
  * Callback fired during a `gtk_tree_model_foreach`. The function
  * examines the checkbox in the model's passed iteration, and returns true or false depending
  * if the checkbox is marked.
@@ -60,7 +66,7 @@ void update_label(GtkTreeView *tree_view, gpointer user_data) {
  * changes the view to marked or cleared depending on the checkboxes previous state.
  * @param renderer Pointer to the checkbox's cell renderer.
  * @param path Pointer to the path associated with the current iteration.
- * @param treeview Pointer to associated treeview.
+ * @param data Void ointer to associated treeview.
 */
 static void check_toggle_clicked(GtkCellRendererToggle *renderer,
                                  gchar *path,
@@ -108,10 +114,9 @@ static void add_check_row(GtkWidget *widget, gpointer data) {
 }
 
 /**
-    Deletes a checked row from the model (and reflected in the treeview) after user clicks the Delete button. Inspiration for
-this loop is from https://www.kksou.com/php-gtk2/sample-codes/iterate-through-a-GtkListStore-Part-2.php.
-    @param widget Pointer to the clicked Delete button.
-    @param data Void pointer to the temporary list store.
+Deletes a checked row from the model (and reflected in the treeview) after user clicks the Delete button. Inspiration for this loop is from [198. How to iterate through a GtkListStore - Part 2?](https://www.kksou.com/php-gtk2/sample-codes/iterate-through-a-GtkListStore-Part-2.php).
+@param widget Pointer to the clicked Delete button.
+@param data Void pointer to the temporary list store.
 */
 static void delete_check_row(GtkWidget *widget, gpointer data) {
     GtkListStore *list_store = (GtkListStore *)data;

@@ -33,10 +33,9 @@ static void add_row(GtkWidget *widget, gpointer data) {
 }
 
 /**
-    Deletes a checked row from the model (and reflected in the treeview) after user clicks the Delete button. Inspiration for
-this loop is from https://www.kksou.com/php-gtk2/sample-codes/iterate-through-a-GtkListStore-Part-2.php.
-    @param widget Pointer to the clicked Delete button.
-    @param data Void pointer to the temporary list store.
+Deletes a checked row from the model (and reflected in the treeview) after user clicks the Delete button. Inspiration for this loop is from [198. How to iterate through a GtkListStore - Part 2?](https://www.kksou.com/php-gtk2/sample-codes/iterate-through-a-GtkListStore-Part-2.php).
+@param widget Pointer to the clicked Delete button.
+@param data Void pointer to the temporary list store.
 */
 static void delete_row(GtkWidget *widget, gpointer data) {
     GtkListStore *list_store = (GtkListStore *)data;
@@ -72,7 +71,7 @@ static void delete_row(GtkWidget *widget, gpointer data) {
     the listing that was read from disk or last written to disk. This function clears the temporary
     store, and then copies the contents of the master store into the temporary store.
     @param widget Pointer to the clicked button.
-    @param data Void pointer to the structure holding both stores, master and temporary.
+    @param data Void pointer to hash table pointer passer. The hash table holds pointers to both stores, master and temporary.
 */
 static void revert_listing(GtkWidget *widget, gpointer data) {
     GHashTable *pointer_passer = (GHashTable *)data;
@@ -131,7 +130,7 @@ static void revert_listing(GtkWidget *widget, gpointer data) {
     after user clicks the Save button. Also sets the master store to the listing in the
     temporary store.
     @param widget Pointer to the clicked Delete button.
-    @param data Void pointer to the temporary list store.
+    @param data Void pointer the hash table containing the pointer to the temporary list store.
 */
 static void save_listing(GtkWidget *widget, gpointer data) {
 
@@ -203,7 +202,7 @@ static void save_listing(GtkWidget *widget, gpointer data) {
 
 /**
     Constructs the view for the four buttons in the Accounts tab.
-    @param pointer_passer GtkListStore passed in from the main view. This parameter
+    @param pointer_passer Pointer to hash table. This parameter
     is passed to the callbacks for adding, deleting, reverting, and saving changes.
     @return An HBox containing the four buttons and associated callbacks.
 */
@@ -236,8 +235,6 @@ GtkWidget *make_accounts_buttons_hbox(GHashTable *pointer_passer) {
     gtk_widget_set_sensitive(account_button_delete, FALSE);
     gtk_widget_set_sensitive(account_button_revert, FALSE);
     gtk_widget_set_sensitive(account_button_save, FALSE);
-
-    //GtkListStore *list_store_temporary = g_ptr_array_index(list_store_ptr_array, POSITION_LIST_STORE_TEMPORARY);
 
 
     GtkListStore *list_store_temporary = GTK_LIST_STORE( g_hash_table_lookup(pointer_passer, &KEY_LIST_STORE_TEMPORARY));

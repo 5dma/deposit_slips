@@ -5,11 +5,10 @@
 
 /**
  * @file account_store.c
- * Sets up the store for accounts.
+ * @brief Sets up the store for accounts.
 */
 /** 
  * Reads a CSV file in `~/.deposit_slip/deposit_slips.csv` into a `GSList`.
- * 
  * @return Returns a `GSList *` of account numbers read from disk.
 */
 GSList *read_account_numbers() {
@@ -55,7 +54,7 @@ GSList *read_account_numbers() {
 }
 
 /** 
- * Writes a string to `~/.deposit_slip/deposit_slips.csv`.
+ * Writes a CSV string to `~/.deposit_slip/deposit_slips.csv`.
  * @param string_to_save String to write.
  */
 void save_account_numbers(GString *string_to_save) {
@@ -79,7 +78,10 @@ void save_account_numbers(GString *string_to_save) {
 }
 
 /**
- *  Adds a passed Account structure to the list store of accounts
+ *  C callback fired while itering each member of a `GSList` of list of
+ * accounts read from disk. The accounts are added to the passed `ListStore`.
+ * @param account List of accounts in a `GSList`.
+ * @param data The ListStore into which the accounts are copied.
  */
 void build_list_store(gpointer account, gpointer data) {
     GtkListStore *list_store = GTK_LIST_STORE(data);
@@ -97,19 +99,3 @@ void build_list_store(gpointer account, gpointer data) {
                        -1);
 }
 
-/**
- Adds a passed Account structure to the list store of accounts. This function
- is a callback passed from a `g_slist_copy_deep`.
- @return A malloced pointer to a copy of the passed master account record.
-*/
-gpointer build_temporary_list(gpointer item, gpointer user_data) {
-    Account *master_account = item;
-
-    /* Copy master account into a new temporary account */
-    Account *temp_account = g_new(Account, 1);
-    strcpy(temp_account->number, master_account->number);
-    strcpy(temp_account->name, master_account->name);
-    strcpy(temp_account->description, master_account->description);
-
-    return temp_account;
-}

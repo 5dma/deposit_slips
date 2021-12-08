@@ -3,10 +3,19 @@
 
 #include "../constants.h"
 #include "../headers.h"
-#include "checks_store.c"
 #include "draw_functions.c"
 #include "slip_control.c"
 
+/**
+ * @file slip_view.c
+ * @brief Creates the view for creating the deposit slip.
+*/
+
+/**
+ * Creates the view of account numbers in the deposit list tab.
+ * @param pointer_passer Hash table of pointers. This function uses the pointer to the master list of account numbers.
+ * @return A tree view of account numbers.
+*/
 GtkWidget *make_account_view(GHashTable *pointer_passer) {
     GtkTreeIter iter;
     GtkWidget *tree_view;
@@ -32,11 +41,16 @@ GtkWidget *make_account_view(GHashTable *pointer_passer) {
     gtk_tree_selection_set_mode(tree_selection, GTK_SELECTION_SINGLE);
 
     g_signal_connect(G_OBJECT(tree_view), "cursor-changed", G_CALLBACK(update_label), NULL);
-    //g_object_unref(list_store); /* destroy model automatically with view */
+
 
     return tree_view;
 }
 
+/**
+ * Creates the view of checks appearing in a deposit slip.
+ * @param pointer_passer Hash table of pointers. This function uses the pointer to the `ListStore` of checks.
+ * @return A tree view with two columns: one for amounts, another a checkbox to delete an amount.
+*/
 GtkWidget *make_checks_view(GHashTable *pointer_passer) {
     GtkTreeIter iter;
     GtkWidget *tree;
@@ -58,6 +72,7 @@ GtkWidget *make_checks_view(GHashTable *pointer_passer) {
                                                             NULL);
     g_object_set(rendererChecks, "editable", TRUE, "editable-set", TRUE, NULL);
 
+    /* Every time a cell in the Checks column is editing, redraw the preview. */
     g_signal_connect(G_OBJECT(rendererChecks), "edited", G_CALLBACK(draw_background), pointer_passer);
 
     GtkCellRenderer *rendererToggle;
@@ -71,6 +86,8 @@ GtkWidget *make_checks_view(GHashTable *pointer_passer) {
 
     /* g_object_set sets a renderer's properties. */
     g_object_set(rendererToggle, "activatable", TRUE, "active", FALSE, NULL);
+
+    /* Every time a delete checkbox is toggled, set certain buttons to be sensitive. */
     g_signal_connect(G_OBJECT(rendererToggle), "toggled", G_CALLBACK(check_toggle_clicked), tree);
 
     gtk_tree_view_append_column(GTK_TREE_VIEW(tree), columnChecks);
@@ -84,7 +101,7 @@ GtkWidget *make_checks_view(GHashTable *pointer_passer) {
 /**
  * Creates a view for the deposit slip. The view contains a list of accounts,
  * a list of checks to deposit (amount only), and a preview of the deposit slip.
- * @param list_store The master List Store of accounts.
+ * @param pointer_passer Pointer to the hash table of passed pointers.
  * @return A widget containing the three widgets described above.
  */
 GtkWidget *make_slip_view(GHashTable *pointer_passer) {
@@ -116,7 +133,9 @@ GtkWidget *make_slip_view(GHashTable *pointer_passer) {
     g_hash_table_insert(pointer_passer, &KEY_CHECKS_STORE, checks_store);
 
     GtkWidget *tree_checks = make_checks_view(pointer_passer);
+    /* When clicking the add button, add a row to the view */
     g_signal_connect(btnChecksAdd, "clicked", G_CALLBACK(add_check_row), checks_store);
+    /* When clicking the delete button, remove rows whose checkbox is marked. */
     g_signal_connect(btnChecksDelete, "clicked", G_CALLBACK(delete_check_row), checks_store);
 
     GtkWidget *gridSlip = gtk_grid_new();
@@ -135,6 +154,9 @@ GtkWidget *make_slip_view(GHashTable *pointer_passer) {
     gtk_grid_attach(GTK_GRID(gridSlip), drawing_area, 3, 1, 1, 1);
 
     gtk_widget_set_size_request(drawing_area, 500, 100);
+
+    /* When the draw signal is fired on the drawing area (which can happen billions of time)
+    from GTKs internal messaging), go redraw the deposit slip preview. */
     g_signal_connect(G_OBJECT(drawing_area), "draw", G_CALLBACK(draw_preview), pointer_passer);
 
     gtk_grid_attach(GTK_GRID(gridSlip), btnSlipPrint, 3, 2, 1, 1);
