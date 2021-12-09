@@ -17,7 +17,6 @@
  * @return A tree view of account numbers.
 */
 GtkWidget *make_account_view(GHashTable *pointer_passer) {
-    
     GtkTreeIter iter;
     GtkWidget *tree_view;
 
@@ -41,8 +40,12 @@ GtkWidget *make_account_view(GHashTable *pointer_passer) {
     GtkTreeSelection *tree_selection = gtk_tree_view_get_selection(GTK_TREE_VIEW(tree_view));
     gtk_tree_selection_set_mode(tree_selection, GTK_SELECTION_SINGLE);
 
-    g_signal_connect(G_OBJECT(tree_view), "cursor-changed", G_CALLBACK(update_label), NULL);
+    gtk_tree_view_set_activate_on_single_click(GTK_TREE_VIEW(tree_view), TRUE);
+    g_signal_connect(G_OBJECT(tree_view), "row-activated", G_CALLBACK(update_label), NULL);
 
+    gtk_tree_view_row_activated ( GTK_TREE_VIEW(tree_view), 0, 0);
+   
+  
     return tree_view;
 }
 
@@ -52,7 +55,6 @@ GtkWidget *make_account_view(GHashTable *pointer_passer) {
  * @return A tree view with two columns: one for amounts, another a checkbox to delete an amount.
 */
 GtkWidget *make_checks_view(GHashTable *pointer_passer) {
-    
     GtkTreeIter iter;
     GtkWidget *tree;
 
@@ -106,7 +108,6 @@ GtkWidget *make_checks_view(GHashTable *pointer_passer) {
  * @return A widget containing the three widgets described above.
  */
 GtkWidget *make_slip_view(GHashTable *pointer_passer) {
-
     GtkWidget *lblAccount = gtk_label_new("Accounts");
     GtkWidget *lblChecks = gtk_label_new("Checks");
     GtkWidget *lblAccountDescription = gtk_label_new("Description");
@@ -133,6 +134,8 @@ GtkWidget *make_slip_view(GHashTable *pointer_passer) {
     GtkListStore *checks_store = gtk_list_store_new(SLIP_COLUMNS, G_TYPE_STRING, G_TYPE_BOOLEAN);
 
     g_hash_table_insert(pointer_passer, &KEY_CHECKS_STORE, checks_store);
+   g_hash_table_insert(pointer_passer, &KEY_CHECKS_ACCOUNTS_TREEVIEW, treeAccounts);
+    
 
     GtkWidget *tree_checks = make_checks_view(pointer_passer);
     /* When clicking the add button, add a row to the view */
@@ -160,8 +163,6 @@ GtkWidget *make_slip_view(GHashTable *pointer_passer) {
     /* When the draw signal is fired on the drawing area (which can happen billions of time)
     from GTKs internal messaging), go redraw the deposit slip preview. */
     g_signal_connect(G_OBJECT(drawing_area), "draw", G_CALLBACK(draw_preview), pointer_passer);
-
-
 
     gtk_grid_attach(GTK_GRID(gridSlip), btnSlipPrint, 3, 2, 1, 1);
 

@@ -19,7 +19,6 @@
  * @param data Pointer to the hash table of pointers.
 */
 void draw_preview(GtkWidget *widget, cairo_t *cr, gpointer data) {
-    g_print("OMG A\n");
     GHashTable *pointer_passer = (GHashTable *)data;
     g_hash_table_insert(pointer_passer, &KEY_CAIRO_CONTEXT, cr);
     draw_background(NULL, NULL, NULL, data);

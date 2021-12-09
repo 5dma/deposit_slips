@@ -11,7 +11,6 @@
  * @brief Builds the view.
 */
 
-
 /**
  * Function that starts the GTK loop.
  * @param app Pointer to the GTK application
@@ -48,11 +47,10 @@ void on_app_activate(GApplication *app, gpointer data) {
     g_hash_table_insert(pointer_passer, &KEY_LIST_STORE_MASTER, list_store_master);
     g_hash_table_insert(pointer_passer, &KEY_LIST_STORE_TEMPORARY, list_store_temporary);
 
-
     GtkWidget *accounts_tab_tree = make_tree_view(list_store_temporary);
     GtkWidget *slips_tab_tree = make_slip_view(pointer_passer);
-    
-    g_signal_connect(window,"destroy",G_CALLBACK(free_memory), pointer_passer);
+
+    g_signal_connect(window, "destroy", G_CALLBACK(free_memory), pointer_passer);
 
     GtkWidget *accounts_buttons_hbox = make_accounts_buttons_hbox(pointer_passer);
 
@@ -65,8 +63,11 @@ void on_app_activate(GApplication *app, gpointer data) {
     gtk_container_add(GTK_CONTAINER(window), notebook);
 
     gfloat total_deposit = 0;
-     g_hash_table_insert(pointer_passer, &KEY_TOTAL_DEPOSIT, &total_deposit);
-    g_print("OMG 7\n");
+    g_hash_table_insert(pointer_passer, &KEY_TOTAL_DEPOSIT, &total_deposit);
 
     gtk_widget_show_all(GTK_WIDGET(window));
+
+    GtkTreePath *path = gtk_tree_path_new_from_string("0");
+    GtkTreeView *account_tree_view_deposit_slip = GTK_TREE_VIEW(g_hash_table_lookup(pointer_passer, &KEY_CHECKS_ACCOUNTS_TREEVIEW));
+    gtk_tree_view_set_cursor(account_tree_view_deposit_slip, path, NULL, FALSE);
 }

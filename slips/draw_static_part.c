@@ -22,7 +22,6 @@ void draw_background(GtkCellRendererText *self,
                      gchar *path,
                      gchar *new_text,
                      gpointer data) {
-
     GHashTable *pointer_passer = (GHashTable *)data;
 
     GtkWidget *drawing_area = (GtkWidget *)g_hash_table_lookup(pointer_passer, &KEY_DRAWING_AREA);
@@ -66,6 +65,25 @@ void draw_background(GtkCellRendererText *self,
     cairo_move_to(cr, 27, 83);
     cairo_show_text(cr, "Date");
 
+    /* Write Routing number */
+    GtkTreeView *accounts_treeview = (GtkTreeView *)g_hash_table_lookup(pointer_passer, &KEY_CHECKS_ACCOUNTS_TREEVIEW);
+
+    GtkTreeSelection *tree_view_selection = gtk_tree_view_get_selection(accounts_treeview);
+    GtkTreeModel *account_model;
+    GtkTreeIter account_iter;
+    gtk_tree_selection_get_selected(tree_view_selection, &account_model, &account_iter);
+    gchar *routing_number;
+
+    gtk_tree_model_get(account_model, &account_iter,
+                       ROUTING_NUMBER, &routing_number,
+                       -1);
+
+    cairo_select_font_face(cr, "MICR", CAIRO_FONT_SLANT_NORMAL, CAIRO_FONT_WEIGHT_BOLD);
+    cairo_set_font_size(cr, 10);
+    cairo_move_to(cr, 60, 103);
+    cairo_show_text(cr, routing_number);
+    
+
     /* Draw individual deposit lines */
 
     GtkTreeView *treeview = GTK_TREE_VIEW(g_hash_table_lookup(pointer_passer, &KEY_CHECK_TREE_VIEW));
@@ -108,7 +126,7 @@ void draw_background(GtkCellRendererText *self,
  * @param iter Iterator for the current check.
  * @param data Void pointer to the hash table of passed pointers.
  * @return No value is returned.
-*/ 
+*/
 gboolean print_deposit_amounts(GtkTreeModel *model,
                                GtkTreePath *path,
                                GtkTreeIter *iter,

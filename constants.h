@@ -58,6 +58,8 @@ static gint KEY_DRAW_HANDLER = 6;
 static gint KEY_CHECKS_STORE = 7; 
 /** Hash key for the sum of all checks deposited.  */
 static gint KEY_TOTAL_DEPOSIT = 8; 
+/** Hash key for the tree view of accounts in the deposit slip tab.  */
+static gint KEY_CHECKS_ACCOUNTS_TREEVIEW = 9;
 
 
 #endif
