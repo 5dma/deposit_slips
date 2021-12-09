@@ -24,6 +24,23 @@ void draw_background(GtkCellRendererText *self,
                      gpointer data) {
     GHashTable *pointer_passer = (GHashTable *)data;
 
+    GtkTreeView *accounts_treeview = (GtkTreeView *)g_hash_table_lookup(pointer_passer, &KEY_CHECKS_ACCOUNTS_TREEVIEW);
+
+    /* Get account number, name, and routing number from selected account. */
+    GtkTreeSelection *tree_view_selection = gtk_tree_view_get_selection(accounts_treeview);
+    GtkTreeModel *account_model;
+    GtkTreeIter account_iter;
+    gtk_tree_selection_get_selected(tree_view_selection, &account_model, &account_iter);
+    gchar *routing_number;
+    gchar *account_number;
+    gchar *account_name;
+
+    gtk_tree_model_get(account_model, &account_iter,
+                       ACCOUNT_NUMBER, &account_number,
+                       ACCOUNT_NAME, &account_name,
+                       ROUTING_NUMBER, &routing_number,
+                       -1);
+
     GtkWidget *drawing_area = (GtkWidget *)g_hash_table_lookup(pointer_passer, &KEY_DRAWING_AREA);
 
     cairo_t *cr = (cairo_t *)g_hash_table_lookup(pointer_passer, &KEY_CAIRO_CONTEXT);
@@ -55,34 +72,42 @@ void draw_background(GtkCellRendererText *self,
     cairo_move_to(cr, 27, 25);
     cairo_show_text(cr, "Name");
 
+    cairo_set_font_size(cr, 16);
+    cairo_move_to(cr, 127, 25);
+    cairo_show_text(cr, account_name);
+
     /* Write Account */
     cairo_set_font_size(cr, 6);
     cairo_move_to(cr, 27, 52);
     cairo_show_text(cr, "Account");
+
+    cairo_set_font_size(cr, 16);
+    cairo_move_to(cr, 127, 52);
+    cairo_show_text(cr, account_number);
 
     /* Write Date */
     cairo_set_font_size(cr, 5);
     cairo_move_to(cr, 27, 83);
     cairo_show_text(cr, "Date");
 
+    GDateTime *date_time = g_date_time_new_now_local();
+    gchar *date_time_string = g_date_time_format (date_time, "%B %e, %Y");
+    cairo_move_to(cr, 127, 83);
+    cairo_show_text(cr, date_time_string);
+    g_print("%s\n",date_time_string);
+    g_free(date_time_string);
+
+
+
     /* Write Routing number */
-    GtkTreeView *accounts_treeview = (GtkTreeView *)g_hash_table_lookup(pointer_passer, &KEY_CHECKS_ACCOUNTS_TREEVIEW);
-
-    GtkTreeSelection *tree_view_selection = gtk_tree_view_get_selection(accounts_treeview);
-    GtkTreeModel *account_model;
-    GtkTreeIter account_iter;
-    gtk_tree_selection_get_selected(tree_view_selection, &account_model, &account_iter);
-    gchar *routing_number;
-
-    gtk_tree_model_get(account_model, &account_iter,
-                       ROUTING_NUMBER, &routing_number,
-                       -1);
-
     cairo_select_font_face(cr, "MICR", CAIRO_FONT_SLANT_NORMAL, CAIRO_FONT_WEIGHT_BOLD);
     cairo_set_font_size(cr, 10);
     cairo_move_to(cr, 60, 103);
     cairo_show_text(cr, routing_number);
-    
+
+    /* Write account number */
+    cairo_move_to(cr, 160, 103);
+    cairo_show_text(cr, account_number);
 
     /* Draw individual deposit lines */
 
