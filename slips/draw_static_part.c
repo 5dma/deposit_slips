@@ -31,9 +31,10 @@ void draw_background(GtkCellRendererText *self,
     GtkTreeModel *account_model;
     GtkTreeIter account_iter;
     gtk_tree_selection_get_selected(tree_view_selection, &account_model, &account_iter);
-    gchar *routing_number;
-    gchar *account_number;
-    gchar *account_name;
+    gchar *routing_number = NULL;
+    gchar *account_number = NULL;
+    gchar *account_name = NULL;
+
 
     gtk_tree_model_get(account_model, &account_iter,
                        ACCOUNT_NUMBER, &account_number,
@@ -91,13 +92,11 @@ void draw_background(GtkCellRendererText *self,
     cairo_show_text(cr, "Date");
 
     GDateTime *date_time = g_date_time_new_now_local();
-    gchar *date_time_string = g_date_time_format (date_time, "%B %e, %Y");
+    gchar *date_time_string = g_date_time_format(date_time, "%B %e, %Y");
     cairo_move_to(cr, 127, 83);
     cairo_show_text(cr, date_time_string);
-    g_print("%s\n",date_time_string);
+    g_print("%s\n", date_time_string);
     g_free(date_time_string);
-
-
 
     /* Write Routing number */
     cairo_select_font_face(cr, "MICR", CAIRO_FONT_SLANT_NORMAL, CAIRO_FONT_WEIGHT_BOLD);
@@ -109,6 +108,8 @@ void draw_background(GtkCellRendererText *self,
     cairo_move_to(cr, 160, 103);
     cairo_show_text(cr, account_number);
 
+    /* For some reason, this statement prevents a stack smashing error. */
+    g_print("MOVING\n");
     /* Draw individual deposit lines */
 
     GtkTreeView *treeview = GTK_TREE_VIEW(g_hash_table_lookup(pointer_passer, &KEY_CHECK_TREE_VIEW));
@@ -142,6 +143,10 @@ void draw_background(GtkCellRendererText *self,
 
         gtk_widget_queue_draw(drawing_area);
     }
+
+    g_free(account_name);
+    g_free(routing_number);
+    g_free(account_number);
 }
 
 /**
