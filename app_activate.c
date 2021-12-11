@@ -62,8 +62,12 @@ void on_app_activate(GApplication *app, gpointer data) {
 
     gtk_container_add(GTK_CONTAINER(window), notebook);
 
-    gfloat total_deposit = 0;
+    gfloat total_deposit = 0.0;
     g_hash_table_insert(pointer_passer, &KEY_TOTAL_DEPOSIT, &total_deposit);
+
+   // gfloat *barf = (gfloat *)g_hash_table_lookup(pointer_passer, &KEY_TOTAL_DEPOSIT);
+   // g_print("The amount stored in the hash table is %.10f\n", *barf);
+
 
     gtk_widget_show_all(GTK_WIDGET(window));
 

@@ -31,10 +31,10 @@ void draw_background(GtkCellRendererText *self,
     GtkTreeModel *account_model;
     GtkTreeIter account_iter;
     gtk_tree_selection_get_selected(tree_view_selection, &account_model, &account_iter);
+
     gchar *routing_number = NULL;
     gchar *account_number = NULL;
     gchar *account_name = NULL;
-
 
     gtk_tree_model_get(account_model, &account_iter,
                        ACCOUNT_NUMBER, &account_number,
@@ -42,6 +42,7 @@ void draw_background(GtkCellRendererText *self,
                        ROUTING_NUMBER, &routing_number,
                        -1);
 
+    g_print("MOVING\n");
     GtkWidget *drawing_area = (GtkWidget *)g_hash_table_lookup(pointer_passer, &KEY_DRAWING_AREA);
 
     cairo_t *cr = (cairo_t *)g_hash_table_lookup(pointer_passer, &KEY_CAIRO_CONTEXT);
@@ -104,12 +105,12 @@ void draw_background(GtkCellRendererText *self,
     cairo_move_to(cr, 60, 103);
     cairo_show_text(cr, routing_number);
 
+    /* For some reason, this statement prevents a stack smashing error. */
+
     /* Write account number */
     cairo_move_to(cr, 160, 103);
     cairo_show_text(cr, account_number);
 
-    /* For some reason, this statement prevents a stack smashing error. */
-    g_print("MOVING\n");
     /* Draw individual deposit lines */
 
     GtkTreeView *treeview = GTK_TREE_VIEW(g_hash_table_lookup(pointer_passer, &KEY_CHECK_TREE_VIEW));
@@ -132,16 +133,21 @@ void draw_background(GtkCellRendererText *self,
     */
     if (checks_exist) {
         gtk_tree_model_foreach(model, print_deposit_amounts, pointer_passer);
+        g_print("finished foreach\n");
         /* Write total of checks deposited */
         gfloat *current_total = (gfloat *)g_hash_table_lookup(pointer_passer, &KEY_TOTAL_DEPOSIT);
-        gchar current_total_string[10];
+        g_print("Retrieved current total and it is %.2f\n", *current_total);
+        gchar current_total_string[100];
+        g_print("declared memory\n");
         g_snprintf(current_total_string, 11, "%.2f", *current_total);
+        g_print("formatted string is %s\n", current_total_string);
 
         cairo_set_font_size(cr, 15);
         cairo_move_to(cr, 270, 83);
         cairo_show_text(cr, current_total_string);
-
+   g_print("before draw\n");
         gtk_widget_queue_draw(drawing_area);
+   g_print("after draw\n");
     }
 
     g_free(account_name);
@@ -188,20 +194,37 @@ gboolean print_deposit_amounts(GtkTreeModel *model,
     cairo_set_source_rgb(cr, 1.0, 0.0, 0.0);
     cairo_select_font_face(cr, "DejaVuSans", CAIRO_FONT_SLANT_NORMAL, CAIRO_FONT_WEIGHT_BOLD);
     cairo_set_font_size(cr, 16);
-    /* Move to the horizontal coordinate and the vertical coordinatet corresponding to the
+    /* Move to the horizontal coordinate and the vertical coordinate corresponding to the
     current row. */
     cairo_move_to(cr, 50, (row_number * 10) + 50);
-    g_print("The amountddd is %s and the string is %s\n", amount, pathstring);
+    g_print("The amount is %s and the string is %s\n", amount, pathstring);
     cairo_show_text(cr, amount);
 
     /* Increment the total of all amounts in the deposit slip and update its
     value in the hash table of passed pointers. */
-    gfloat *current_total = (gfloat *)g_hash_table_lookup(pointer_passer, &KEY_TOTAL_DEPOSIT);
+    gfloat *total_deposit = (gfloat *)g_hash_table_lookup(pointer_passer, &KEY_TOTAL_DEPOSIT);
+
+    g_print("The looked up total_deposit is %.10f\n", *total_deposit);
+
+    gfloat current_total = *total_deposit;
+    g_print("The current_total after lookup is %.10f\n", current_total);
 
     float amount_float = atof((char *)amount);
-    *current_total += amount_float;
+    current_total += amount_float;
 
-    g_print("The total amount is %.2f\n", *current_total);
+    g_print("The amount_float is %.2f and current total is  %.2f\n", amount_float, current_total);
+    *total_deposit = current_total;
 
-    g_hash_table_replace(pointer_passer, &KEY_TOTAL_DEPOSIT, current_total);
+
+  g_print("assigned referenced pointer the current total\n");
+  
+   // g_hash_table_insert(pointer_passer, &KEY_TOTAL_DEPOSIT, &current_total);
+
+    g_free(amount);
+    g_print("Freed the amount\n");
+  
+
+    g_free(pathstring);
+    g_print("Freed the pathstring\n");
+  
 }

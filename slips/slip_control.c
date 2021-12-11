@@ -9,7 +9,6 @@
  * @brief Contains code for managing interactions with the controls in the deposit slip view.
 */
 
-
 /**
  * Callback fired during a `gtk_tree_model_foreach`. The function
  * examines the checkbox in the model's passed iteration, and returns true or false depending
@@ -49,13 +48,15 @@ void update_label(GtkTreeView *tree_view, gpointer user_data) {
 
     if (gtk_tree_selection_get_selected(tree_selection, &model, &iter)) {
         GtkWidget *lbl_description = get_child_from_parent(tree_parent, LABEL_ACCOUNT_DESCRIPTION);
-        gchararray account_name;
-        gchararray description;
+        gchar *account_name;
+        gchar *description;
         gtk_tree_model_get(model, &iter, ACCOUNT_NAME, &account_name, DESCRIPTION, &description, -1);
         gchar *full_label = g_strdup_printf("%s (%s)", account_name, description);
         g_print("%s\n", full_label);
         gtk_label_set_label(GTK_LABEL(lbl_description), full_label);
         g_free(full_label);
+        g_free(account_name);
+        g_free(description);
     } else {
         return;
     }
@@ -103,7 +104,6 @@ static void check_toggle_clicked(GtkCellRendererToggle *renderer,
 */
 
 static void add_check_row(GtkWidget *widget, gpointer data) {
-
     g_print("Clicked ADD\n");
     GtkListStore *list_store = (GtkListStore *)data;
 
@@ -125,17 +125,21 @@ static void delete_check_row(GtkWidget *widget, gpointer data) {
     GtkTreeIter iter;
     GValue *gvalue;
     gboolean still_in_list = TRUE;
+    gboolean removed_last_row = FALSE;
     gtk_tree_model_get_iter_first(GTK_TREE_MODEL(data), &iter);
 
     do {
         gtk_tree_model_get_value(GTK_TREE_MODEL(data), &iter, CHECK_CHECKBOX, gvalue);
+
         if (g_value_get_boolean(gvalue) == TRUE) {
-            gtk_list_store_remove(list_store, &iter);
+            removed_last_row = !gtk_list_store_remove(list_store, &iter);
         } else {
+            removed_last_row = gtk_tree_model_iter_next(GTK_TREE_MODEL(data), &iter);
+        }
+
+        g_value_unset(gvalue);
+ if (!removed_last_row) {
             still_in_list = gtk_tree_model_iter_next(GTK_TREE_MODEL(data), &iter);
         }
-        g_value_unset(gvalue);
-
-    } while (still_in_list);
+    } while  (still_in_list && !removed_last_row);
 }
-
