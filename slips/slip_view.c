@@ -43,8 +43,6 @@ GtkWidget *make_account_view(GHashTable *pointer_passer) {
     gtk_tree_view_set_activate_on_single_click(GTK_TREE_VIEW(tree_view), TRUE);
     g_signal_connect(G_OBJECT(tree_view), "row-activated", G_CALLBACK(update_label), NULL);
 
-    gtk_tree_view_row_activated(GTK_TREE_VIEW(tree_view), 0, 0);
-
     return tree_view;
 }
 
@@ -68,14 +66,19 @@ GtkWidget *make_checks_view(GHashTable *pointer_passer) {
     GtkTreeViewColumn *columnChecks;
 
     rendererChecks = gtk_cell_renderer_text_new();
+    g_print("I defined rendererChecks\n");
     columnChecks = gtk_tree_view_column_new_with_attributes("Amount",
                                                             rendererChecks,
                                                             "text", CHECK_AMOUNT,
                                                             NULL);
     g_object_set(rendererChecks, "editable", TRUE, "editable-set", TRUE, NULL);
 
+    /* Add the pointer to the cell renderer, because we need it in draw_preview */
+    g_hash_table_insert(pointer_passer, &KEY_CHECK_CELL_RENDERER, rendererChecks);
+
     /* Every time a cell in the Checks column is editing, redraw the preview. */
-    g_signal_connect(G_OBJECT(rendererChecks), "edited", G_CALLBACK(draw_background), pointer_passer);
+    g_signal_connect(G_OBJECT(rendererChecks), "edited", G_CALLBACK(deposit_amount_edited), pointer_passer);
+        g_print("I connected the signal\n");
 
     GtkCellRenderer *rendererToggle;
     GtkTreeViewColumn *columnToggle;
@@ -126,14 +129,17 @@ GtkWidget *make_slip_view(GHashTable *pointer_passer) {
 
     GtkWidget *drawing_area = gtk_drawing_area_new();
 
+    g_print("The first address of the drawing area is %p\n", drawing_area);
+
     g_hash_table_insert(pointer_passer, &KEY_DRAWING_AREA, drawing_area);
 
     GtkWidget *treeAccounts = make_account_view(pointer_passer);
 
+    g_hash_table_insert(pointer_passer, &KEY_CHECKS_ACCOUNTS_TREEVIEW, treeAccounts);
+
     GtkListStore *checks_store = gtk_list_store_new(SLIP_COLUMNS, G_TYPE_STRING, G_TYPE_BOOLEAN);
 
     g_hash_table_insert(pointer_passer, &KEY_CHECKS_STORE, checks_store);
-    g_hash_table_insert(pointer_passer, &KEY_CHECKS_ACCOUNTS_TREEVIEW, treeAccounts);
 
     GtkWidget *tree_checks = make_checks_view(pointer_passer);
     /* When clicking the add button, add a row to the view */

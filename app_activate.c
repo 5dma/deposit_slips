@@ -65,13 +65,17 @@ void on_app_activate(GApplication *app, gpointer data) {
     gfloat total_deposit = 0.0;
     g_hash_table_insert(pointer_passer, &KEY_TOTAL_DEPOSIT, &total_deposit);
 
-   // gfloat *barf = (gfloat *)g_hash_table_lookup(pointer_passer, &KEY_TOTAL_DEPOSIT);
-   // g_print("The amount stored in the hash table is %.10f\n", *barf);
-
+    static gboolean at_least_one_check = FALSE;
+    g_hash_table_insert(pointer_passer, &KEY_AT_LEAST_ONE_CHECK, &at_least_one_check);
+ 
 
     gtk_widget_show_all(GTK_WIDGET(window));
 
+    /* Select first row in accounts list of slips tab. */
     GtkTreePath *path = gtk_tree_path_new_from_string("0");
     GtkTreeView *account_tree_view_deposit_slip = GTK_TREE_VIEW(g_hash_table_lookup(pointer_passer, &KEY_CHECKS_ACCOUNTS_TREEVIEW));
     gtk_tree_view_set_cursor(account_tree_view_deposit_slip, path, NULL, FALSE);
+
+    GtkDrawingArea *drawing_area = (GtkDrawingArea *)g_hash_table_lookup(pointer_passer, &KEY_DRAWING_AREA);
+    gtk_widget_queue_draw(GTK_WIDGET(drawing_area));
 }

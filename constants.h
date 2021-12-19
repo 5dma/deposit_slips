@@ -60,6 +60,10 @@ static gint KEY_CHECKS_STORE = 7;
 static gint KEY_TOTAL_DEPOSIT = 8; 
 /** Hash key for the tree view of accounts in the deposit slip tab.  */
 static gint KEY_CHECKS_ACCOUNTS_TREEVIEW = 9;
+/** Hash key for the tree view of accounts in the deposit slip tab.  */
+static gint KEY_CHECK_CELL_RENDERER = 10;
+/** Hash key for the tree view of accounts in the deposit slip tab.  */
+static gint KEY_AT_LEAST_ONE_CHECK = 11;
 
 
 #endif

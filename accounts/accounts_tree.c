@@ -339,8 +339,6 @@ GtkWidget *make_tree_view(GtkListStore *list_store) {
     g_signal_connect(G_OBJECT(rendererRouting), "edited", G_CALLBACK(routing_edited), tree);
 
 
-
-
     GtkCellRenderer *rendererToggle;
     GtkTreeViewColumn *columnToggle;
     rendererToggle = gtk_cell_renderer_toggle_new();
@@ -363,7 +361,7 @@ GtkWidget *make_tree_view(GtkListStore *list_store) {
     gtk_tree_view_column_set_cell_data_func(columnAccount, rendererAccount, account_column_formatter, NULL, NULL);
     gtk_tree_view_column_set_cell_data_func(columnName, rendererName, name_column_formatter, NULL, NULL);
     gtk_tree_view_column_set_cell_data_func(columnDescription, rendererDescription, description_column_formatter, NULL, NULL);
-    gtk_tree_view_column_set_cell_data_func(columnRouting, rendererRouting,  routing_column_formatter, NULL, NULL);
+    gtk_tree_view_column_set_cell_data_func(columnRouting, rendererRouting, routing_column_formatter, NULL, NULL);
 
     return tree;
 }

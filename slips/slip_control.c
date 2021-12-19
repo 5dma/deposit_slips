@@ -102,7 +102,6 @@ static void check_toggle_clicked(GtkCellRendererToggle *renderer,
     @param widget Pointer to the clicked Add button.
     @param data Void pointer to the temporary list store.
 */
-
 static void add_check_row(GtkWidget *widget, gpointer data) {
     g_print("Clicked ADD\n");
     GtkListStore *list_store = (GtkListStore *)data;
@@ -126,20 +125,18 @@ static void delete_check_row(GtkWidget *widget, gpointer data) {
     GValue *gvalue;
     gboolean still_in_list = TRUE;
     gboolean removed_last_row = FALSE;
-    gtk_tree_model_get_iter_first(GTK_TREE_MODEL(data), &iter);
+
+    gboolean found_first = gtk_tree_model_get_iter_first(GTK_TREE_MODEL(data), &iter);
 
     do {
         gtk_tree_model_get_value(GTK_TREE_MODEL(data), &iter, CHECK_CHECKBOX, gvalue);
 
         if (g_value_get_boolean(gvalue) == TRUE) {
             removed_last_row = !gtk_list_store_remove(list_store, &iter);
-        } else {
-            removed_last_row = gtk_tree_model_iter_next(GTK_TREE_MODEL(data), &iter);
         }
-
         g_value_unset(gvalue);
- if (!removed_last_row) {
+        if (!removed_last_row) {
             still_in_list = gtk_tree_model_iter_next(GTK_TREE_MODEL(data), &iter);
         }
-    } while  (still_in_list && !removed_last_row);
+    } while (still_in_list && !removed_last_row);
 }

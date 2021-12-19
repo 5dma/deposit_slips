@@ -18,141 +18,27 @@
  * @param new_text Text in the cell renderer after the editing is complete.
  * @param data Void pointer to the hash table of passed pointers.
 */
-void draw_background(GtkCellRendererText *self,
-                     gchar *path,
-                     gchar *new_text,
-                     gpointer data) {
+void deposit_amount_edited(GtkCellRendererText *self,
+                           gchar *path,
+                           gchar *new_text,
+                           gpointer data) {
     GHashTable *pointer_passer = (GHashTable *)data;
 
-    GtkTreeView *accounts_treeview = (GtkTreeView *)g_hash_table_lookup(pointer_passer, &KEY_CHECKS_ACCOUNTS_TREEVIEW);
-
-    /* Get account number, name, and routing number from selected account. */
-    GtkTreeSelection *tree_view_selection = gtk_tree_view_get_selection(accounts_treeview);
-    GtkTreeModel *account_model;
-    GtkTreeIter account_iter;
-    gtk_tree_selection_get_selected(tree_view_selection, &account_model, &account_iter);
-
-    gchar *routing_number = NULL;
-    gchar *account_number = NULL;
-    gchar *account_name = NULL;
-
-    gtk_tree_model_get(account_model, &account_iter,
-                       ACCOUNT_NUMBER, &account_number,
-                       ACCOUNT_NAME, &account_name,
-                       ROUTING_NUMBER, &routing_number,
-                       -1);
-
-    g_print("MOVING\n");
-    GtkWidget *drawing_area = (GtkWidget *)g_hash_table_lookup(pointer_passer, &KEY_DRAWING_AREA);
-
-    cairo_t *cr = (cairo_t *)g_hash_table_lookup(pointer_passer, &KEY_CAIRO_CONTEXT);
-
-    guint width = gtk_widget_get_allocated_width(drawing_area);
-    guint height = 0.45 * width;
-
-    cairo_rectangle(cr, 0.0, 0.0, width, height);
-    cairo_set_line_width(cr, 5.0);
-    cairo_set_source_rgb(cr, 0, 0, 0);
-    cairo_stroke_preserve(cr);
-    cairo_set_source_rgb(cr, 1, 1, 1);
-    cairo_fill(cr);
-
-    cairo_text_extents_t te;
-    cairo_text_extents(cr, "a", &te);
-
-    /* Write Deposit Ticket */
-    cairo_set_source_rgb(cr, 0.0, 0.0, 0.0);
-    cairo_select_font_face(cr, "DejaVuSans", CAIRO_FONT_SLANT_NORMAL, CAIRO_FONT_WEIGHT_NORMAL);
-    cairo_set_font_size(cr, 6);
-    cairo_move_to(cr, 104, 10);
-    cairo_show_text(cr, "DEPOSIT TICKET");
-
-    /* Write Name */
-    cairo_set_source_rgb(cr, 0.0, 0.0, 0.0);
-    cairo_select_font_face(cr, "DejaVuSans", CAIRO_FONT_SLANT_NORMAL, CAIRO_FONT_WEIGHT_BOLD);
-    cairo_set_font_size(cr, 6);
-    cairo_move_to(cr, 27, 25);
-    cairo_show_text(cr, "Name");
-
-    cairo_set_font_size(cr, 16);
-    cairo_move_to(cr, 127, 25);
-    cairo_show_text(cr, account_name);
-
-    /* Write Account */
-    cairo_set_font_size(cr, 6);
-    cairo_move_to(cr, 27, 52);
-    cairo_show_text(cr, "Account");
-
-    cairo_set_font_size(cr, 16);
-    cairo_move_to(cr, 127, 52);
-    cairo_show_text(cr, account_number);
-
-    /* Write Date */
-    cairo_set_font_size(cr, 5);
-    cairo_move_to(cr, 27, 83);
-    cairo_show_text(cr, "Date");
-
-    GDateTime *date_time = g_date_time_new_now_local();
-    gchar *date_time_string = g_date_time_format(date_time, "%B %e, %Y");
-    cairo_move_to(cr, 127, 83);
-    cairo_show_text(cr, date_time_string);
-    g_print("%s\n", date_time_string);
-    g_free(date_time_string);
-
-    /* Write Routing number */
-    cairo_select_font_face(cr, "MICR", CAIRO_FONT_SLANT_NORMAL, CAIRO_FONT_WEIGHT_BOLD);
-    cairo_set_font_size(cr, 10);
-    cairo_move_to(cr, 60, 103);
-    cairo_show_text(cr, routing_number);
-
-    /* For some reason, this statement prevents a stack smashing error. */
-
-    /* Write account number */
-    cairo_move_to(cr, 160, 103);
-    cairo_show_text(cr, account_number);
-
-    /* Draw individual deposit lines */
-
-    GtkTreeView *treeview = GTK_TREE_VIEW(g_hash_table_lookup(pointer_passer, &KEY_CHECK_TREE_VIEW));
-    GtkTreeModel *model = gtk_tree_view_get_model(treeview);
     GtkTreeIter iter;
+    GtkTreeModel *model;
 
-    if (self != NULL) {
-        if (gtk_tree_model_get_iter_from_string(model, &iter, path)) {
-            gtk_list_store_set(GTK_LIST_STORE(model), &iter, CHECK_AMOUNT, new_text, -1);
-        }
+    GtkTreeView *tree_view = (GtkTreeView *)g_hash_table_lookup(pointer_passer, &KEY_CHECK_TREE_VIEW);
+    model = gtk_tree_view_get_model(tree_view);
+
+    if (gtk_tree_model_get_iter_from_string(model, &iter, path)) {
+        gtk_list_store_set(GTK_LIST_STORE(model), &iter, CHECK_AMOUNT, new_text,-1);
+        gboolean *at_least_one_check = (gboolean *) (g_hash_table_lookup(pointer_passer, &KEY_AT_LEAST_ONE_CHECK));
+        *at_least_one_check = TRUE;
     }
 
-    /* Check if any checks exist in the view. */
-    gboolean checks_exist = gtk_tree_model_get_iter_first(model, &iter);
+    GtkDrawingArea *drawing_area = (GtkDrawingArea *)g_hash_table_lookup(pointer_passer, &KEY_DRAWING_AREA);
 
-    /* If any checks exist:
-       a) Go print the deposit amounts of all existing checks.
-       b) Compute the total for all existing chekcs.
-       c) Print the total.
-    */
-    if (checks_exist) {
-        gtk_tree_model_foreach(model, print_deposit_amounts, pointer_passer);
-        g_print("finished foreach\n");
-        /* Write total of checks deposited */
-        gfloat *current_total = (gfloat *)g_hash_table_lookup(pointer_passer, &KEY_TOTAL_DEPOSIT);
-        g_print("Retrieved current total and it is %.2f\n", *current_total);
-        gchar current_total_string[100];
-        g_print("declared memory\n");
-        g_snprintf(current_total_string, 11, "%.2f", *current_total);
-        g_print("formatted string is %s\n", current_total_string);
-
-        cairo_set_font_size(cr, 15);
-        cairo_move_to(cr, 270, 83);
-        cairo_show_text(cr, current_total_string);
-   g_print("before draw\n");
-        gtk_widget_queue_draw(drawing_area);
-   g_print("after draw\n");
-    }
-
-    g_free(account_name);
-    g_free(routing_number);
-    g_free(account_number);
+    gtk_widget_queue_draw(GTK_WIDGET(drawing_area));
 }
 
 /**
@@ -215,16 +101,13 @@ gboolean print_deposit_amounts(GtkTreeModel *model,
     g_print("The amount_float is %.2f and current total is  %.2f\n", amount_float, current_total);
     *total_deposit = current_total;
 
+    g_print("assigned referenced pointer the current total\n");
 
-  g_print("assigned referenced pointer the current total\n");
-  
-   // g_hash_table_insert(pointer_passer, &KEY_TOTAL_DEPOSIT, &current_total);
+    // g_hash_table_insert(pointer_passer, &KEY_TOTAL_DEPOSIT, &current_total);
 
     g_free(amount);
     g_print("Freed the amount\n");
-  
 
     g_free(pathstring);
     g_print("Freed the pathstring\n");
-  
 }
