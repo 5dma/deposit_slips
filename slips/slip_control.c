@@ -97,13 +97,31 @@ static void check_toggle_clicked(GtkCellRendererToggle *renderer,
     }
 }
 
+gboolean barf_gag(GtkTreeModel *model, GtkTreePath *path, GtkTreeIter *iter, gpointer data) {
+    gchar *mypath;
+    GValue *gvalue;
+    gchar *amount;
+
+    mypath = gtk_tree_path_to_string(path);
+    const gchar *myvalue = gtk_tree_model_get_string_from_iter(model, iter);
+
+    gtk_tree_model_get_iter_first(model, iter);
+    g_print("Step 1\n");
+    //gtk_tree_model_get_value(model, iter, CHECK_CHECKBOX, gvalue);
+    gtk_tree_model_get(model, iter, CHECK_AMOUNT, &amount, -1);
+    g_print("HERE IS THE AMOUNT %s and the iter string is %s\n", amount, myvalue);
+
+    //g_print("Step 2\n");
+    //  g_print("Did the lookup\n");
+    return FALSE;
+}
+
 /**
     Adds a row to the checks model after user clicks the Add button.
     @param widget Pointer to the clicked Add button.
     @param data Void pointer to the temporary list store.
 */
 static void add_check_row(GtkWidget *widget, gpointer data) {
-    g_print("Clicked ADD\n");
     GtkListStore *list_store = (GtkListStore *)data;
 
     GtkTreeIter iter;
@@ -112,6 +130,7 @@ static void add_check_row(GtkWidget *widget, gpointer data) {
                        CHECK_AMOUNT, NEW_AMOUNT,
                        CHECK_CHECKBOX, FALSE,
                        -1);
+    gtk_tree_model_foreach(GTK_TREE_MODEL(list_store), barf_gag, NULL);
 }
 
 /**
@@ -126,6 +145,8 @@ static void delete_check_row(GtkWidget *widget, gpointer data) {
     gboolean still_in_list = TRUE;
     gboolean removed_last_row = FALSE;
 
+    gtk_tree_model_foreach(GTK_TREE_MODEL(list_store), barf_gag, NULL);
+    g_print("FINISHED FOR_EACH\n");
     gboolean found_first = gtk_tree_model_get_iter_first(GTK_TREE_MODEL(data), &iter);
 
     do {

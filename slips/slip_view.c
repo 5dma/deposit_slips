@@ -55,7 +55,7 @@ GtkWidget *make_checks_view(GHashTable *pointer_passer) {
     GtkTreeIter iter;
     GtkWidget *tree;
 
-    GtkListStore *checks_store = GTK_LIST_STORE(g_hash_table_lookup(pointer_passer, &KEY_CHECKS_STORE));
+    GtkListStore *checks_store = (GtkListStore *)(g_hash_table_lookup(pointer_passer, &KEY_CHECKS_STORE));
 
     tree = gtk_tree_view_new_with_model(GTK_TREE_MODEL(checks_store));
 
@@ -66,7 +66,6 @@ GtkWidget *make_checks_view(GHashTable *pointer_passer) {
     GtkTreeViewColumn *columnChecks;
 
     rendererChecks = gtk_cell_renderer_text_new();
-    g_print("I defined rendererChecks\n");
     columnChecks = gtk_tree_view_column_new_with_attributes("Amount",
                                                             rendererChecks,
                                                             "text", CHECK_AMOUNT,
@@ -138,6 +137,27 @@ GtkWidget *make_slip_view(GHashTable *pointer_passer) {
     g_hash_table_insert(pointer_passer, &KEY_CHECKS_ACCOUNTS_TREEVIEW, treeAccounts);
 
     GtkListStore *checks_store = gtk_list_store_new(SLIP_COLUMNS, G_TYPE_STRING, G_TYPE_BOOLEAN);
+      GtkTreeIter trashiter;
+    gtk_list_store_append(checks_store, &trashiter);
+    gtk_list_store_set(checks_store, &trashiter,
+                       CHECK_AMOUNT, "OMGBAERF",
+                       CHECK_CHECKBOX, FALSE,
+                       -1);
+                           gtk_list_store_append(checks_store, &trashiter);
+    gtk_list_store_set(checks_store, &trashiter,
+                       CHECK_AMOUNT, "OMGBAERF",
+                       CHECK_CHECKBOX, FALSE,
+                       -1);
+                           gtk_list_store_append(checks_store, &trashiter);
+    gtk_list_store_set(checks_store, &trashiter,
+                       CHECK_AMOUNT, "OMGBAERF",
+                       CHECK_CHECKBOX, FALSE,
+                       -1);
+                           gtk_list_store_append(checks_store, &trashiter);
+    gtk_list_store_set(checks_store, &trashiter,
+                       CHECK_AMOUNT, "OMGBAERF",
+                       CHECK_CHECKBOX, FALSE,
+                       -1);
 
     g_hash_table_insert(pointer_passer, &KEY_CHECKS_STORE, checks_store);
 
