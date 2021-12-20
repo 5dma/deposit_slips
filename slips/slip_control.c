@@ -97,25 +97,6 @@ static void check_toggle_clicked(GtkCellRendererToggle *renderer,
     }
 }
 
-gboolean barf_gag(GtkTreeModel *model, GtkTreePath *path, GtkTreeIter *iter, gpointer data) {
-    gchar *mypath;
-    GValue *gvalue;
-    gchar *amount;
-
-    mypath = gtk_tree_path_to_string(path);
-    const gchar *myvalue = gtk_tree_model_get_string_from_iter(model, iter);
-
-    gtk_tree_model_get_iter_first(model, iter);
-    g_print("Step 1\n");
-    //gtk_tree_model_get_value(model, iter, CHECK_CHECKBOX, gvalue);
-    gtk_tree_model_get(model, iter, CHECK_AMOUNT, &amount, -1);
-    g_print("HERE IS THE AMOUNT %s and the iter string is %s\n", amount, myvalue);
-
-    //g_print("Step 2\n");
-    //  g_print("Did the lookup\n");
-    return FALSE;
-}
-
 /**
     Adds a row to the checks model after user clicks the Add button.
     @param widget Pointer to the clicked Add button.
@@ -130,7 +111,7 @@ static void add_check_row(GtkWidget *widget, gpointer data) {
                        CHECK_AMOUNT, NEW_AMOUNT,
                        CHECK_CHECKBOX, FALSE,
                        -1);
-    gtk_tree_model_foreach(GTK_TREE_MODEL(list_store), barf_gag, NULL);
+    // gtk_tree_model_foreach(GTK_TREE_MODEL(list_store), barf_gag, NULL);
 }
 
 /**
@@ -141,21 +122,20 @@ Deletes a checked row from the model (and reflected in the treeview) after user 
 static void delete_check_row(GtkWidget *widget, gpointer data) {
     GtkListStore *list_store = (GtkListStore *)data;
     GtkTreeIter iter;
-    GValue *gvalue;
+    GValue gvalue = G_VALUE_INIT;
     gboolean still_in_list = TRUE;
     gboolean removed_last_row = FALSE;
 
-    gtk_tree_model_foreach(GTK_TREE_MODEL(list_store), barf_gag, NULL);
-    g_print("FINISHED FOR_EACH\n");
     gboolean found_first = gtk_tree_model_get_iter_first(GTK_TREE_MODEL(data), &iter);
 
     do {
-        gtk_tree_model_get_value(GTK_TREE_MODEL(data), &iter, CHECK_CHECKBOX, gvalue);
+        gtk_tree_model_get_value(GTK_TREE_MODEL(data), &iter, CHECK_CHECKBOX, &gvalue);
 
-        if (g_value_get_boolean(gvalue) == TRUE) {
+        if (g_value_get_boolean(&gvalue) == TRUE) {
             removed_last_row = !gtk_list_store_remove(list_store, &iter);
         }
-        g_value_unset(gvalue);
+        g_value_unset(&gvalue);
+
         if (!removed_last_row) {
             still_in_list = gtk_tree_model_iter_next(GTK_TREE_MODEL(data), &iter);
         }

@@ -41,17 +41,17 @@ Deletes a checked row from the model (and reflected in the treeview) after user 
 static void delete_row(GtkWidget *widget, gpointer data) {
     GtkListStore *list_store = (GtkListStore *)data;
     GtkTreeIter iter;
-    GValue *gvalue;
+    GValue gvalue = G_VALUE_INIT;
     gboolean still_in_list = TRUE;
     gboolean removed_last_row = FALSE;
     gtk_tree_model_get_iter_first(GTK_TREE_MODEL(data), &iter);
 
     do {
-        gtk_tree_model_get_value(GTK_TREE_MODEL(data), &iter, CHECKBOX, gvalue);
-        if (g_value_get_boolean(gvalue) == TRUE) {
+        gtk_tree_model_get_value(GTK_TREE_MODEL(data), &iter, CHECKBOX, &gvalue);
+        if (g_value_get_boolean(&gvalue) == TRUE) {
             removed_last_row = !gtk_list_store_remove(list_store, &iter);
         }
-        g_value_unset(gvalue);
+        g_value_unset(&gvalue);
         if (!removed_last_row) {
             still_in_list = gtk_tree_model_iter_next(GTK_TREE_MODEL(data), &iter);
         }

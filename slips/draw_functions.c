@@ -20,11 +20,26 @@
 void draw_preview(GtkWidget *widget, cairo_t *cr, gpointer data) {
     GHashTable *pointer_passer = (GHashTable *)data;
 
+    GtkTreeIter iter;
+    GtkTreeModel *model;
+    GtkListStore *checks_store = GTK_LIST_STORE(g_hash_table_lookup(pointer_passer, &KEY_CHECKS_STORE));
+    GtkWidget *accounts_tree = GTK_WIDGET(g_hash_table_lookup(pointer_passer, &KEY_CHECKS_ACCOUNTS_TREEVIEW));
+    GtkTreeSelection *tree_selection = gtk_tree_view_get_selection (GTK_TREE_VIEW(accounts_tree));
+
+
     gchar *routing_number = NULL;
     gchar *account_number = NULL;
     gchar *account_name = NULL;
 
-    //GtkDrawingArea *drawing_area = GTK_DRAWING_AREA(widget);
+
+  if (gtk_tree_selection_get_selected(tree_selection, &model, &iter)) {     
+        gtk_tree_model_get(model, &iter, 
+        ACCOUNT_NUMBER, &account_number,
+        ACCOUNT_NAME, &account_name,
+        ROUTING_NUMBER, &routing_number,
+        -1);
+  }
+
 
     guint width = gtk_widget_get_allocated_width(widget);
     guint height = 0.45 * width;
@@ -66,7 +81,6 @@ void draw_preview(GtkWidget *widget, cairo_t *cr, gpointer data) {
     gchar *date_time_string = g_date_time_format(date_time, "%B %e, %Y");
     cairo_move_to(cr, 127, 83);
     cairo_show_text(cr, date_time_string);
-    g_print("%s\n", date_time_string);
     g_free(date_time_string);
 
     /* Write Routing number */
@@ -80,8 +94,6 @@ void draw_preview(GtkWidget *widget, cairo_t *cr, gpointer data) {
     cairo_show_text(cr, account_number);
 
     /* Check if any checks exist in the view. */
-    GtkTreeIter iter;
-    GtkListStore *checks_store = GTK_LIST_STORE(g_hash_table_lookup(pointer_passer, &KEY_CHECKS_STORE));
     
     gboolean checks_exist = gtk_tree_model_get_iter_first(GTK_TREE_MODEL(checks_store), &iter);
 
@@ -97,21 +109,18 @@ void draw_preview(GtkWidget *widget, cairo_t *cr, gpointer data) {
     if (*at_least_one_check == TRUE) {
         g_hash_table_insert(pointer_passer, &KEY_CAIRO_CONTEXT, cr);
         gtk_tree_model_foreach(GTK_TREE_MODEL(checks_store), print_deposit_amounts, pointer_passer);
-        g_print("finished foreach\n");
+
         /* Write total of checks deposited */
         gfloat *current_total = (gfloat *)g_hash_table_lookup(pointer_passer, &KEY_TOTAL_DEPOSIT);
-        g_print("Retrieved current total and it is %.2f\n", *current_total);
         gchar current_total_string[100];
-        g_print("declared memory\n");
+
         g_snprintf(current_total_string, 11, "%.2f", *current_total);
-        g_print("formatted string is %s\n", current_total_string);
+
 
         cairo_set_font_size(cr, 15);
         cairo_move_to(cr, 270, 83);
         cairo_show_text(cr, current_total_string);
-        g_print("before draw\n");
-        gtk_widget_queue_draw(widget);
-        g_print("after draw\n");
+
     }
 
     g_free(account_name);
@@ -119,5 +128,5 @@ void draw_preview(GtkWidget *widget, cairo_t *cr, gpointer data) {
     g_free(account_number);
 
     GRand *seed = g_rand_new();
-    g_print("I am in draw_preview at randum number %d\n", g_rand_int(seed));
+    g_print("I am in draw_preview at random number %d\n", g_rand_int(seed));
 }

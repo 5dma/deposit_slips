@@ -65,10 +65,9 @@ void on_app_activate(GApplication *app, gpointer data) {
     gfloat total_deposit = 0.0;
     g_hash_table_insert(pointer_passer, &KEY_TOTAL_DEPOSIT, &total_deposit);
 
-    static gboolean at_least_one_check = FALSE;
+    static gboolean at_least_one_check = TRUE;
     g_hash_table_insert(pointer_passer, &KEY_AT_LEAST_ONE_CHECK, &at_least_one_check);
  
-
     gtk_widget_show_all(GTK_WIDGET(window));
 
     /* Select first row in accounts list of slips tab. */

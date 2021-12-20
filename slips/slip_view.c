@@ -77,7 +77,6 @@ GtkWidget *make_checks_view(GHashTable *pointer_passer) {
 
     /* Every time a cell in the Checks column is editing, redraw the preview. */
     g_signal_connect(G_OBJECT(rendererChecks), "edited", G_CALLBACK(deposit_amount_edited), pointer_passer);
-        g_print("I connected the signal\n");
 
     GtkCellRenderer *rendererToggle;
     GtkTreeViewColumn *columnToggle;
@@ -128,8 +127,6 @@ GtkWidget *make_slip_view(GHashTable *pointer_passer) {
 
     GtkWidget *drawing_area = gtk_drawing_area_new();
 
-    g_print("The first address of the drawing area is %p\n", drawing_area);
-
     g_hash_table_insert(pointer_passer, &KEY_DRAWING_AREA, drawing_area);
 
     GtkWidget *treeAccounts = make_account_view(pointer_passer);
@@ -137,27 +134,14 @@ GtkWidget *make_slip_view(GHashTable *pointer_passer) {
     g_hash_table_insert(pointer_passer, &KEY_CHECKS_ACCOUNTS_TREEVIEW, treeAccounts);
 
     GtkListStore *checks_store = gtk_list_store_new(SLIP_COLUMNS, G_TYPE_STRING, G_TYPE_BOOLEAN);
-      GtkTreeIter trashiter;
+    GtkTreeIter trashiter;
     gtk_list_store_append(checks_store, &trashiter);
     gtk_list_store_set(checks_store, &trashiter,
-                       CHECK_AMOUNT, "OMGBAERF",
+                       CHECK_AMOUNT, "1.00",
                        CHECK_CHECKBOX, FALSE,
                        -1);
-                           gtk_list_store_append(checks_store, &trashiter);
-    gtk_list_store_set(checks_store, &trashiter,
-                       CHECK_AMOUNT, "OMGBAERF",
-                       CHECK_CHECKBOX, FALSE,
-                       -1);
-                           gtk_list_store_append(checks_store, &trashiter);
-    gtk_list_store_set(checks_store, &trashiter,
-                       CHECK_AMOUNT, "OMGBAERF",
-                       CHECK_CHECKBOX, FALSE,
-                       -1);
-                           gtk_list_store_append(checks_store, &trashiter);
-    gtk_list_store_set(checks_store, &trashiter,
-                       CHECK_AMOUNT, "OMGBAERF",
-                       CHECK_CHECKBOX, FALSE,
-                       -1);
+
+
 
     g_hash_table_insert(pointer_passer, &KEY_CHECKS_STORE, checks_store);
 

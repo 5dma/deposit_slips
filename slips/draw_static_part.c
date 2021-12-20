@@ -31,14 +31,16 @@ void deposit_amount_edited(GtkCellRendererText *self,
     model = gtk_tree_view_get_model(tree_view);
 
     if (gtk_tree_model_get_iter_from_string(model, &iter, path)) {
-        gtk_list_store_set(GTK_LIST_STORE(model), &iter, CHECK_AMOUNT, new_text,-1);
-        gboolean *at_least_one_check = (gboolean *) (g_hash_table_lookup(pointer_passer, &KEY_AT_LEAST_ONE_CHECK));
-        *at_least_one_check = TRUE;
-    }
+        gtk_list_store_set(GTK_LIST_STORE(model), &iter, CHECK_AMOUNT, new_text, -1);
+       /*  gboolean *at_least_one_check = (gboolean *)(g_hash_table_lookup(pointer_passer, &KEY_AT_LEAST_ONE_CHECK));
+        *at_least_one_check = TRUE;*/
+    } 
 
     GtkDrawingArea *drawing_area = (GtkDrawingArea *)g_hash_table_lookup(pointer_passer, &KEY_DRAWING_AREA);
-
     gtk_widget_queue_draw(GTK_WIDGET(drawing_area));
+
+   // g_signal_emit_by_name (G_OBJECT(drawing_area), "draw", G_CALLBACK(draw_preview), pointer_passer);
+
 }
 
 /**
@@ -83,31 +85,21 @@ gboolean print_deposit_amounts(GtkTreeModel *model,
     /* Move to the horizontal coordinate and the vertical coordinate corresponding to the
     current row. */
     cairo_move_to(cr, 50, (row_number * 10) + 50);
-    g_print("The amount is %s and the string is %s\n", amount, pathstring);
     cairo_show_text(cr, amount);
 
     /* Increment the total of all amounts in the deposit slip and update its
     value in the hash table of passed pointers. */
     gfloat *total_deposit = (gfloat *)g_hash_table_lookup(pointer_passer, &KEY_TOTAL_DEPOSIT);
 
-    g_print("The looked up total_deposit is %.10f\n", *total_deposit);
+
 
     gfloat current_total = *total_deposit;
-    g_print("The current_total after lookup is %.10f\n", current_total);
 
     float amount_float = atof((char *)amount);
     current_total += amount_float;
 
-    g_print("The amount_float is %.2f and current total is  %.2f\n", amount_float, current_total);
     *total_deposit = current_total;
 
-    g_print("assigned referenced pointer the current total\n");
-
-    // g_hash_table_insert(pointer_passer, &KEY_TOTAL_DEPOSIT, &current_total);
-
     g_free(amount);
-    g_print("Freed the amount\n");
-
     g_free(pathstring);
-    g_print("Freed the pathstring\n");
 }
