@@ -77,7 +77,6 @@ static void check_toggle_clicked(GtkCellRendererToggle *renderer,
     GtkTreeModel *model;
     gboolean value;
     model = gtk_tree_view_get_model(treeview);
-    g_debug("Here\n");
     if (gtk_tree_model_get_iter_from_string(model, &iter, path)) {
         gtk_tree_model_get(model, &iter, CHECK_CHECKBOX, &value, -1);
         gtk_list_store_set(GTK_LIST_STORE(model), &iter, CHECK_CHECKBOX, !value, -1);
@@ -111,7 +110,6 @@ static void add_check_row(GtkWidget *widget, gpointer data) {
                        CHECK_AMOUNT, NEW_AMOUNT,
                        CHECK_CHECKBOX, FALSE,
                        -1);
-    // gtk_tree_model_foreach(GTK_TREE_MODEL(list_store), barf_gag, NULL);
 }
 
 /**

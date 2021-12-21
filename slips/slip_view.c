@@ -47,6 +47,40 @@ GtkWidget *make_account_view(GHashTable *pointer_passer) {
 }
 
 /**
+* Callback that prevents the user from entering anything in a `GtkCellEditable` other than digits and a decimal point.
+* @param widget Widget where the edit is occurring.
+* @param event Key that was pressed.
+* @param user_data `NULL` in this case.
+* @return  `TRUE`, but meaningless in this implementation.
+*/ 
+static gboolean number_formatter(GtkWidget *widget, GdkEventKey *event, gpointer user_data) {
+    g_print("Another key pressed!\n");
+    if (
+        (event->keyval >= GDK_KEY_0) && (event->keyval <= GDK_KEY_9) ||
+        (event->keyval == GDK_KEY_period) ||
+        (event->keyval == GDK_KEY_BackSpace) ||
+        (event->keyval == GDK_KEY_Left) ||
+        (event->keyval == GDK_KEY_Right)) {
+        g_print("A digit was pressed~\n");
+    }
+}
+
+/**
+ * Callback used to capture the `GtkCellEditable`. We connect that object to the `key-press-event` signal so we can ensure the user enters only digits and a decimal point.
+ * @param self Cell where the editing started.
+ * @param editable `GtkCellEditable` in which user performs edits.
+ * @param path Path within the tree view the editing occurs.
+ * @param user_data `NULL` in this case.
+ * @return `TRUE`, but meaningless in this implementation.
+*/ 
+void started_cell_editing(GtkCellRenderer* self, GtkCellEditable* editable, gchar* path, gpointer user_data ) {
+
+    g_print("Key pressed!\n");
+    g_signal_connect (GTK_WIDGET(editable), "key-press-event",
+                      G_CALLBACK(number_formatter), user_data);
+}
+
+/**
  * Creates the view of checks appearing in a deposit slip.
  * @param pointer_passer Hash table of pointers. This function uses the pointer to the `ListStore` of checks.
  * @return A tree view with two columns: one for amounts, another a checkbox to delete an amount.
@@ -80,6 +114,9 @@ GtkWidget *make_checks_view(GHashTable *pointer_passer) {
 
     /* Every time a cell in the Checks column is editing, redraw the preview. */
     g_signal_connect(G_OBJECT(rendererChecks), "edited", G_CALLBACK(deposit_amount_edited), pointer_passer);
+
+    /* Connect to a callback that captures the GtkEdit used to edit a cell. We use that callback to monitor the keys pressed inside the cell. */
+    g_signal_connect(rendererChecks, "editing-started", G_CALLBACK(started_cell_editing), NULL);
 
     GtkCellRenderer *rendererToggle;
     GtkTreeViewColumn *columnToggle;
