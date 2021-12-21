@@ -12,6 +12,8 @@
  * Callback fired each time a check amount is modified. The
  * callback redraws the entire preview. (Would be better if it redraws
  * only the area of the preview affected by the changed check amount.)
+ * This callback also formats the amount entered into a decimal format, and stores
+ * that formatted string.
  * @param self Pointer to the edited cell. This passed value can be `NULL` when calling this function from the first time--when setting up the GTK windows and before the user
  * clicks the add button to add the first check.
  * @param path Path to the edited cell.
@@ -31,16 +33,16 @@ void deposit_amount_edited(GtkCellRendererText *self,
     model = gtk_tree_view_get_model(tree_view);
 
     if (gtk_tree_model_get_iter_from_string(model, &iter, path)) {
-        gtk_list_store_set(GTK_LIST_STORE(model), &iter, CHECK_AMOUNT, new_text, -1);
-       /*  gboolean *at_least_one_check = (gboolean *)(g_hash_table_lookup(pointer_passer, &KEY_AT_LEAST_ONE_CHECK));
-        *at_least_one_check = TRUE;*/
-    } 
+        float amount_float = atof(new_text);
+        gchar *formatted_amount = g_strdup_printf("%3.2f", amount_float);
+        gtk_list_store_set(GTK_LIST_STORE(model), &iter, CHECK_AMOUNT, formatted_amount, -1);
+
+    }
 
     GtkDrawingArea *drawing_area = (GtkDrawingArea *)g_hash_table_lookup(pointer_passer, &KEY_DRAWING_AREA);
     gtk_widget_queue_draw(GTK_WIDGET(drawing_area));
 
-   // g_signal_emit_by_name (G_OBJECT(drawing_area), "draw", G_CALLBACK(draw_preview), pointer_passer);
-
+    // g_signal_emit_by_name (G_OBJECT(drawing_area), "draw", G_CALLBACK(draw_preview), pointer_passer);
 }
 
 /**

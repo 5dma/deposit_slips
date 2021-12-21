@@ -57,7 +57,9 @@ static gboolean number_formatter(GtkWidget *widget, GdkEventKey *event, gpointer
     g_print("Another key pressed!\n");
     if (
         (event->keyval >= GDK_KEY_0) && (event->keyval <= GDK_KEY_9) ||
+        (event->keyval >= GDK_KEY_KP_0) && (event->keyval <= GDK_KEY_KP_9) ||
         (event->keyval == GDK_KEY_period) ||
+        (event->keyval == GDK_KEY_KP_Decimal) ||
         (event->keyval == GDK_KEY_BackSpace) ||
         (event->keyval == GDK_KEY_Left) ||
         (event->keyval == GDK_KEY_Right) ||
