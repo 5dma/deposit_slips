@@ -115,8 +115,9 @@ void draw_preview(GtkWidget *widget, cairo_t *cr, gpointer data) {
         /* Write total of checks deposited */
         gfloat *current_total = (gfloat *)g_hash_table_lookup(pointer_passer, &KEY_TOTAL_DEPOSIT);
 
+        /* Format the total string with thousands separators. There is similar code in
+      draw_static_part.c:print_deposit_amounts that should be put into a function. */
         gchar current_total_string[100];
-
         if (*current_total < 1000) {
             g_snprintf(current_total_string, 11, "%.2f", *current_total);
         } else {
