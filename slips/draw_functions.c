@@ -84,14 +84,20 @@ void draw_preview(GtkWidget *widget, cairo_t *cr, gpointer data) {
     g_free(date_time_string);
 
     /* Write Routing number */
+    gchar *routing_with_transit = g_strconcat("T",routing_number,"T",NULL);
     cairo_select_font_face(cr, "MICR", CAIRO_FONT_SLANT_NORMAL, CAIRO_FONT_WEIGHT_BOLD);
     cairo_set_font_size(cr, 10);
     cairo_move_to(cr, 60, 103);
-    cairo_show_text(cr, routing_number);
+    cairo_show_text(cr, routing_with_transit);
+    g_free(routing_with_transit);
+
 
     /* Write account number */
+     gchar *account_with_transit = g_strconcat(account_number,"O009",NULL);
+      cairo_set_font_size(cr, 10);
     cairo_move_to(cr, 160, 103);
-    cairo_show_text(cr, account_number);
+    cairo_show_text(cr, account_with_transit);
+    g_free(account_with_transit);
 
     /* Check if any checks exist in the view. */
     

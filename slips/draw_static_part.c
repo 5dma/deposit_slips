@@ -91,8 +91,6 @@ gboolean print_deposit_amounts(GtkTreeModel *model,
     value in the hash table of passed pointers. */
     gfloat *total_deposit = (gfloat *)g_hash_table_lookup(pointer_passer, &KEY_TOTAL_DEPOSIT);
 
-
-
     gfloat current_total = *total_deposit;
 
     float amount_float = atof((char *)amount);
