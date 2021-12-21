@@ -12,6 +12,7 @@
         "guint",
         "gfloat",
         "gvalue",
-        "hbox"
+        "hbox",
+        "gdouble"
     ]
 }

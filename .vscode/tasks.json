@@ -15,8 +15,6 @@
             "args": [
                 "-g",
                 "${fileWorkspaceFolder}/**.c",
-//                "/home/abba/programming/c_programs/deposit_slips/app_activate.c",
-//                "/home/abba/programming/c_programs/deposit_slips/hello.c",
                 "-o",
                 "${fileWorkspaceFolder}/deposit_slip",
                 "-pthread",
@@ -32,6 +30,7 @@
                 "-lgio-2.0",
                 "-lgobject-2.0",
                 "-lglib-2.0",
+                "-lm",
                 "-I/usr/include/gtk-3.0",
                 "-I/usr/include/at-spi2-atk/2.0",
                 "-I/usr/include/at-spi-2.0",

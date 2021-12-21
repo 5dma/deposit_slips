@@ -1,4 +1,5 @@
 #include <gtk/gtk.h>
+#include <math.h>
 
 #include "../constants.h"
 #include "../headers.h"
@@ -24,22 +25,19 @@ void draw_preview(GtkWidget *widget, cairo_t *cr, gpointer data) {
     GtkTreeModel *model;
     GtkListStore *checks_store = GTK_LIST_STORE(g_hash_table_lookup(pointer_passer, &KEY_CHECKS_STORE));
     GtkWidget *accounts_tree = GTK_WIDGET(g_hash_table_lookup(pointer_passer, &KEY_CHECKS_ACCOUNTS_TREEVIEW));
-    GtkTreeSelection *tree_selection = gtk_tree_view_get_selection (GTK_TREE_VIEW(accounts_tree));
-
+    GtkTreeSelection *tree_selection = gtk_tree_view_get_selection(GTK_TREE_VIEW(accounts_tree));
 
     gchar *routing_number = NULL;
     gchar *account_number = NULL;
     gchar *account_name = NULL;
 
-
-  if (gtk_tree_selection_get_selected(tree_selection, &model, &iter)) {     
-        gtk_tree_model_get(model, &iter, 
-        ACCOUNT_NUMBER, &account_number,
-        ACCOUNT_NAME, &account_name,
-        ROUTING_NUMBER, &routing_number,
-        -1);
-  }
-
+    if (gtk_tree_selection_get_selected(tree_selection, &model, &iter)) {
+        gtk_tree_model_get(model, &iter,
+                           ACCOUNT_NUMBER, &account_number,
+                           ACCOUNT_NAME, &account_name,
+                           ROUTING_NUMBER, &routing_number,
+                           -1);
+    }
 
     guint width = gtk_widget_get_allocated_width(widget);
     guint height = 0.45 * width;
@@ -84,27 +82,25 @@ void draw_preview(GtkWidget *widget, cairo_t *cr, gpointer data) {
     g_free(date_time_string);
 
     /* Write Routing number */
-    gchar *routing_with_transit = g_strconcat("T",routing_number,"T",NULL);
+    gchar *routing_with_transit = g_strconcat("T", routing_number, "T", NULL);
     cairo_select_font_face(cr, "MICR", CAIRO_FONT_SLANT_NORMAL, CAIRO_FONT_WEIGHT_BOLD);
     cairo_set_font_size(cr, 10);
     cairo_move_to(cr, 60, 103);
     cairo_show_text(cr, routing_with_transit);
     g_free(routing_with_transit);
 
-
     /* Write account number */
-     gchar *account_with_transit = g_strconcat(account_number,"O009",NULL);
-      cairo_set_font_size(cr, 10);
+    gchar *account_with_transit = g_strconcat(account_number, "O009", NULL);
+    cairo_set_font_size(cr, 10);
     cairo_move_to(cr, 160, 103);
     cairo_show_text(cr, account_with_transit);
     g_free(account_with_transit);
 
     /* Check if any checks exist in the view. */
-    
+
     gboolean checks_exist = gtk_tree_model_get_iter_first(GTK_TREE_MODEL(checks_store), &iter);
 
-    gboolean *at_least_one_check = (gboolean *) (g_hash_table_lookup(pointer_passer, &KEY_AT_LEAST_ONE_CHECK));
-
+    gboolean *at_least_one_check = (gboolean *)(g_hash_table_lookup(pointer_passer, &KEY_AT_LEAST_ONE_CHECK));
 
     /* If any checks exist:
        a) Go print the deposit amounts of all existing checks.
@@ -118,15 +114,20 @@ void draw_preview(GtkWidget *widget, cairo_t *cr, gpointer data) {
 
         /* Write total of checks deposited */
         gfloat *current_total = (gfloat *)g_hash_table_lookup(pointer_passer, &KEY_TOTAL_DEPOSIT);
+
         gchar current_total_string[100];
 
-        g_snprintf(current_total_string, 11, "%.2f", *current_total);
-
+        if (*current_total < 1000) {
+            g_snprintf(current_total_string, 11, "%.2f", *current_total);
+        } else {
+            gdouble first_group = floor(*current_total / 1000);
+            gfloat second_group = *current_total - (first_group * 1000);
+            g_snprintf(current_total_string, 11, "%.0f,%06.2f", first_group, second_group);
+        }
 
         cairo_set_font_size(cr, 15);
         cairo_move_to(cr, 270, 83);
         cairo_show_text(cr, current_total_string);
-
     }
 
     g_free(account_name);
