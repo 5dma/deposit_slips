@@ -47,11 +47,11 @@ GtkWidget *make_account_view(GHashTable *pointer_passer) {
 }
 
 /**
-* Callback that prevents the user from entering anything in a `GtkCellEditable` other than digits and a decimal point.
+* Callback that prevents the user from entering anything in a `GtkCellEditable` other than digits and a decimal point. The actual allowed keys are [0-9], decimal point, backspace, delete, cursor right, and cursor left.
 * @param widget Widget where the edit is occurring.
 * @param event Key that was pressed.
 * @param user_data `NULL` in this case.
-* @return  `TRUE`, but meaningless in this implementation.
+* @return  `FALSE` if the key pressed was allowed, `FALSE` otherwise.
 */ 
 static gboolean number_formatter(GtkWidget *widget, GdkEventKey *event, gpointer user_data) {
     g_print("Another key pressed!\n");
@@ -60,9 +60,14 @@ static gboolean number_formatter(GtkWidget *widget, GdkEventKey *event, gpointer
         (event->keyval == GDK_KEY_period) ||
         (event->keyval == GDK_KEY_BackSpace) ||
         (event->keyval == GDK_KEY_Left) ||
-        (event->keyval == GDK_KEY_Right)) {
+        (event->keyval == GDK_KEY_Right) ||
+        (event->keyval == GDK_KEY_KP_Left) ||
+        (event->keyval == GDK_KEY_KP_Right) ||
+        (event->keyval == GDK_KEY_Delete)) {
         g_print("A digit was pressed~\n");
+        return FALSE;
     }
+    return TRUE;
 }
 
 /**
