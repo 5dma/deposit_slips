@@ -70,6 +70,9 @@ GtkWidget *make_checks_view(GHashTable *pointer_passer) {
                                                             rendererChecks,
                                                             "text", CHECK_AMOUNT,
                                                             NULL);
+    /* Right-align text in check column. */
+    gtk_cell_renderer_set_alignment(rendererChecks, 1.0, 0.5);
+
     g_object_set(rendererChecks, "editable", TRUE, "editable-set", TRUE, NULL);
 
     /* Add the pointer to the cell renderer, because we need it in draw_preview */
@@ -140,8 +143,6 @@ GtkWidget *make_slip_view(GHashTable *pointer_passer) {
                        CHECK_AMOUNT, "1.00",
                        CHECK_CHECKBOX, FALSE,
                        -1);
-
-
 
     g_hash_table_insert(pointer_passer, &KEY_CHECKS_STORE, checks_store);
 
