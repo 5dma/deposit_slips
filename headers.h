@@ -57,6 +57,6 @@ gboolean print_deposit_amounts(GtkTreeModel *model,
                                gpointer data);
 
 void draw_background( GtkCellRendererText* self, gchar* path, gchar* new_text, gpointer data);
-
+void print_deposit_slip(GtkButton *self, gpointer data);
 #endif
 

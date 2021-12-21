@@ -5,6 +5,7 @@
 #include "../headers.h"
 #include "draw_functions.c"
 #include "slip_control.c"
+#include "print_slip.c"
 
 /**
  * @file slip_view.c
@@ -195,6 +196,8 @@ GtkWidget *make_slip_view(GHashTable *pointer_passer) {
     g_signal_connect(btnChecksAdd, "clicked", G_CALLBACK(add_check_row), checks_store);
     /* When clicking the delete button, remove rows whose checkbox is marked. */
     g_signal_connect(btnChecksDelete, "clicked", G_CALLBACK(delete_check_row), checks_store);
+    /* When clicking the preint button, print the deposit slip. */
+    g_signal_connect(btnSlipPrint, "clicked", G_CALLBACK(print_deposit_slip), pointer_passer);
 
     GtkWidget *gridSlip = gtk_grid_new();
     /* First column of grid */

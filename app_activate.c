@@ -69,6 +69,7 @@ void on_app_activate(GApplication *app, gpointer data) {
     g_hash_table_insert(pointer_passer, &KEY_AT_LEAST_ONE_CHECK, &at_least_one_check);
  
     gtk_widget_show_all(GTK_WIDGET(window));
+    g_hash_table_insert(pointer_passer, &KEY_APPLICATION_WINDOW, window);
 
     /* Select first row in accounts list of slips tab. */
     GtkTreePath *path = gtk_tree_path_new_from_string("0");

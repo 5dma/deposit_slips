@@ -36,7 +36,6 @@ void deposit_amount_edited(GtkCellRendererText *self,
         float amount_float = atof(new_text);
         gchar *formatted_amount = g_strdup_printf("%3.2f", amount_float);
         gtk_list_store_set(GTK_LIST_STORE(model), &iter, CHECK_AMOUNT, formatted_amount, -1);
-
     }
 
     GtkDrawingArea *drawing_area = (GtkDrawingArea *)g_hash_table_lookup(pointer_passer, &KEY_DRAWING_AREA);
@@ -66,18 +65,17 @@ gboolean print_deposit_amounts(GtkTreeModel *model,
     guint64 row_number;
     GError *gerror = NULL;
 
-      /* Format the current amount with thousands separators. There is similar code in
+    /* Format the current amount with thousands separators. There is similar code in
       draw_functions.c:draw_preview that should be put into a function. */
-        gchar current_amount_string[100];
-        gfloat current_amount = atof(amount);
-        if (current_amount < 1000) {
-            g_snprintf(current_amount_string, 11, "%.2f", current_amount);
-        } else {
-            gdouble first_group = floor(current_amount / 1000);
-            gfloat second_group = current_amount - (first_group * 1000);
-            g_snprintf(current_amount_string, 11, "%.0f,%06.2f", first_group, second_group);
-        }
-
+    gchar current_amount_string[100];
+    gfloat current_amount = atof(amount);
+    if (current_amount < 1000) {
+        g_snprintf(current_amount_string, 11, "%.2f", current_amount);
+    } else {
+        gdouble first_group = floor(current_amount / 1000);
+        gfloat second_group = current_amount - (first_group * 1000);
+        g_snprintf(current_amount_string, 11, "%.0f,%06.2f", first_group, second_group);
+    }
 
     /* The current amount needs to be printed at a particular coordinate
     in the preview. The horizontal coordinate is fixed, but the vertical coordinate
