@@ -81,20 +81,20 @@ gboolean print_deposit_amounts(GtkTreeModel *model,
         &row_number, /* returned row number */
         &gerror);    /* pointer for GError *. */
 
-    cairo_set_source_rgb(cr, 1.0, 0.0, 0.0);
-    cairo_select_font_face(cr, "DejaVuSans", CAIRO_FONT_SLANT_NORMAL, CAIRO_FONT_WEIGHT_BOLD);
-    cairo_set_font_size(cr, 16);
-    /* Move to the horizontal coordinate and the vertical coordinate corresponding to the
-    current row. */      
-    
-        gfloat current_amount = atof(amount);
-        gchar *formatted_total = comma_formatted_amount(&current_amount);
 
-        cairo_text_extents_t extents;
-        cairo_text_extents (cr, formatted_total, &extents);
-        cairo_move_to(cr, RIGHT_MARGIN_SCREEN - extents.width, (row_number * 10) + 50);
-        cairo_show_text(cr, formatted_total);
-        g_free(formatted_total);
+    cairo_select_font_face(cr, "DejaVuMono", CAIRO_FONT_SLANT_NORMAL, CAIRO_FONT_WEIGHT_BOLD);
+    cairo_set_font_size(cr, 16);
+
+    /* Get the formatted string corresponding to this check's amount. */
+    gfloat current_amount = atof(amount);
+    gchar *formatted_total = comma_formatted_amount(&current_amount);
+
+    /* Move to the correct position to print the amount such that it is right-aligned. */
+    cairo_text_extents_t extents;
+    cairo_text_extents(cr, formatted_total, &extents);
+    cairo_move_to(cr, RIGHT_MARGIN_SCREEN - extents.width, (row_number * (extents.height + 7)) + 40);
+    cairo_show_text(cr, formatted_total);
+    g_free(formatted_total);
 
     /* Increment the total of all amounts in the deposit slip and update its
     value in the hash table of passed pointers. */

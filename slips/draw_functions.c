@@ -65,17 +65,16 @@ void draw_preview(GtkWidget *widget, cairo_t *cr, gpointer data) {
     guint width = gtk_widget_get_allocated_width(widget);
     guint height = 0.45 * width;
 
+    /* Draw white background */
     cairo_rectangle(cr, 0.0, 0.0, width, height);
-    cairo_set_line_width(cr, 5.0);
+    cairo_set_line_width(cr, 1.0);
     cairo_set_source_rgb(cr, 0, 0, 0);
     cairo_stroke_preserve(cr);
     cairo_set_source_rgb(cr, 1, 1, 1);
     cairo_fill(cr);
 
-    cairo_text_extents_t te;
-    cairo_text_extents(cr, "a", &te);
 
-    /* Write Deposit Ticket */
+    /* Write "Deposit Ticket" */
     cairo_set_source_rgb(cr, 0.0, 0.0, 0.0);
     cairo_select_font_face(cr, "DejaVuSans", CAIRO_FONT_SLANT_NORMAL, CAIRO_FONT_WEIGHT_NORMAL);
     cairo_set_font_size(cr, 6);
@@ -83,39 +82,63 @@ void draw_preview(GtkWidget *widget, cairo_t *cr, gpointer data) {
     cairo_show_text(cr, "DEPOSIT TICKET");
 
     /* Write Name */
-    cairo_set_source_rgb(cr, 0.0, 0.0, 0.0);
     cairo_select_font_face(cr, "DejaVuSans", CAIRO_FONT_SLANT_NORMAL, CAIRO_FONT_WEIGHT_BOLD);
     cairo_set_font_size(cr, 6);
-    cairo_move_to(cr, 27, 25);
+    cairo_move_to(cr, 15, 38);
     cairo_show_text(cr, "Name");
 
-    cairo_set_font_size(cr, 16);
-    cairo_move_to(cr, 127, 25);
+    cairo_set_font_size(cr, 10);
+    cairo_move_to(cr, 41, 38);
     cairo_show_text(cr, account_name);
+ 
+    cairo_move_to(cr, 41, 39);
+    cairo_line_to(cr,200,39);
+    cairo_stroke(cr);
+
+
+
+    /* Write Account Number */
+    cairo_select_font_face(cr, "DejaVuSans", CAIRO_FONT_SLANT_NORMAL, CAIRO_FONT_WEIGHT_BOLD);
+    cairo_set_font_size(cr, 6);
+    cairo_move_to(cr, 15, 70);
+    cairo_show_text(cr, "Account No");
+
+    cairo_set_font_size(cr, 10);
+    cairo_move_to(cr, 60, 70);
+    cairo_show_text(cr, account_number);
+
+    cairo_move_to(cr, 60, 71);
+    cairo_line_to(cr,200,71);
+    cairo_stroke(cr);
 
     /* Write Date */
-    cairo_set_font_size(cr, 5);
-    cairo_move_to(cr, 27, 83);
+    cairo_set_font_size(cr, 6);
+    cairo_move_to(cr, 15, 105);
     cairo_show_text(cr, "Date");
 
     GDateTime *date_time = g_date_time_new_now_local();
     gchar *date_time_string = g_date_time_format(date_time, "%B %e, %Y");
-    cairo_move_to(cr, 127, 83);
+    cairo_set_font_size(cr, 10);
+    cairo_move_to(cr, 40, 105);
     cairo_show_text(cr, date_time_string);
     g_free(date_time_string);
+
+    cairo_move_to(cr, 40,106);
+    cairo_line_to(cr,200,106);
+    cairo_stroke(cr);
 
     /* Write Routing number */
     gchar *routing_with_transit = g_strconcat("T", routing_number, "T", NULL);
     cairo_select_font_face(cr, "MICR", CAIRO_FONT_SLANT_NORMAL, CAIRO_FONT_WEIGHT_BOLD);
     cairo_set_font_size(cr, 10);
-    cairo_move_to(cr, 60, 103);
+    cairo_move_to(cr, 15, 135);
     cairo_show_text(cr, routing_with_transit);
     g_free(routing_with_transit);
 
-    /* Write account number */
+    /* Write account number MICR*/
     gchar *account_with_transit = g_strconcat(account_number, "O009", NULL);
     cairo_set_font_size(cr, 10);
-    cairo_move_to(cr, 160, 103);
+    cairo_move_to(cr, 90, 135);
     cairo_show_text(cr, account_with_transit);
     g_free(account_with_transit);
 
@@ -146,7 +169,7 @@ void draw_preview(GtkWidget *widget, cairo_t *cr, gpointer data) {
         cairo_text_extents_t extents;
         gchar *formatted_total = comma_formatted_amount(current_total);
         cairo_text_extents (cr, formatted_total, &extents);
-        cairo_move_to(cr, RIGHT_MARGIN_SCREEN - extents.width, 83);
+        cairo_move_to(cr, RIGHT_MARGIN_SCREEN - extents.width, 125);
         cairo_show_text(cr, formatted_total);
         g_free(formatted_total);
     }
