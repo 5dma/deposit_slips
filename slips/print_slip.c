@@ -3,51 +3,89 @@
 #include "../constants.h"
 #include "../headers.h"
 
-void draw_page(GtkPrintOperation *self, GtkPrintContext *context, gint page_nr, gpointer user_data) {
-    g_print("Inside draw_page\n");
-    cairo_t *cr;
-    PangoLayout *layout;
-    gdouble width, text_height;
-    gint layout_height;
-    PangoFontDescription *desc;
+void draw_page(GtkPrintOperation *self, GtkPrintContext *context, gint page_nr, gpointer data) {
+    GHashTable *pointer_passer = (GHashTable *)data;
 
+    gchar *routing_number = NULL;
+    gchar *account_number = NULL;
+    gchar *account_name = NULL;
+
+    GtkTreeIter iter;
+    GtkTreeModel *model;
+
+    GtkWidget *accounts_tree = GTK_WIDGET(g_hash_table_lookup(pointer_passer, &KEY_CHECKS_ACCOUNTS_TREEVIEW));
+    GtkTreeSelection *tree_selection = gtk_tree_view_get_selection(GTK_TREE_VIEW(accounts_tree));
+
+    if (gtk_tree_selection_get_selected(tree_selection, &model, &iter)) {
+        gtk_tree_model_get(model, &iter,
+                           ACCOUNT_NUMBER, &account_number,
+                           ACCOUNT_NAME, &account_name,
+                           ROUTING_NUMBER, &routing_number,
+                           -1);
+    }
+
+    gdouble width, height;
+    gint layout_height;
+
+    cairo_t *cr;
     cr = gtk_print_context_get_cairo_context(context);
     width = gtk_print_context_get_width(context);
+    height = gtk_print_context_get_height(context);
 
-    cairo_rectangle(cr, 0, 0, width, 200);
+    /* Print a rectangle around the deposit slip. Comment out when not testing. */
+    cairo_rectangle(cr, 207, 0, 198, 504);
+    cairo_set_line_width(cr, 10);
+    cairo_set_source_rgb(cr, 0.0, 0.0, 0.0);
+    cairo_stroke(cr);
 
-    cairo_set_source_rgb(cr, 0.8, 0.8, 0.8);
-    cairo_fill(cr);
+    cairo_select_font_face(cr, "DejaVuSans", CAIRO_FONT_SLANT_NORMAL, CAIRO_FONT_WEIGHT_NORMAL);
+    cairo_set_font_size(cr, 16);
 
-    layout = gtk_print_context_create_pango_layout(context);
+    cairo_save(cr); /* Save context 0 */
+    cairo_translate(cr, 208, 0);
 
-    desc = pango_font_description_from_string("sans 14");
-    pango_layout_set_font_description(layout, desc);
-    pango_font_description_free(desc);
+    /* Write Name */
+    cairo_move_to(cr, 31, 360);
+    cairo_save(cr); /* Save context 1 */
+    cairo_rotate(cr, -G_PI_2);
+    cairo_show_text(cr, account_name);
+    cairo_restore(cr); /* Restore context 1 */
 
-    pango_layout_set_text(layout, "some text", -1);
-    pango_layout_set_width(layout, width * PANGO_SCALE);
-    pango_layout_set_alignment(layout, PANGO_ALIGN_CENTER);
+    /* Write Account Number */
+    cairo_move_to(cr, 54, 333);
+    cairo_save(cr); /* Save context 1 */
+    cairo_rotate(cr, -G_PI_2);
+    cairo_show_text(cr, account_number);
+    cairo_restore(cr); /* Restore context 1 */
 
-    pango_layout_get_size(layout, NULL, &layout_height);
-    text_height = (gdouble)layout_height / PANGO_SCALE;
+    /* Write date */
+    GDateTime *date_time = g_date_time_new_now_local();
+    gchar *date_time_string = g_date_time_format(date_time, "%B %e, %Y");
 
-    cairo_move_to(cr, width / 2, (200 - text_height) / 2);
-    pango_cairo_show_layout(cr, layout);
+    cairo_move_to(cr, 75, 371);
+    cairo_save(cr); /* Save context 1 */
+    cairo_rotate(cr, -G_PI_2);
+    cairo_show_text(cr, date_time_string);
+    cairo_restore(cr); /* Restore context 1 */
+    g_free(date_time_string);
 
-    g_object_unref(layout);
-}
 
-void begin_print ( GtkPrintOperation* self, GtkPrintContext* context, gpointer user_data ) {
-    g_print("Beginning the pring!\n");
-}
+    /* Write Account in MICR */
+    gchar *account_with_transit = g_strconcat(account_number, "O009", NULL);
+    cairo_select_font_face(cr, "MICR", CAIRO_FONT_SLANT_NORMAL, CAIRO_FONT_WEIGHT_BOLD);
+    cairo_set_font_size(cr, 10);
+    cairo_move_to(cr, 180, 288);
+    cairo_save(cr); /* Save context 1 */
+    cairo_rotate(cr, -G_PI_2);
+    cairo_show_text(cr, account_with_transit);
+    cairo_restore(cr); /* Restore context 1 */
+    g_free(account_with_transit);
 
-void end_print ( GtkPrintOperation* self, GtkPrintContext* context, gpointer user_data ) {
-        g_print("Ending the pring!\n");
+    cairo_restore(cr); /* Restore context 0 */
 }
 
 void print_deposit_slip(GtkButton *self, gpointer data) {
-   //  system("lpr -P Brother-HL-L2350DW-series -o InputSlot=Manual /home/abba/Desktop/amazon_buy.txt");
+    //  system("lpr -P Brother-HL-L2350DW-series -o InputSlot=Manual /home/abba/Desktop/amazon_buy.txt");
     GHashTable *pointer_passer = (GHashTable *)data;
     GtkWidget *application_window = GTK_WIDGET(g_hash_table_lookup(pointer_passer, &KEY_APPLICATION_WINDOW));
     g_print("The button is clicked\n");
@@ -60,28 +98,26 @@ void print_deposit_slip(GtkButton *self, gpointer data) {
     gtk_print_operation_set_unit(operation, GTK_UNIT_POINTS);
     gtk_print_operation_set_use_full_page(operation, TRUE);
     gtk_print_operation_set_allow_async(operation, TRUE);
-     gtk_print_operation_set_n_pages(operation, 1);
+    gtk_print_operation_set_n_pages(operation, 1);
 
-    g_signal_connect(G_OBJECT(operation), "begin_print", G_CALLBACK(begin_print), NULL);
-    g_signal_connect(G_OBJECT(operation), "draw_page", G_CALLBACK(draw_page), NULL);
-    g_signal_connect(G_OBJECT(operation), "end_print", G_CALLBACK(end_print), NULL);
+    g_signal_connect(G_OBJECT(operation), "draw_page", G_CALLBACK(draw_page), pointer_passer);
+
     res = gtk_print_operation_run(operation, GTK_PRINT_OPERATION_ACTION_PRINT_DIALOG, GTK_WINDOW(application_window), &error);
     switch (res) {
         case GTK_PRINT_OPERATION_RESULT_ERROR:
             g_print("Error\n");
-        break;
+            break;
         case GTK_PRINT_OPERATION_RESULT_APPLY:
             g_print("Apply\n");
-        break;
+            break;
         case GTK_PRINT_OPERATION_RESULT_CANCEL:
             g_print("Cancel\n");
-        break;
+            break;
         case GTK_PRINT_OPERATION_RESULT_IN_PROGRESS:
             g_print("In progress\n");
-        break;
+            break;
         default:
             g_print("Default\n");
     }
     g_object_unref(operation);
-    g_print("All done\n");
 }
