@@ -141,8 +141,14 @@ void draw_preview(GtkWidget *widget, cairo_t *cr, gpointer data) {
         /* Format the total string with thousands separators. There is similar code in
       draw_static_part.c:print_deposit_amounts that should be put into a function. */
         cairo_set_font_size(cr, 15);
-        cairo_move_to(cr, 270, 83);
-        cairo_show_text(cr, comma_formatted_amount(current_total));
+        
+        /* Get the width of the total amount, and move to that point to print the total. */
+        cairo_text_extents_t extents;
+        gchar *formatted_total = comma_formatted_amount(current_total);
+        cairo_text_extents (cr, formatted_total, &extents);
+        cairo_move_to(cr, RIGHT_MARGIN_SCREEN - extents.width, 83);
+        cairo_show_text(cr, formatted_total);
+        g_free(formatted_total);
     }
 
     g_free(account_name);

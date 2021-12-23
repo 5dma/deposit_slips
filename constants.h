@@ -41,6 +41,8 @@ static const char LABEL_ACCOUNT_DESCRIPTION[] = "lblAccountDescription";
 /** Dummy amount string for the new check row. */
 static const char NEW_AMOUNT[] = "0.00"; 
 
+/** Right margin of on-screen deposit slip. */
+static const double RIGHT_MARGIN_SCREEN = 490;
 
 /** Hash key for the pointer to master list store. */
 static gint KEY_LIST_STORE_MASTER = 0; 

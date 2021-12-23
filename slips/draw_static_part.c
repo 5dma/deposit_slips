@@ -85,11 +85,16 @@ gboolean print_deposit_amounts(GtkTreeModel *model,
     cairo_select_font_face(cr, "DejaVuSans", CAIRO_FONT_SLANT_NORMAL, CAIRO_FONT_WEIGHT_BOLD);
     cairo_set_font_size(cr, 16);
     /* Move to the horizontal coordinate and the vertical coordinate corresponding to the
-    current row. */
-    cairo_move_to(cr, 50, (row_number * 10) + 50);
-    /* Format the amount to be printed. */
-      gfloat current_amount = atof(amount);
-    cairo_show_text(cr, comma_formatted_amount(&current_amount));
+    current row. */      
+    
+        gfloat current_amount = atof(amount);
+        gchar *formatted_total = comma_formatted_amount(&current_amount);
+
+        cairo_text_extents_t extents;
+        cairo_text_extents (cr, formatted_total, &extents);
+        cairo_move_to(cr, RIGHT_MARGIN_SCREEN - extents.width, (row_number * 10) + 50);
+        cairo_show_text(cr, formatted_total);
+        g_free(formatted_total);
 
     /* Increment the total of all amounts in the deposit slip and update its
     value in the hash table of passed pointers. */
