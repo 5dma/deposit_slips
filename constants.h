@@ -66,6 +66,8 @@ static gint KEY_CHECK_CELL_RENDERER = 10;
 static gint KEY_AT_LEAST_ONE_CHECK = 11;
 /** Hash key for the pointer to the application window.  */
 static gint KEY_APPLICATION_WINDOW = 12;
+/** Hash key for the pointer to boolean indicating output is to paper or screen.  */
+static gint KEY_OUTPUT_TO_PAPER = 13;
 
 
 #endif

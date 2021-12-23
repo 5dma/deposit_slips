@@ -10,15 +10,38 @@
 */
 
 /**
- *  Callback fired when the `draw` signal is fired to redraw the preview area of the deposit slip.
+ * Formats a passed float number into a familiar currency value. For example, takes 51003.34 and formats it into 51,003.34.
+ * @param amount Any gfloat less than 999999.99
+ * @return The formatted string. 
+*/
+gchar *comma_formatted_amount(gfloat *number) {
+    gfloat amount = *number;
+    gchar formatted_amount[100];
+    int num;
+    if (amount < 1000) {
+        num = g_snprintf(formatted_amount, 11, "%.2f", *number);
+    } else {
+        gdouble first_group = floor(amount / 1000);
+        gfloat second_group = amount - (first_group * 1000);
+        num = g_snprintf(formatted_amount, sizeof(formatted_amount), "%.0f,%06.2f", first_group, second_group);
+    }
+    return g_strdup(formatted_amount);
+}
+
+/**
+ * Callback fired when the `draw` signal is fired to redraw the preview area of the deposit slip.
  * This callback does two things:
- * Adds the created `cairo_t` pointer to the has table of pointer passers so that the function can redraw the preview.
- * Draws the preview for the first time.
+ * \li Adds the created `cairo_t` pointer to the has table of pointer passers so that the function can redraw the preview.
+ * \li Draws the preview for the first time.
+ * 
+ * (There is a lot of commonality between this code and the one in draw_page(). However, the commonality was not enough to combine them into a single function.) 
  * @param widget Pointer to the preview area.
  * @param cr Pointer to the Cairo context.
  * @param data Pointer to the hash table of pointers.
+ * \sa print_deposit_amounts()
 */
 void draw_preview(GtkWidget *widget, cairo_t *cr, gpointer data) {
+
     GHashTable *pointer_passer = (GHashTable *)data;
 
     GtkTreeIter iter;
@@ -108,7 +131,7 @@ void draw_preview(GtkWidget *widget, cairo_t *cr, gpointer data) {
        c) Print the total.
     */
 
-    if (*at_least_one_check == TRUE) {
+    if (*at_least_one_check == TRUE) {  // We need to get rid of this variable at_least_one_check because the UI should enforce at least one check.
         g_hash_table_insert(pointer_passer, &KEY_CAIRO_CONTEXT, cr);
         gtk_tree_model_foreach(GTK_TREE_MODEL(checks_store), print_deposit_amounts, pointer_passer);
 
@@ -117,18 +140,9 @@ void draw_preview(GtkWidget *widget, cairo_t *cr, gpointer data) {
 
         /* Format the total string with thousands separators. There is similar code in
       draw_static_part.c:print_deposit_amounts that should be put into a function. */
-        gchar current_total_string[100];
-        if (*current_total < 1000) {
-            g_snprintf(current_total_string, 11, "%.2f", *current_total);
-        } else {
-            gdouble first_group = floor(*current_total / 1000);
-            gfloat second_group = *current_total - (first_group * 1000);
-            g_snprintf(current_total_string, 11, "%.0f,%06.2f", first_group, second_group);
-        }
-
         cairo_set_font_size(cr, 15);
         cairo_move_to(cr, 270, 83);
-        cairo_show_text(cr, current_total_string);
+        cairo_show_text(cr, comma_formatted_amount(current_total));
     }
 
     g_free(account_name);

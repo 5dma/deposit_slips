@@ -58,5 +58,6 @@ gboolean print_deposit_amounts(GtkTreeModel *model,
 
 void draw_background( GtkCellRendererText* self, gchar* path, gchar* new_text, gpointer data);
 void print_deposit_slip(GtkButton *self, gpointer data);
+gchar *comma_formatted_amount(gfloat *amount);
 #endif
 

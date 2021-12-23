@@ -51,6 +51,7 @@ void deposit_amount_edited(GtkCellRendererText *self,
  * @param iter Iterator for the current check.
  * @param data Void pointer to the hash table of passed pointers.
  * @return No value is returned.
+ * \sa draw_preview()
 */
 gboolean print_deposit_amounts(GtkTreeModel *model,
                                GtkTreePath *path,
@@ -64,18 +65,6 @@ gboolean print_deposit_amounts(GtkTreeModel *model,
 
     guint64 row_number;
     GError *gerror = NULL;
-
-    /* Format the current amount with thousands separators. There is similar code in
-      draw_functions.c:draw_preview that should be put into a function. */
-    gchar current_amount_string[100];
-    gfloat current_amount = atof(amount);
-    if (current_amount < 1000) {
-        g_snprintf(current_amount_string, 11, "%.2f", current_amount);
-    } else {
-        gdouble first_group = floor(current_amount / 1000);
-        gfloat second_group = current_amount - (first_group * 1000);
-        g_snprintf(current_amount_string, 11, "%.0f,%06.2f", first_group, second_group);
-    }
 
     /* The current amount needs to be printed at a particular coordinate
     in the preview. The horizontal coordinate is fixed, but the vertical coordinate
@@ -98,7 +87,9 @@ gboolean print_deposit_amounts(GtkTreeModel *model,
     /* Move to the horizontal coordinate and the vertical coordinate corresponding to the
     current row. */
     cairo_move_to(cr, 50, (row_number * 10) + 50);
-    cairo_show_text(cr, amount);
+    /* Format the amount to be printed. */
+      gfloat current_amount = atof(amount);
+    cairo_show_text(cr, comma_formatted_amount(&current_amount));
 
     /* Increment the total of all amounts in the deposit slip and update its
     value in the hash table of passed pointers. */

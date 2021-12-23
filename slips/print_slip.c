@@ -3,6 +3,15 @@
 #include "../constants.h"
 #include "../headers.h"
 
+
+/**
+ * @file print_slip.c
+ * @brief Prints the actual deposit slip.
+*/
+
+/**
+ * Callback fired when a print job prints a page. Prints the physical deposit slip. (There is a lot of commonality between this code and the one in draw_preview(). However, the commonality was not enough to combine them into a single function.) 
+*/
 void draw_page(GtkPrintOperation *self, GtkPrintContext *context, gint page_nr, gpointer data) {
     GHashTable *pointer_passer = (GHashTable *)data;
 
@@ -61,7 +70,6 @@ void draw_page(GtkPrintOperation *self, GtkPrintContext *context, gint page_nr, 
     /* Write date */
     GDateTime *date_time = g_date_time_new_now_local();
     gchar *date_time_string = g_date_time_format(date_time, "%B %e, %Y");
-
     cairo_move_to(cr, 75, 371);
     cairo_save(cr); /* Save context 1 */
     cairo_rotate(cr, -G_PI_2);
@@ -71,11 +79,11 @@ void draw_page(GtkPrintOperation *self, GtkPrintContext *context, gint page_nr, 
 
 
     /* Write Account in MICR */
-    gchar *account_with_transit = g_strconcat(account_number, "O009", NULL);
-    cairo_select_font_face(cr, "MICR", CAIRO_FONT_SLANT_NORMAL, CAIRO_FONT_WEIGHT_BOLD);
+    gchar *account_with_transit = g_strconcat(account_number, "O", NULL);
     cairo_set_font_size(cr, 10);
     cairo_move_to(cr, 180, 288);
     cairo_save(cr); /* Save context 1 */
+    cairo_select_font_face(cr, "MICR", CAIRO_FONT_SLANT_NORMAL, CAIRO_FONT_WEIGHT_BOLD);
     cairo_rotate(cr, -G_PI_2);
     cairo_show_text(cr, account_with_transit);
     cairo_restore(cr); /* Restore context 1 */
@@ -84,11 +92,17 @@ void draw_page(GtkPrintOperation *self, GtkPrintContext *context, gint page_nr, 
     cairo_restore(cr); /* Restore context 0 */
 }
 
+/**
+ * Callback fired when user clicks the print button.
+ * @param self Pointer to the clikced button.
+ * @param data to the passed hash table.
+ * \sa draw_page()
+ * 
+*/
 void print_deposit_slip(GtkButton *self, gpointer data) {
-    //  system("lpr -P Brother-HL-L2350DW-series -o InputSlot=Manual /home/abba/Desktop/amazon_buy.txt");
+
     GHashTable *pointer_passer = (GHashTable *)data;
     GtkWidget *application_window = GTK_WIDGET(g_hash_table_lookup(pointer_passer, &KEY_APPLICATION_WINDOW));
-    g_print("The button is clicked\n");
     GtkPrintOperation *operation;
     GError *error;
     gint res;

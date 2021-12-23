@@ -13,6 +13,7 @@
         "gfloat",
         "gvalue",
         "hbox",
-        "gdouble"
+        "gdouble",
+        "gerror"
     ]
 }
