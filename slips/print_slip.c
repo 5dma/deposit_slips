@@ -3,11 +3,89 @@
 #include "../constants.h"
 #include "../headers.h"
 
-
 /**
  * @file print_slip.c
  * @brief Prints the actual deposit slip.
 */
+
+
+/**
+ * Callback fired while iterating over all checks.
+ * @param model Pointer to the model containing the checks.
+ * @param path Path to the current check.
+ * @param iter Iterator for the current check.
+ * @param data Void pointer to the hash table of passed pointers.
+ * @return No value is returned.
+ * \sa draw_preview()
+*/
+gboolean print_deposit_amounts(GtkTreeModel *model,
+                               GtkTreePath *path,
+                               GtkTreeIter *iter,
+                               gpointer data) {
+    GHashTable *pointer_passer = (GHashTable *)data;
+    cairo_t *cr = (cairo_t *)g_hash_table_lookup(pointer_passer, &KEY_CAIRO_CONTEXT);
+    gchar *amount;
+    gtk_tree_model_get(model, iter, CHECK_AMOUNT, &amount, -1);
+    gchar *pathstring = gtk_tree_path_to_string(path);
+
+    guint64 row_number;
+    GError *gerror = NULL;
+
+    cairo_save(cr); /* Save passed context */
+
+    /* The current amount needs to be printed at a particular coordinate
+    in the preview. The horizontal coordinate is fixed, but the vertical coordinate
+    changes depending on index of the current check in the list. The farther down
+    the current check is, the farther down it is in the preview. The vertical coordinate
+    is therefore a function of the `path` passed to the callback. */
+
+    /* First, determine the row number in the list of checks for the current check. */
+    gboolean string_to_int = g_ascii_string_to_unsigned(
+        pathstring,  /* path of the current row */
+        10,          /* Base 10 */
+        0,           /* minimum value */
+        100,         /* maximum value */
+        &row_number, /* returned row number */
+        &gerror);    /* pointer for GError *. */
+
+
+    cairo_select_font_face(cr, "DejaVuSansMono", CAIRO_FONT_SLANT_NORMAL, CAIRO_FONT_WEIGHT_BOLD);
+    cairo_set_font_size(cr, FONT_SIZE_AMOUNT);
+
+    /* Get the formatted string corresponding to this check's amount. */
+    gfloat current_amount = atof(amount);
+    gchar *formatted_amount = comma_formatted_amount(&current_amount);
+
+    /* Move to the correct position to print the amount such that it is right-aligned. */
+    cairo_text_extents_t extents;
+    cairo_text_extents(cr, formatted_amount, &extents);
+    cairo_move_to(cr, (row_number * 22.5) + 40.5, extents.width + RIGHT_MARGIN_PRINT);
+    
+    cairo_save(cr); /* Save context 1 */
+    cairo_rotate(cr, -G_PI_2);
+    cairo_show_text(cr, formatted_amount);
+    cairo_restore(cr); /* Restore context 0 */
+
+    g_free(formatted_amount);
+
+    /* Increment the total of all amounts in the deposit slip and update its
+    value in the hash table of passed pointers. */
+    gfloat *total_deposit = (gfloat *)g_hash_table_lookup(pointer_passer, &KEY_TOTAL_DEPOSIT);
+
+    gfloat current_total = *total_deposit;
+
+    float amount_float = atof((char *)amount);
+    current_total += amount_float;
+
+    *total_deposit = current_total;
+
+    g_free(amount);
+    g_free(pathstring);
+
+    cairo_save(cr); /* Restore passed context */
+
+}
+
 
 /**
  * Callback fired when a print job prints a page. Prints the physical deposit slip. (There is a lot of commonality between this code and the one in draw_preview(). However, the commonality was not enough to combine them into a single function.) 
@@ -41,55 +119,87 @@ void draw_page(GtkPrintOperation *self, GtkPrintContext *context, gint page_nr, 
     width = gtk_print_context_get_width(context);
     height = gtk_print_context_get_height(context);
 
-    /* Print a rectangle around the deposit slip. Comment out when not testing. */
-    cairo_rectangle(cr, 207, 0, 198, 504);
-    cairo_set_line_width(cr, 10);
-    cairo_set_source_rgb(cr, 0.0, 0.0, 0.0);
-    cairo_stroke(cr);
-
-    cairo_select_font_face(cr, "DejaVuSans", CAIRO_FONT_SLANT_NORMAL, CAIRO_FONT_WEIGHT_NORMAL);
-    cairo_set_font_size(cr, 16);
-
-    cairo_save(cr); /* Save context 0 */
+    cairo_select_font_face(cr, "DejaVuSans", CAIRO_FONT_SLANT_NORMAL, CAIRO_FONT_WEIGHT_BOLD);
+    cairo_set_font_size(cr, 7);
     cairo_translate(cr, 208, 0);
+    cairo_save(cr); /* Save context 0 */
 
     /* Write Name */
-    cairo_move_to(cr, 31, 360);
+
+    cairo_move_to(cr, 18, 405);
     cairo_save(cr); /* Save context 1 */
+    cairo_rotate(cr, -G_PI_2);
+    cairo_show_text(cr, "Name");
+    cairo_restore(cr); /* Restore context 0 */
+
+    cairo_move_to(cr, 18, 373);
+    cairo_save(cr); /* Save context 1 */
+    cairo_set_font_size(cr, FONT_SIZE_PRINT_DYNAMIC);
     cairo_rotate(cr, -G_PI_2);
     cairo_show_text(cr, account_name);
-    cairo_restore(cr); /* Restore context 1 */
+    cairo_restore(cr); /* Restore context 0 */
 
     /* Write Account Number */
-    cairo_move_to(cr, 54, 333);
+
+    cairo_move_to(cr, 41, 405);
     cairo_save(cr); /* Save context 1 */
     cairo_rotate(cr, -G_PI_2);
+    cairo_show_text(cr, "Account No");
+    cairo_restore(cr); /* Restore context 0 */
+
+    cairo_move_to(cr, 41, 351);
+    cairo_save(cr); /* Save context 1 */
+    cairo_set_font_size(cr, FONT_SIZE_PRINT_DYNAMIC);
+    cairo_rotate(cr, -G_PI_2);
     cairo_show_text(cr, account_number);
-    cairo_restore(cr); /* Restore context 1 */
+    cairo_restore(cr); /* Restore context 0 */
 
     /* Write date */
+
     GDateTime *date_time = g_date_time_new_now_local();
     gchar *date_time_string = g_date_time_format(date_time, "%B %e, %Y");
     cairo_move_to(cr, 75, 371);
     cairo_save(cr); /* Save context 1 */
+    cairo_set_font_size(cr, FONT_SIZE_PRINT_DYNAMIC);
     cairo_rotate(cr, -G_PI_2);
     cairo_show_text(cr, date_time_string);
-    cairo_restore(cr); /* Restore context 1 */
+    cairo_restore(cr); /* Restore context 0 */
     g_free(date_time_string);
-
 
     /* Write Account in MICR */
     gchar *account_with_transit = g_strconcat(account_number, "O", NULL);
-    cairo_set_font_size(cr, 10);
-    cairo_move_to(cr, 180, 288);
+
+    cairo_move_to(cr, 178, 288);
     cairo_save(cr); /* Save context 1 */
-    cairo_select_font_face(cr, "MICR", CAIRO_FONT_SLANT_NORMAL, CAIRO_FONT_WEIGHT_BOLD);
+    cairo_set_font_size(cr, FONT_SIZE_PRINT_DYNAMIC);
+    cairo_select_font_face(cr, "MICR", CAIRO_FONT_SLANT_NORMAL, CAIRO_FONT_WEIGHT_NORMAL);
     cairo_rotate(cr, -G_PI_2);
     cairo_show_text(cr, account_with_transit);
-    cairo_restore(cr); /* Restore context 1 */
+    cairo_restore(cr); /* Restore context 0 */
     g_free(account_with_transit);
 
+    g_hash_table_insert(pointer_passer, &KEY_CAIRO_CONTEXT, cr);
+    
+    GtkListStore *checks_store = GTK_LIST_STORE(g_hash_table_lookup(pointer_passer, &KEY_CHECKS_STORE));
+    gtk_tree_model_foreach(GTK_TREE_MODEL(checks_store), print_deposit_amounts, pointer_passer);
+
+    /* Write total of checks deposited */
+    gfloat *current_total = (gfloat *)g_hash_table_lookup(pointer_passer, &KEY_TOTAL_DEPOSIT);
+
+    /* Get the width of the total amount, and move to that point to print the total. */
+    cairo_text_extents_t extents;
+    gchar *formatted_total = comma_formatted_amount(current_total);
+    cairo_text_extents(cr, formatted_total, &extents);
+    cairo_move_to(cr, 153, extents.width + RIGHT_MARGIN_PRINT);
+    cairo_save(cr); /* Save context 1 */
+    cairo_set_font_size(cr, FONT_SIZE_AMOUNT);
+    cairo_select_font_face(cr, "DejaVuSansMono", CAIRO_FONT_SLANT_NORMAL, CAIRO_FONT_WEIGHT_BOLD);
+    cairo_rotate(cr, -G_PI_2);
+    cairo_show_text(cr, formatted_total);
     cairo_restore(cr); /* Restore context 0 */
+    g_free(formatted_total);
+
+    cairo_restore(cr); /* Trash context 0 */
 }
 
 /**
@@ -100,7 +210,6 @@ void draw_page(GtkPrintOperation *self, GtkPrintContext *context, gint page_nr, 
  * 
 */
 void print_deposit_slip(GtkButton *self, gpointer data) {
-
     GHashTable *pointer_passer = (GHashTable *)data;
     GtkWidget *application_window = GTK_WIDGET(g_hash_table_lookup(pointer_passer, &KEY_APPLICATION_WINDOW));
     GtkPrintOperation *operation;

@@ -53,7 +53,7 @@ void deposit_amount_edited(GtkCellRendererText *self,
  * @return No value is returned.
  * \sa draw_preview()
 */
-gboolean print_deposit_amounts(GtkTreeModel *model,
+gboolean preview_deposit_amounts(GtkTreeModel *model,
                                GtkTreePath *path,
                                GtkTreeIter *iter,
                                gpointer data) {

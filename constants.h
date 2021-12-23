@@ -43,6 +43,10 @@ static const char NEW_AMOUNT[] = "0.00";
 
 /** Right margin of on-screen deposit slip. */
 static const double RIGHT_MARGIN_SCREEN = 490;
+/** Right margin of printed deposit slip. */
+static const double RIGHT_MARGIN_PRINT = 5;
+
+
 
 /** Hash key for the pointer to master list store. */
 static gint KEY_LIST_STORE_MASTER = 0; 
@@ -70,6 +74,12 @@ static gint KEY_AT_LEAST_ONE_CHECK = 11;
 static gint KEY_APPLICATION_WINDOW = 12;
 /** Hash key for the pointer to boolean indicating output is to paper or screen.  */
 static gint KEY_OUTPUT_TO_PAPER = 13;
+
+/** Font size for dynamic info (name, account number, date) on printed slip. */
+static gint FONT_SIZE_PRINT_DYNAMIC = 11;
+/** Font size for amounts on printed slip. */
+static gint FONT_SIZE_AMOUNT = 12;
+
 
 
 #endif

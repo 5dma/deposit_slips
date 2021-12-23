@@ -51,7 +51,7 @@ void free_memory (GtkWidget *window, gpointer user_data);
 
 void draw_single_amount(GHashTable *pointer_passer, gchar *new_amount);
 
-gboolean print_deposit_amounts(GtkTreeModel *model,
+gboolean preview_deposit_amounts(GtkTreeModel *model,
                                GtkTreePath *path,
                                GtkTreeIter *iter,
                                gpointer data);

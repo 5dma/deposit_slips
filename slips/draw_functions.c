@@ -38,7 +38,7 @@ gchar *comma_formatted_amount(gfloat *number) {
  * @param widget Pointer to the preview area.
  * @param cr Pointer to the Cairo context.
  * @param data Pointer to the hash table of pointers.
- * \sa print_deposit_amounts()
+ * \sa preview_deposit_amounts()
 */
 void draw_preview(GtkWidget *widget, cairo_t *cr, gpointer data) {
 
@@ -156,13 +156,13 @@ void draw_preview(GtkWidget *widget, cairo_t *cr, gpointer data) {
 
     if (*at_least_one_check == TRUE) {  // We need to get rid of this variable at_least_one_check because the UI should enforce at least one check.
         g_hash_table_insert(pointer_passer, &KEY_CAIRO_CONTEXT, cr);
-        gtk_tree_model_foreach(GTK_TREE_MODEL(checks_store), print_deposit_amounts, pointer_passer);
+        gtk_tree_model_foreach(GTK_TREE_MODEL(checks_store), preview_deposit_amounts, pointer_passer);
 
         /* Write total of checks deposited */
         gfloat *current_total = (gfloat *)g_hash_table_lookup(pointer_passer, &KEY_TOTAL_DEPOSIT);
 
         /* Format the total string with thousands separators. There is similar code in
-      draw_static_part.c:print_deposit_amounts that should be put into a function. */
+      draw_static_part.c:preview_deposit_amounts that should be put into a function. */
         cairo_set_font_size(cr, 15);
         
         /* Get the width of the total amount, and move to that point to print the total. */
