@@ -55,7 +55,6 @@ GtkWidget *make_account_view(GHashTable *pointer_passer) {
 * @return  `FALSE` if the key pressed was allowed, `FALSE` otherwise.
 */
 static gboolean number_formatter(GtkWidget *widget, GdkEventKey *event, gpointer user_data) {
-    g_print("Another key pressed!\n");
     if (
         (event->keyval >= GDK_KEY_0) && (event->keyval <= GDK_KEY_9) ||
         (event->keyval >= GDK_KEY_KP_0) && (event->keyval <= GDK_KEY_KP_9) ||
@@ -67,7 +66,6 @@ static gboolean number_formatter(GtkWidget *widget, GdkEventKey *event, gpointer
         (event->keyval == GDK_KEY_KP_Left) ||
         (event->keyval == GDK_KEY_KP_Right) ||
         (event->keyval == GDK_KEY_Delete)) {
-        g_print("A digit was pressed~\n");
         return FALSE;
     }
     return TRUE;
@@ -226,7 +224,7 @@ GtkWidget *make_slip_view(GHashTable *pointer_passer) {
     /* Third column of grid */
     gtk_grid_attach(GTK_GRID(gridSlip), drawing_area, 3, 1, 1, 1);
 
-    gtk_widget_set_size_request(drawing_area, 500, 100);
+    gtk_widget_set_size_request(drawing_area, 500, 150);
 
     /* When the draw signal is fired on the drawing area (which can happen billions of time)
     from GTKs internal messaging), go redraw the deposit slip preview. */

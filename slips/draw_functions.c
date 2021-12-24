@@ -138,7 +138,7 @@ void draw_preview(GtkWidget *widget, cairo_t *cr, gpointer data) {
     /* Write account number MICR*/
     gchar *account_with_transit = g_strconcat(account_number, "O009", NULL);
     cairo_set_font_size(cr, 10);
-    cairo_move_to(cr, 90, 135);
+    cairo_move_to(cr, 120, 135);
     cairo_show_text(cr, account_with_transit);
     g_free(account_with_transit);
 
