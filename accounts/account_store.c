@@ -22,19 +22,18 @@ GSList *read_account_numbers() {
         gchar *content;
         if (g_file_get_contents(input_file, &content, NULL, &error)) {
             g_print("%s\n", content);
-            gchar **lines[1000];
+            gchar **lines;
             /* Split input string a newlines, memory is freed below. */
-            gchar **account_records = g_strsplit(content, "\n", 1000);
+            gchar **account_records = g_strsplit(content, "\n", -1);
             int i = 0;
             /* For each line, instantiate an account structure and add it to the GSList of structures */
             while (account_records[i] != NULL && (strlen(account_records[i]) > 0)) {
-                gchar **single_account = g_strsplit(account_records[i], "\t", 1000);
-                /* Memory is freed below */
-                Account *account_entry = g_new(Account, 1);
-                strcpy(account_entry->number, single_account[0]);
-                strcpy(account_entry->name, single_account[1]);
-                strcpy(account_entry->description, single_account[2]);
-                strcpy(account_entry->routing, single_account[3]);
+                gchar **single_account = g_strsplit(account_records[i], "\t", -1);
+                Account *account_entry = g_new(Account, 1); /* Memory is freed below */
+                g_stpcpy(account_entry->number, single_account[0]);
+                g_stpcpy(account_entry->name, single_account[1]);
+                g_stpcpy(account_entry->description, single_account[2]);
+                g_stpcpy(account_entry->routing, single_account[3]);
 
                 local_struct_list = g_slist_append(local_struct_list, account_entry);
                 g_strfreev(single_account);
