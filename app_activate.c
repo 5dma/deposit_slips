@@ -68,9 +68,6 @@ void on_app_activate(GApplication *app, gpointer data) {
     static gboolean at_least_one_check = TRUE;
     g_hash_table_insert(pointer_passer, &KEY_AT_LEAST_ONE_CHECK, &at_least_one_check);
  
-   static gboolean output_to_paper = FALSE;
-    g_hash_table_insert(pointer_passer, &KEY_OUTPUT_TO_PAPER, &output_to_paper);
-
     gtk_widget_show_all(GTK_WIDGET(window));
     g_hash_table_insert(pointer_passer, &KEY_APPLICATION_WINDOW, window);
 
@@ -81,4 +78,5 @@ void on_app_activate(GApplication *app, gpointer data) {
 
     GtkDrawingArea *drawing_area = (GtkDrawingArea *)g_hash_table_lookup(pointer_passer, &KEY_DRAWING_AREA);
     gtk_widget_queue_draw(GTK_WIDGET(drawing_area));
+
 }

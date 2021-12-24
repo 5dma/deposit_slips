@@ -49,14 +49,11 @@ GSList *read_account_numbers();
 GtkWidget *make_accounts_buttons_hbox(GHashTable *pointer_passer);
 void free_memory (GtkWidget *window, gpointer user_data);
 
-void draw_single_amount(GHashTable *pointer_passer, gchar *new_amount);
-
 gboolean preview_deposit_amounts(GtkTreeModel *model,
                                GtkTreePath *path,
                                GtkTreeIter *iter,
                                gpointer data);
 
-void draw_background( GtkCellRendererText* self, gchar* path, gchar* new_text, gpointer data);
 void print_deposit_slip(GtkButton *self, gpointer data);
 gchar *comma_formatted_amount(gfloat *amount);
 #endif

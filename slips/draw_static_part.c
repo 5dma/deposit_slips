@@ -41,7 +41,6 @@ void deposit_amount_edited(GtkCellRendererText *self,
     GtkDrawingArea *drawing_area = (GtkDrawingArea *)g_hash_table_lookup(pointer_passer, &KEY_DRAWING_AREA);
     gtk_widget_queue_draw(GTK_WIDGET(drawing_area));
 
-    // g_signal_emit_by_name (G_OBJECT(drawing_area), "draw", G_CALLBACK(draw_preview), pointer_passer);
 }
 
 /**

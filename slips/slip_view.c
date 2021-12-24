@@ -4,8 +4,8 @@
 #include "../constants.h"
 #include "../headers.h"
 #include "draw_functions.c"
-#include "slip_control.c"
 #include "print_slip.c"
+#include "slip_control.c"
 
 /**
  * @file slip_view.c
@@ -44,6 +44,8 @@ GtkWidget *make_account_view(GHashTable *pointer_passer) {
     gtk_tree_view_set_activate_on_single_click(GTK_TREE_VIEW(tree_view), TRUE);
     g_signal_connect(G_OBJECT(tree_view), "row-activated", G_CALLBACK(update_label), NULL);
 
+
+
     return tree_view;
 }
 
@@ -53,7 +55,7 @@ GtkWidget *make_account_view(GHashTable *pointer_passer) {
 * @param event Key that was pressed.
 * @param user_data `NULL` in this case.
 * @return  `FALSE` if the key pressed was allowed, `FALSE` otherwise.
-*/ 
+*/
 static gboolean number_formatter(GtkWidget *widget, GdkEventKey *event, gpointer user_data) {
     g_print("Another key pressed!\n");
     if (
@@ -80,12 +82,11 @@ static gboolean number_formatter(GtkWidget *widget, GdkEventKey *event, gpointer
  * @param path Path within the tree view the editing occurs.
  * @param user_data `NULL` in this case.
  * @return `TRUE`, but meaningless in this implementation.
-*/ 
-void started_cell_editing(GtkCellRenderer* self, GtkCellEditable* editable, gchar* path, gpointer user_data ) {
-
+*/
+void started_cell_editing(GtkCellRenderer *self, GtkCellEditable *editable, gchar *path, gpointer user_data) {
     g_print("Key pressed!\n");
-    g_signal_connect (GTK_WIDGET(editable), "key-press-event",
-                      G_CALLBACK(number_formatter), user_data);
+    g_signal_connect(GTK_WIDGET(editable), "key-press-event",
+                     G_CALLBACK(number_formatter), user_data);
 }
 
 /**
@@ -170,6 +171,14 @@ GtkWidget *make_slip_view(GHashTable *pointer_passer) {
     gtk_widget_set_name(btnSlipPrint, BUTTON_SLIP_PRINT);
     gtk_widget_set_name(lblAccountDescription, LABEL_ACCOUNT_DESCRIPTION);
 
+    gtk_label_set_xalign(GTK_LABEL(lblAccount), 0.0);
+    gtk_label_set_xalign(GTK_LABEL(lblChecks), 0.0);
+    gtk_label_set_xalign(GTK_LABEL(lblAccountDescription), 0.0);
+
+    gtk_widget_set_margin_start(lblAccount, 3);
+    gtk_widget_set_margin_start(lblChecks, 4);
+    gtk_widget_set_margin_start(lblAccountDescription, 5);
+
     gtk_widget_set_sensitive(btnChecksAdd, TRUE);
     gtk_widget_set_sensitive(btnChecksDelete, FALSE);
 
@@ -203,13 +212,13 @@ GtkWidget *make_slip_view(GHashTable *pointer_passer) {
     /* First column of grid */
     gtk_grid_attach(GTK_GRID(gridSlip), lblAccount, 0, 0, 1, 1);
     gtk_grid_attach(GTK_GRID(gridSlip), treeAccounts, 0, 1, 1, 1);
-    gtk_grid_attach(GTK_GRID(gridSlip), lblAccountDescription, 0, 2, 1, 1);
+    gtk_grid_attach(GTK_GRID(gridSlip), lblAccountDescription, 0, 2, 4, 1);
 
     /* Second column of grid */
     gtk_grid_attach(GTK_GRID(gridSlip), lblChecks, 1, 0, 2, 1);
     gtk_grid_attach(GTK_GRID(gridSlip), tree_checks, 1, 1, 2, 1);
-    gtk_grid_attach(GTK_GRID(gridSlip), btnChecksDelete, 1, 2, 1, 1);
-    gtk_grid_attach(GTK_GRID(gridSlip), btnChecksAdd, 2, 2, 1, 1);
+    gtk_grid_attach(GTK_GRID(gridSlip), btnChecksDelete, 1, 3, 1, 1);
+    gtk_grid_attach(GTK_GRID(gridSlip), btnChecksAdd, 2, 3, 1, 1);
 
     /* Third column of grid */
     gtk_grid_attach(GTK_GRID(gridSlip), drawing_area, 3, 1, 1, 1);
@@ -220,7 +229,7 @@ GtkWidget *make_slip_view(GHashTable *pointer_passer) {
     from GTKs internal messaging), go redraw the deposit slip preview. */
     g_signal_connect(G_OBJECT(drawing_area), "draw", G_CALLBACK(draw_preview), pointer_passer);
 
-    gtk_grid_attach(GTK_GRID(gridSlip), btnSlipPrint, 3, 2, 1, 1);
+    gtk_grid_attach(GTK_GRID(gridSlip), btnSlipPrint, 3, 3, 1, 1);
 
     gtk_grid_set_column_spacing(GTK_GRID(gridSlip), 20);
     gtk_grid_set_row_spacing(GTK_GRID(gridSlip), 20);

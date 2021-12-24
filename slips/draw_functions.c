@@ -178,6 +178,4 @@ void draw_preview(GtkWidget *widget, cairo_t *cr, gpointer data) {
     g_free(routing_number);
     g_free(account_number);
 
-    GRand *seed = g_rand_new();
-    g_print("I am in draw_preview at random number %d\n", g_rand_int(seed));
 }

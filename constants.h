@@ -46,8 +46,6 @@ static const double RIGHT_MARGIN_SCREEN = 490;
 /** Right margin of printed deposit slip. */
 static const double RIGHT_MARGIN_PRINT = 5;
 
-
-
 /** Hash key for the pointer to master list store. */
 static gint KEY_LIST_STORE_MASTER = 0; 
 /** Hash key for the pointer to temporary list store. */
@@ -58,8 +56,6 @@ static gint KEY_CAIRO_CONTEXT = 2;
 static gint KEY_CHECK_TREE_VIEW = 3; 
 /** Hash key for the pointer to the drawing area. */
 static gint KEY_DRAWING_AREA = 4; 
-/** Hash key for the drawing action to take. One of the  */
-static gint KEY_DRAW_HANDLER = 6; 
 /** Hash key for the list store of the checks  */
 static gint KEY_CHECKS_STORE = 7; 
 /** Hash key for the sum of all checks deposited.  */
@@ -72,14 +68,11 @@ static gint KEY_CHECK_CELL_RENDERER = 10;
 static gint KEY_AT_LEAST_ONE_CHECK = 11;
 /** Hash key for the pointer to the application window.  */
 static gint KEY_APPLICATION_WINDOW = 12;
-/** Hash key for the pointer to boolean indicating output is to paper or screen.  */
-static gint KEY_OUTPUT_TO_PAPER = 13;
+
 
 /** Font size for dynamic info (name, account number, date) on printed slip. */
 static gint FONT_SIZE_PRINT_DYNAMIC = 11;
 /** Font size for amounts on printed slip. */
 static gint FONT_SIZE_AMOUNT = 12;
-
-
 
 #endif
