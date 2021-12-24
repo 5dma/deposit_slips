@@ -36,11 +36,11 @@ GDestroyNotify free_gslist_account(gpointer data) {
 }
 
 /**
-Frees memory in the master and temporary account lists. This callback fires after
-the user destroys the main application windows.
-@param window The parent node.
-@param user_data Pointer to user data
-@return A widget corresponding to the passed name of the child node.
+* Frees memory in the master and temporary account lists. This callback fires after
+* the user destroys the main application windows.
+* @param window The parent node.
+* @param user_data Pointer to user data
+* @return A widget corresponding to the passed name of the child node.
 */
 void free_memory(GtkWidget *window, gpointer user_data) {
     

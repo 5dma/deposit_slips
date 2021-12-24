@@ -44,8 +44,6 @@ GtkWidget *make_account_view(GHashTable *pointer_passer) {
     gtk_tree_view_set_activate_on_single_click(GTK_TREE_VIEW(tree_view), TRUE);
     g_signal_connect(G_OBJECT(tree_view), "row-activated", G_CALLBACK(update_label), NULL);
 
-
-
     return tree_view;
 }
 
@@ -208,6 +206,11 @@ GtkWidget *make_slip_view(GHashTable *pointer_passer) {
     /* When clicking the preint button, print the deposit slip. */
     g_signal_connect(btnSlipPrint, "clicked", G_CALLBACK(print_deposit_slip), pointer_passer);
 
+    /* Prevent buttons from expanding horizontally. */
+    gtk_widget_set_halign(btnChecksAdd, GTK_ALIGN_CENTER);
+    gtk_widget_set_halign(btnChecksDelete, GTK_ALIGN_CENTER);
+    gtk_widget_set_halign(btnSlipPrint, GTK_ALIGN_CENTER);
+
     GtkWidget *gridSlip = gtk_grid_new();
     /* First column of grid */
     gtk_grid_attach(GTK_GRID(gridSlip), lblAccount, 0, 0, 1, 1);
@@ -229,12 +232,11 @@ GtkWidget *make_slip_view(GHashTable *pointer_passer) {
     from GTKs internal messaging), go redraw the deposit slip preview. */
     g_signal_connect(G_OBJECT(drawing_area), "draw", G_CALLBACK(draw_preview), pointer_passer);
 
+    /* Need to prevent the the print button from expanding to the width of the grid column. */
     gtk_grid_attach(GTK_GRID(gridSlip), btnSlipPrint, 3, 3, 1, 1);
 
     gtk_grid_set_column_spacing(GTK_GRID(gridSlip), 20);
     gtk_grid_set_row_spacing(GTK_GRID(gridSlip), 20);
-
-    //gtk_grid_set_column_homogeneous (GTK_GRID(gridSlip), TRUE);
 
     return gridSlip;
 }

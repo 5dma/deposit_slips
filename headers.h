@@ -56,5 +56,7 @@ gboolean preview_deposit_amounts(GtkTreeModel *model,
 
 void print_deposit_slip(GtkButton *self, gpointer data);
 gchar *comma_formatted_amount(gfloat *amount);
+
+GDestroyNotify free_gslist_account(gpointer data);
 #endif
 
