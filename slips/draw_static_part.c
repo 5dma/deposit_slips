@@ -16,9 +16,11 @@
  * that formatted string.
  * @param self Pointer to the edited cell. This passed value can be `NULL` when calling this function from the first time--when setting up the GTK windows and before the user
  * clicks the add button to add the first check.
+ * @param self Pointer to the renderer being edited.
  * @param path Path to the edited cell.
  * @param new_text Text in the cell renderer after the editing is complete.
  * @param data Void pointer to the hash table of passed pointers.
+ * \sa make_checks_view()
 */
 void deposit_amount_edited(GtkCellRendererText *self,
                            gchar *path,
@@ -36,11 +38,12 @@ void deposit_amount_edited(GtkCellRendererText *self,
         float amount_float = atof(new_text);
         gchar *formatted_amount = g_strdup_printf("%3.2f", amount_float);
         gtk_list_store_set(GTK_LIST_STORE(model), &iter, CHECK_AMOUNT, formatted_amount, -1);
+        g_free(formatted_amount);
     }
 
     GtkDrawingArea *drawing_area = (GtkDrawingArea *)g_hash_table_lookup(pointer_passer, &KEY_DRAWING_AREA);
     gtk_widget_queue_draw(GTK_WIDGET(drawing_area));
-
+    
 }
 
 /**

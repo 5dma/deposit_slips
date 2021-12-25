@@ -52,7 +52,8 @@ GtkWidget *make_account_view(GHashTable *pointer_passer) {
 * @param widget Widget where the edit is occurring.
 * @param event Key that was pressed.
 * @param user_data `NULL` in this case.
-* @return  `FALSE` if the key pressed was allowed, `FALSE` otherwise.
+* @return  `FALSE` if an allowed key was pressed, `TRUE` otherwise.
+* \sa started_cell_editing()
 */
 static gboolean number_formatter(GtkWidget *widget, GdkEventKey *event, gpointer user_data) {
     if (
@@ -77,10 +78,9 @@ static gboolean number_formatter(GtkWidget *widget, GdkEventKey *event, gpointer
  * @param editable `GtkCellEditable` in which user performs edits.
  * @param path Path within the tree view the editing occurs.
  * @param user_data `NULL` in this case.
- * @return `TRUE`, but meaningless in this implementation.
+ * \sa number_formatter()
 */
 void started_cell_editing(GtkCellRenderer *self, GtkCellEditable *editable, gchar *path, gpointer user_data) {
-    g_print("Key pressed!\n");
     g_signal_connect(GTK_WIDGET(editable), "key-press-event",
                      G_CALLBACK(number_formatter), user_data);
 }
@@ -94,7 +94,7 @@ GtkWidget *make_checks_view(GHashTable *pointer_passer) {
     GtkTreeIter iter;
     GtkWidget *tree;
 
-    GtkListStore *checks_store = (GtkListStore *)(g_hash_table_lookup(pointer_passer, &KEY_CHECKS_STORE));
+    GtkListStore *checks_store = (GtkListStore *)(g_hash_table_lookup(pointer_passer, &KEY_CHECKS_STORE)); /* Reference count decremented below */
 
     tree = gtk_tree_view_new_with_model(GTK_TREE_MODEL(checks_store));
 
@@ -178,6 +178,12 @@ GtkWidget *make_slip_view(GHashTable *pointer_passer) {
     gtk_widget_set_sensitive(btnChecksAdd, TRUE);
     gtk_widget_set_sensitive(btnChecksDelete, FALSE);
 
+    /* Prevent buttons from expanding horizontally. */
+    gtk_widget_set_halign(btnChecksAdd, GTK_ALIGN_CENTER);
+    gtk_widget_set_halign(btnChecksDelete, GTK_ALIGN_CENTER);
+    gtk_widget_set_halign(btnSlipPrint, GTK_ALIGN_CENTER);
+
+
     GtkWidget *drawing_area = gtk_drawing_area_new();
 
     g_hash_table_insert(pointer_passer, &KEY_DRAWING_AREA, drawing_area);
@@ -203,11 +209,6 @@ GtkWidget *make_slip_view(GHashTable *pointer_passer) {
     g_signal_connect(btnChecksDelete, "clicked", G_CALLBACK(delete_check_row), checks_store);
     /* When clicking the preint button, print the deposit slip. */
     g_signal_connect(btnSlipPrint, "clicked", G_CALLBACK(print_deposit_slip), pointer_passer);
-
-    /* Prevent buttons from expanding horizontally. */
-    gtk_widget_set_halign(btnChecksAdd, GTK_ALIGN_CENTER);
-    gtk_widget_set_halign(btnChecksDelete, GTK_ALIGN_CENTER);
-    gtk_widget_set_halign(btnSlipPrint, GTK_ALIGN_CENTER);
 
     GtkWidget *gridSlip = gtk_grid_new();
     /* First column of grid */

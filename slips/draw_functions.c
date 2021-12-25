@@ -178,4 +178,5 @@ void draw_preview(GtkWidget *widget, cairo_t *cr, gpointer data) {
     g_free(routing_number);
     g_free(account_number);
 
+
 }

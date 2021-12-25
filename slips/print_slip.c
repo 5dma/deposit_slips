@@ -26,7 +26,7 @@ gboolean print_deposit_amounts(GtkTreeModel *model,
     cairo_t *cr = (cairo_t *)g_hash_table_lookup(pointer_passer, &KEY_CAIRO_CONTEXT);
     gchar *amount;
     gtk_tree_model_get(model, iter, CHECK_AMOUNT, &amount, -1);
-    gchar *pathstring = gtk_tree_path_to_string(path);
+    gchar *pathstring = gtk_tree_path_to_string(path); /* Memory freed below. */
 
     guint64 row_number;
     GError *gerror = NULL;
@@ -54,7 +54,7 @@ gboolean print_deposit_amounts(GtkTreeModel *model,
 
     /* Get the formatted string corresponding to this check's amount. */
     gfloat current_amount = atof(amount);
-    gchar *formatted_amount = comma_formatted_amount(&current_amount);
+    gchar *formatted_amount = comma_formatted_amount(&current_amount); /* Memory freed below. */
 
     /* Move to the correct position to print the amount such that it is right-aligned. */
     cairo_text_extents_t extents;

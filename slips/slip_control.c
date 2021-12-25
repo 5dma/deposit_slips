@@ -18,6 +18,7 @@
  * @param iter Pointer to the iterator associated with the current iteration.
  * @param data Void pointer to user data.
  * @return `TRUE` if at least one of the checkboxes in the delete column is checked, `FALSE` otherwise.
+ * \sa check_toggle_clicked()
 */
 gboolean examine_all_check_checkboxes(GtkTreeModel *model,
                                       GtkTreePath *path,
