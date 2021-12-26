@@ -16,7 +16,6 @@
  * that formatted string.
  * @param self Pointer to the edited cell. This passed value can be `NULL` when calling this function from the first time--when setting up the GTK windows and before the user
  * clicks the add button to add the first check.
- * @param self Pointer to the renderer being edited.
  * @param path Path to the edited cell.
  * @param new_text Text in the cell renderer after the editing is complete.
  * @param data Void pointer to the hash table of passed pointers.

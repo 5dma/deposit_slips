@@ -90,7 +90,6 @@ void description_column_formatter(GtkTreeViewColumn *col,
     }
 }
 
-
 /**
  * Callback fired to format each row in the Description column in the Accounts tab. The callback
  * retrieves the text associated with the passed `iter`. If the text is `(Description)`, the text is formatted in light gray and italic; otherwise the text is formatted as normal and black.
@@ -101,10 +100,10 @@ void description_column_formatter(GtkTreeViewColumn *col,
  * @param user_data Void pointer to passed user data, `NULL` in this case.
 */
 void routing_column_formatter(GtkTreeViewColumn *col,
-                                  GtkCellRenderer *renderer,
-                                  GtkTreeModel *model,
-                                  GtkTreeIter *iter,
-                                  gpointer user_data) {
+                              GtkCellRenderer *renderer,
+                              GtkTreeModel *model,
+                              GtkTreeIter *iter,
+                              gpointer user_data) {
     gchararray routing[500];
     gtk_tree_model_get(model, iter, ROUTING_NUMBER, routing, -1);
     g_object_set(renderer, "text", *routing, NULL);
@@ -115,10 +114,7 @@ void routing_column_formatter(GtkTreeViewColumn *col,
         g_object_set(renderer, "foreground-rgba", &EXISTING_ACCOUNT_FOREGROUND, NULL);
         g_object_set(renderer, "style", PANGO_STYLE_NORMAL, NULL);
     }
-
 }
-
-
 
 /**
  * Callback fired after a cell in the account number column is edited. The function
@@ -132,7 +128,7 @@ static void number_edited(GtkCellRendererText *renderer,
                           gchar *path,
                           gchar *new_account_number,
                           gpointer user_data) {
-    GtkTreeView *treeview = (GtkTreeView *) user_data;
+    GtkTreeView *treeview = (GtkTreeView *)user_data;
     GtkTreeIter iter;
     GtkTreeModel *model;
     if (g_ascii_strcasecmp(new_account_number, "") != 0) {
@@ -154,8 +150,8 @@ static void number_edited(GtkCellRendererText *renderer,
 static void name_edited(GtkCellRendererText *renderer,
                         gchar *path,
                         gchar *new_account_name,
-                       gpointer user_data) {
-    GtkTreeView *treeview = (GtkTreeView *) user_data;
+                        gpointer user_data) {
+    GtkTreeView *treeview = (GtkTreeView *)user_data;
     GtkTreeIter iter;
     GtkTreeModel *model;
     if (g_ascii_strcasecmp(new_account_name, "") != 0) {
@@ -178,7 +174,7 @@ static void description_edited(GtkCellRendererText *renderer,
                                gchar *path,
                                gchar *new_description,
                                gpointer user_data) {
-        GtkTreeView *treeview = (GtkTreeView *) user_data;
+    GtkTreeView *treeview = (GtkTreeView *)user_data;
     GtkTreeIter iter;
     GtkTreeModel *model;
     if (g_ascii_strcasecmp(new_description, "") != 0) {
@@ -189,7 +185,6 @@ static void description_edited(GtkCellRendererText *renderer,
     }
 }
 
-
 /**
  * Callback fired after a cell in the name  column is edited. The function
  * replaces the name in the model with the one passed to the callback.
@@ -199,10 +194,10 @@ static void description_edited(GtkCellRendererText *renderer,
  * @param user_data Void pointer to the tree view.
 */
 static void routing_edited(GtkCellRendererText *renderer,
-                        gchar *path,
-                        gchar *new_routing_number,
-                       gpointer user_data) {
-    GtkTreeView *treeview = (GtkTreeView *) user_data;
+                           gchar *path,
+                           gchar *new_routing_number,
+                           gpointer user_data) {
+    GtkTreeView *treeview = (GtkTreeView *)user_data;
     GtkTreeIter iter;
     GtkTreeModel *model;
     if (g_ascii_strcasecmp(new_routing_number, "") != 0) {
@@ -213,8 +208,6 @@ static void routing_edited(GtkCellRendererText *renderer,
     }
 }
 
-
-
 /**
  * Callback fired during a `gtk_tree_model_foreach`. The function
  * examines the checkbox in the model's passed iteration, and returns true or false depending
@@ -224,6 +217,7 @@ static void routing_edited(GtkCellRendererText *renderer,
  * @param iter Pointer to the iterator associated with the current iteration.
  * @param data Void pointer to user data.
  * @return `TRUE` if at least one of the checkboxes in the delete column is checked, `FALSE` otherwise.
+ * \sa toggle_clicked()
 */
 gboolean examine_all_checkboxes(GtkTreeModel *model,
                                 GtkTreePath *path,
@@ -254,7 +248,6 @@ static void toggle_clicked(GtkCellRendererToggle *renderer,
     GtkTreeModel *model;
     gboolean value;
     model = gtk_tree_view_get_model(treeview);
-    g_debug("Here\n");
     if (gtk_tree_model_get_iter_from_string(model, &iter, path)) {
         gtk_tree_model_get(model, &iter, CHECKBOX, &value, -1);
         gtk_list_store_set(GTK_LIST_STORE(model), &iter, CHECKBOX, !value, -1);
@@ -325,7 +318,6 @@ GtkWidget *make_tree_view(GtkListStore *list_store) {
     g_object_set(rendererDescription, "editable", TRUE, "editable-set", TRUE, NULL);
     g_signal_connect(G_OBJECT(rendererDescription), "edited", G_CALLBACK(description_edited), tree);
 
-
     GtkCellRenderer *rendererRouting;
     GtkTreeViewColumn *columnRouting;
 
@@ -337,7 +329,6 @@ GtkWidget *make_tree_view(GtkListStore *list_store) {
     g_object_set(rendererRouting, "editable", TRUE, "editable-set", TRUE, NULL);
 
     g_signal_connect(G_OBJECT(rendererRouting), "edited", G_CALLBACK(routing_edited), tree);
-
 
     GtkCellRenderer *rendererToggle;
     GtkTreeViewColumn *columnToggle;

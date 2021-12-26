@@ -11,7 +11,7 @@
 
 /**
  * Formats a passed float number into a familiar currency value. For example, takes 51003.34 and formats it into 51,003.34.
- * @param amount Any gfloat less than 999999.99
+ * @param number Any gfloat less than 999999.99
  * @return The formatted string. 
 */
 gchar *comma_formatted_amount(gfloat *number) {

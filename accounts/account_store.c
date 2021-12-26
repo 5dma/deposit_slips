@@ -21,7 +21,6 @@ GSList *read_account_numbers() {
     if (input_file_exists) {
         gchar *content;
         if (g_file_get_contents(input_file, &content, NULL, &error)) {
-            g_print("%s\n", content);
             gchar **lines;
             /* Split input string a newlines, memory is freed below. */
             gchar **account_records = g_strsplit(content, "\n", -1);

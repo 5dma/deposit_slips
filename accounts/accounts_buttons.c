@@ -243,11 +243,10 @@ GtkWidget *make_accounts_buttons_hbox(GHashTable *pointer_passer) {
     gtk_widget_set_sensitive(account_button_add, TRUE);
     gtk_widget_set_sensitive(account_button_delete, FALSE);
     gtk_widget_set_sensitive(account_button_revert, FALSE);
-    gtk_widget_set_sensitive(account_button_save, FALSE);
+    gtk_widget_set_sensitive(account_button_save, TRUE);
 
 
     GtkListStore *list_store_temporary = GTK_LIST_STORE( g_hash_table_lookup(pointer_passer, &KEY_LIST_STORE_TEMPORARY));
-
 
     g_signal_connect(account_button_add, "clicked", G_CALLBACK(add_row), list_store_temporary);
     g_signal_connect(account_button_delete, "clicked", G_CALLBACK(delete_row), list_store_temporary);

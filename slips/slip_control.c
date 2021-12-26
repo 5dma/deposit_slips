@@ -53,7 +53,6 @@ void update_label(GtkTreeView *tree_view, gpointer user_data) {
         gchar *description;
         gtk_tree_model_get(model, &iter, ACCOUNT_NAME, &account_name, DESCRIPTION, &description, -1);
         gchar *full_label = g_strdup_printf("%s (%s)", account_name, description);
-        g_print("%s\n", full_label);
         gtk_label_set_label(GTK_LABEL(lbl_description), full_label);
         g_free(full_label);
         g_free(account_name);
