@@ -9,25 +9,6 @@
  * @brief Sets up the store for accounts.
 */
 
-void forEachJsonElement(JsonArray *array, guint i, JsonNode *element_node, gpointer user_data) {
-    GSList *local_struct_list = (GSList *)user_data;
-
-    JsonObject *object = json_node_get_object(element_node);
-    const gchar *account = json_object_get_string_member(object, "account");
-    const gchar *name = json_object_get_string_member(object, "name");
-    const gchar *description = json_object_get_string_member(object, "description");
-    const gchar *routing = json_object_get_string_member(object, "routing");
-
-    Account *account_entry = g_new(Account, 1); 
-    g_stpcpy(account_entry->number, account);
-    g_stpcpy(account_entry->name, name);
-    g_stpcpy(account_entry->description, description);
-    g_stpcpy(account_entry->routing, routing);
-
-    local_struct_list = g_slist_append(local_struct_list, account_entry);
-
-    g_print("At index %d and account is %s\n", i, account);
-}
 
 /** 
  * Reads a CSV file in `~/.deposit_slip/deposit_slips.csv` into a `GSList`.
@@ -57,8 +38,26 @@ GSList *read_account_numbers() {
         JsonNode *root = json_parser_get_root(parser);
         JsonObject *obj = json_node_get_object(root);
         JsonArray *array = (JsonArray *)json_object_get_array_member(obj, "accounts");
-        json_array_foreach_element(array, (JsonArrayForeach) forEachJsonElement, local_struct_list);
+        guint len = json_array_get_length(array);
 
+        /* Would be better to put this in a function json_array_foreach_element */
+        for (int i = 0; i < len; i++) {
+            JsonObject *object = json_array_get_object_element ( array, i );
+            const gchar *account = json_object_get_string_member(object, "account");
+            const gchar *name = json_object_get_string_member(object, "name");
+            const gchar *description = json_object_get_string_member(object, "description");
+            const gchar *routing = json_object_get_string_member(object, "routing");
+
+            Account *account_entry = g_new(Account, 1);
+            g_stpcpy(account_entry->number, account);
+            g_stpcpy(account_entry->name, name);
+            g_stpcpy(account_entry->description, description);
+            g_stpcpy(account_entry->routing, routing);
+
+            local_struct_list = g_slist_append(local_struct_list, account_entry);
+        }
+
+        
         g_object_unref(parser);
 
     } else {
