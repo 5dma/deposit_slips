@@ -9,7 +9,6 @@
  * @brief Sets up the store for accounts.
 */
 
-
 /** 
  * Reads a CSV file in `~/.deposit_slip/deposit_slips.csv` into a `GSList`.
  * @return Returns a `GSList *` of account numbers read from disk.
@@ -42,7 +41,7 @@ GSList *read_account_numbers() {
 
         /* Would be better to put this in a function json_array_foreach_element */
         for (int i = 0; i < len; i++) {
-            JsonObject *object = json_array_get_object_element ( array, i );
+            JsonObject *object = json_array_get_object_element(array, i);
             const gchar *account = json_object_get_string_member(object, "account");
             const gchar *name = json_object_get_string_member(object, "name");
             const gchar *description = json_object_get_string_member(object, "description");
@@ -57,7 +56,6 @@ GSList *read_account_numbers() {
             local_struct_list = g_slist_append(local_struct_list, account_entry);
         }
 
-        
         g_object_unref(parser);
 
     } else {
@@ -70,9 +68,11 @@ GSList *read_account_numbers() {
 
 /** 
  * Writes a CSV string to `~/.deposit_slip/deposit_slips.csv`.
- * @param string_to_save String to write.
+ * @param generator A JsonGenerator used to write a JSON object to a file. See 
+ * \sa [json_generator_to_file](https://gnome.pages.gitlab.gnome.org/json-glib/method.Generator.to_file.html)
+ * \sa [JsonGenerator](https://gnome.pages.gitlab.gnome.org/json-glib/class.Generator.html)
  */
-void save_account_numbers(GString *string_to_save) {
+void save_account_numbers(JsonGenerator *generator) {
     GError *error = NULL;
     GtkTreeIter iter;
 
@@ -83,9 +83,9 @@ void save_account_numbers(GString *string_to_save) {
     }
     g_free(save_directory);
 
-    gchar *output_file = g_build_filename(g_get_home_dir(), ".deposit_slip/deposit_slips.csv", NULL);
+    gchar *output_file = g_build_filename(g_get_home_dir(), ".deposit_slip/deposit_slips.json", NULL);
+    gboolean write_successful = json_generator_to_file(generator, output_file, &error);
 
-    gboolean write_successful = g_file_set_contents(output_file, string_to_save->str, -1, &error);
     if (!write_successful) {
         g_print("Could not write the new list, so the previous master list is still will show when restarting this program.\n");
     }
@@ -93,7 +93,7 @@ void save_account_numbers(GString *string_to_save) {
 }
 
 /**
- *  C callback fired while itering each member of a `GSList` of list of
+ * Callback fired while itering each member of a `GSList` of list of
  * accounts read from disk. The accounts are added to the passed `ListStore`.
  * @param account List of accounts in a `GSList`.
  * @param data The ListStore into which the accounts are copied.

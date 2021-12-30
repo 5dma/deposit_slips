@@ -1,4 +1,5 @@
 #include <gtk/gtk.h>
+#include <json-glib/json-glib.h>
 #include <string.h>
 
 #include "../constants.h"
@@ -23,7 +24,7 @@ static void add_row(GtkWidget *widget, gpointer data) {
                        ACCOUNT_NUMBER, NEW_NUMBER,
                        ACCOUNT_NAME, NEW_NAME,
                        DESCRIPTION, NEW_DESCRIPTION,
-                       ROUTING_NUMBER,NEW_ROUTING,
+                       ROUTING_NUMBER, NEW_ROUTING,
                        CHECKBOX, FALSE,
                        -1);
     GtkWidget *accounts_buttons_hbox = gtk_widget_get_parent(widget);
@@ -77,8 +78,8 @@ static void delete_row(GtkWidget *widget, gpointer data) {
 static void revert_listing(GtkWidget *widget, gpointer data) {
     GHashTable *pointer_passer = (GHashTable *)data;
 
-    GtkListStore *list_store_master = GTK_LIST_STORE( g_hash_table_lookup(pointer_passer, &KEY_LIST_STORE_MASTER));
-    GtkListStore *list_store_temporary = GTK_LIST_STORE( g_hash_table_lookup(pointer_passer, &KEY_LIST_STORE_TEMPORARY));
+    GtkListStore *list_store_master = GTK_LIST_STORE(g_hash_table_lookup(pointer_passer, &KEY_LIST_STORE_MASTER));
+    GtkListStore *list_store_temporary = GTK_LIST_STORE(g_hash_table_lookup(pointer_passer, &KEY_LIST_STORE_TEMPORARY));
 
     gtk_list_store_clear(list_store_temporary);
 
@@ -99,7 +100,7 @@ static void revert_listing(GtkWidget *widget, gpointer data) {
                                ACCOUNT_NUMBER, &account_number,
                                ACCOUNT_NAME, &account_name,
                                DESCRIPTION, &account_description,
-                               ROUTING_NUMBER,&routing_number,
+                               ROUTING_NUMBER, &routing_number,
                                -1);
 
             /* Add the entry from the master store to the temporary store */
@@ -136,13 +137,13 @@ static void revert_listing(GtkWidget *widget, gpointer data) {
     temporary store.
     @param widget Pointer to the clicked Delete button.
     @param data Void pointer the hash table containing the pointer to the temporary list store.
+    \sa save_account_numbers()
 */
 static void save_listing(GtkWidget *widget, gpointer data) {
-
     GHashTable *pointer_passer = (GHashTable *)data;
 
-    GtkListStore *list_store_master = GTK_LIST_STORE( g_hash_table_lookup(pointer_passer, &KEY_LIST_STORE_MASTER));
-    GtkListStore *list_store_temporary = GTK_LIST_STORE( g_hash_table_lookup(pointer_passer, &KEY_LIST_STORE_TEMPORARY));
+    GtkListStore *list_store_master = GTK_LIST_STORE(g_hash_table_lookup(pointer_passer, &KEY_LIST_STORE_MASTER));
+    GtkListStore *list_store_temporary = GTK_LIST_STORE(g_hash_table_lookup(pointer_passer, &KEY_LIST_STORE_TEMPORARY));
 
     GtkTreeIter iter_master;
     GtkTreeIter iter_temporary;
@@ -150,13 +151,14 @@ static void save_listing(GtkWidget *widget, gpointer data) {
     gboolean found_first_iter_temporary = gtk_tree_model_get_iter_first(GTK_TREE_MODEL(list_store_temporary), &iter_temporary);
 
     if (found_first_iter_temporary) {
-        /* gchar pointers for reading the entries from the master store */
+        /* gchar pointers for reading the entries from the master store. These variables are freed below. */
         gchar *account_number = NULL;
         gchar *account_name = NULL;
         gchar *account_description = NULL;
         gchar *routing_number = NULL;
 
-        GString *string_to_save = g_string_new (NULL);
+        /* A JSON array of accounts. Memory freed below. */
+        JsonArray *account_array = json_array_new();
 
         gtk_list_store_clear(list_store_master);
 
@@ -178,17 +180,39 @@ static void save_listing(GtkWidget *widget, gpointer data) {
                                ROUTING_NUMBER, routing_number,
                                -1);
 
-            g_string_append_printf (string_to_save,"%s\t%s\t%s\n", account_number,account_name, account_description);
+            /* Create a JSON object for the current account. */
+            JsonObject *account = json_object_new(); /* Memory freed below. */
+            json_object_set_string_member(account, "account", account_number);
+            json_object_set_string_member(account, "name", account_name);
+            json_object_set_string_member(account, "description", account_description);
+            json_object_set_string_member(account, "routing", routing_number);
+
+            /* Add the JSON object to the JSON array of accounts. */
+            json_array_add_object_element(account_array, account);
+           // json_object_unref(account);
 
             gtk_tree_model_iter_next(GTK_TREE_MODEL(list_store_temporary), &iter_temporary);
         }
 
+        /* Create the top-level JSON object. */
+        JsonObject *object = json_object_new();
+        json_object_set_array_member(object, "accounts", account_array);
 
-        /* Remove last line beak character. */
-        glong length_string_to_save = g_utf8_strlen (string_to_save->str,-1) - 1;
-        string_to_save = g_string_truncate (string_to_save, length_string_to_save);
-        save_account_numbers(string_to_save);
-        
+        /* Create a node for the top-level JSON object, from which we create a JsonGenerator. */
+        JsonNode *node = json_node_new (JSON_NODE_OBJECT);
+        json_node_set_object(node, object);
+
+        JsonGenerator *generator;
+        generator = json_generator_new();
+        json_generator_set_root(generator, node);
+
+        /* Go write the JsonGenerator to a file. */
+        save_account_numbers(generator);
+
+       // g_object_unref(generator);
+       // g_object_unref(object);
+       // g_object_unref(account_array);
+
         g_free(account_number);
         g_free(account_name);
         g_free(account_description);
@@ -201,7 +225,7 @@ static void save_listing(GtkWidget *widget, gpointer data) {
         gtk_widget_set_sensitive(account_button_save, FALSE);
         GtkWidget *account_button_delete = get_child_from_parent(accounts_buttons_hbox, BUTTON_NAME_DELETE);
         gtk_widget_set_sensitive(account_button_delete, FALSE);
-        
+
         /* The following statement gives an invalid pointer error. Don't we need to free string_to_save? */
         //g_free(string_to_save);
     } else {
@@ -245,8 +269,7 @@ GtkWidget *make_accounts_buttons_hbox(GHashTable *pointer_passer) {
     gtk_widget_set_sensitive(account_button_revert, FALSE);
     gtk_widget_set_sensitive(account_button_save, TRUE);
 
-
-    GtkListStore *list_store_temporary = GTK_LIST_STORE( g_hash_table_lookup(pointer_passer, &KEY_LIST_STORE_TEMPORARY));
+    GtkListStore *list_store_temporary = GTK_LIST_STORE(g_hash_table_lookup(pointer_passer, &KEY_LIST_STORE_TEMPORARY));
 
     g_signal_connect(account_button_add, "clicked", G_CALLBACK(add_row), list_store_temporary);
     g_signal_connect(account_button_delete, "clicked", G_CALLBACK(delete_row), list_store_temporary);
