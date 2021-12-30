@@ -1,4 +1,5 @@
 #include <gtk/gtk.h>
+#include <json-glib/json-glib.h>
 #include <string.h>
 
 #include "../headers.h"
@@ -7,43 +8,59 @@
  * @file account_store.c
  * @brief Sets up the store for accounts.
 */
+
+void forEachJsonElement(JsonArray *array, guint i, JsonNode *element_node, gpointer user_data) {
+    GSList *local_struct_list = (GSList *)user_data;
+
+    JsonObject *object = json_node_get_object(element_node);
+    const gchar *account = json_object_get_string_member(object, "account");
+    const gchar *name = json_object_get_string_member(object, "name");
+    const gchar *description = json_object_get_string_member(object, "description");
+    const gchar *routing = json_object_get_string_member(object, "routing");
+
+    Account *account_entry = g_new(Account, 1); 
+    g_stpcpy(account_entry->number, account);
+    g_stpcpy(account_entry->name, name);
+    g_stpcpy(account_entry->description, description);
+    g_stpcpy(account_entry->routing, routing);
+
+    local_struct_list = g_slist_append(local_struct_list, account_entry);
+
+    g_print("At index %d and account is %s\n", i, account);
+}
+
 /** 
  * Reads a CSV file in `~/.deposit_slip/deposit_slips.csv` into a `GSList`.
  * @return Returns a `GSList *` of account numbers read from disk.
 */
 GSList *read_account_numbers() {
     GSList *local_struct_list = NULL;
+    JsonParser *parser;
+    JsonNode *root;
     GError *error = NULL;
 
     /* Memory is freed at end of this function */
-    gchar *input_file = g_build_filename(g_get_home_dir(), ".deposit_slip/deposit_slips.csv", NULL);
+    gchar *input_file = g_build_filename(g_get_home_dir(), ".deposit_slip/deposit_slips.json", NULL);
     gboolean input_file_exists = g_file_test(input_file, G_FILE_TEST_EXISTS);
     if (input_file_exists) {
-        gchar *content;
-        if (g_file_get_contents(input_file, &content, NULL, &error)) {
-            gchar **lines;
-            /* Split input string a newlines, memory is freed below. */
-            gchar **account_records = g_strsplit(content, "\n", -1);
-            int i = 0;
-            /* For each line, instantiate an account structure and add it to the GSList of structures */
-            while (account_records[i] != NULL && (strlen(account_records[i]) > 0)) {
-                gchar **single_account = g_strsplit(account_records[i], "\t", -1);
-                Account *account_entry = g_new(Account, 1); /* Memory is freed below */
-                g_stpcpy(account_entry->number, single_account[0]);
-                g_stpcpy(account_entry->name, single_account[1]);
-                g_stpcpy(account_entry->description, single_account[2]);
-                g_stpcpy(account_entry->routing, single_account[3]);
+        parser = json_parser_new();
+        error = NULL;
+        json_parser_load_from_file(parser, input_file, &error);
 
-                local_struct_list = g_slist_append(local_struct_list, account_entry);
-                g_strfreev(single_account);
-                i++;
-            }
-            g_free(content);
-            g_strfreev(account_records);
-        } else {
-            g_print("There was an error reading the file.\n");
-            g_print("%s\n", error->message);
+        if (error) {
+            g_print("Unable to parse `%s': %s\n", input_file, error->message);
+            g_error_free(error);
+            g_object_unref(parser);
+            return NULL;
         }
+
+        JsonNode *root = json_parser_get_root(parser);
+        JsonObject *obj = json_node_get_object(root);
+        JsonArray *array = (JsonArray *)json_object_get_array_member(obj, "accounts");
+        json_array_foreach_element(array, (JsonArrayForeach) forEachJsonElement, local_struct_list);
+
+        g_object_unref(parser);
+
     } else {
         g_print("Input file does not exist.\n");
     }
@@ -98,4 +115,3 @@ void build_list_store(gpointer account, gpointer data) {
                        CHECKBOX, FALSE,
                        -1);
 }
-
