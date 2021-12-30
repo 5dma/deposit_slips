@@ -189,7 +189,7 @@ static void save_listing(GtkWidget *widget, gpointer data) {
 
             /* Add the JSON object to the JSON array of accounts. */
             json_array_add_object_element(account_array, account);
-           // json_object_unref(account);
+            //json_object_unref(account); /* This statement causes a seg fault. Why? Doesn't the json_array_add_object_element increase the reference count?*/
 
             gtk_tree_model_iter_next(GTK_TREE_MODEL(list_store_temporary), &iter_temporary);
         }
@@ -209,9 +209,9 @@ static void save_listing(GtkWidget *widget, gpointer data) {
         /* Go write the JsonGenerator to a file. */
         save_account_numbers(generator);
 
-       // g_object_unref(generator);
-       // g_object_unref(object);
-       // g_object_unref(account_array);
+       g_object_unref(generator);
+       json_object_unref(object);
+       json_array_unref(account_array);
 
         g_free(account_number);
         g_free(account_name);
@@ -222,7 +222,7 @@ static void save_listing(GtkWidget *widget, gpointer data) {
         GtkWidget *account_button_revert = get_child_from_parent(accounts_buttons_hbox, BUTTON_NAME_REVERT);
         gtk_widget_set_sensitive(account_button_revert, FALSE);
         GtkWidget *account_button_save = get_child_from_parent(accounts_buttons_hbox, BUTTON_NAME_SAVE);
-        gtk_widget_set_sensitive(account_button_save, FALSE);
+        gtk_widget_set_sensitive(account_button_save, TRUE);
         GtkWidget *account_button_delete = get_child_from_parent(accounts_buttons_hbox, BUTTON_NAME_DELETE);
         gtk_widget_set_sensitive(account_button_delete, FALSE);
 
