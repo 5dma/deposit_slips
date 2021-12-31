@@ -42,14 +42,13 @@ void on_app_activate(GApplication *app, gpointer data) {
     /* Place items in the temporary account list into list_builder. */
     g_slist_foreach(list_accounts_from_disk, build_list_store, list_store_master);
     g_slist_foreach(list_accounts_from_disk, build_list_store, list_store_temporary);
-    g_slist_free_full(list_accounts_from_disk, (GDestroyNotify) free_gslist_account);
+    g_slist_free_full(list_accounts_from_disk, (GDestroyNotify)free_gslist_account);
 
     /* A hash table for passing pointers to callbacks */
     GHashTable *pointer_passer = g_hash_table_new(g_int_hash, g_int_equal);
 
     g_hash_table_insert(pointer_passer, &KEY_LIST_STORE_MASTER, list_store_master);
     g_hash_table_insert(pointer_passer, &KEY_LIST_STORE_TEMPORARY, list_store_temporary);
-
 
     /* Make the view for the Accounts tab. */
     GtkWidget *accounts_tab_tree = make_tree_view(list_store_temporary);
@@ -76,7 +75,7 @@ void on_app_activate(GApplication *app, gpointer data) {
     /* This needs to be removed, because we want the UI to ensure there is at least one check. */
     static gboolean at_least_one_check = TRUE;
     g_hash_table_insert(pointer_passer, &KEY_AT_LEAST_ONE_CHECK, &at_least_one_check);
- 
+
     gtk_widget_show_all(GTK_WIDGET(window));
     g_hash_table_insert(pointer_passer, &KEY_APPLICATION_WINDOW, window);
 
@@ -85,8 +84,12 @@ void on_app_activate(GApplication *app, gpointer data) {
     GtkTreeView *account_tree_view_deposit_slip = GTK_TREE_VIEW(g_hash_table_lookup(pointer_passer, &KEY_CHECKS_ACCOUNTS_TREEVIEW));
     gtk_tree_view_set_cursor(account_tree_view_deposit_slip, path, NULL, FALSE);
 
+    /* Emit row-activated signal on the account tree in the slips tab to populate the description correctly.  */
+    GtkWidget *check_accounts_tree_view = (GtkWidget *)g_hash_table_lookup(pointer_passer, &KEY_CHECKS_ACCOUNTS_TREEVIEW);
+    g_signal_emit_by_name(G_OBJECT(check_accounts_tree_view), "row-activated", NULL);
+
+
     /* Draw the preview. */
     GtkDrawingArea *drawing_area = (GtkDrawingArea *)g_hash_table_lookup(pointer_passer, &KEY_DRAWING_AREA);
     gtk_widget_queue_draw(GTK_WIDGET(drawing_area));
-
 }
