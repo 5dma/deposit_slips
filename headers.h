@@ -62,7 +62,7 @@ GDestroyNotify free_gslist_account(gpointer data);
 
 
 /**
- * Structure of an account record.
+ * Current UI state of a selected check.
  */
 typedef struct CheckSelections {
     GtkTreePath *path; /**< Path to selected check. */

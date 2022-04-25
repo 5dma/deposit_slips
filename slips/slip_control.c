@@ -21,16 +21,22 @@
  * \sa check_toggle_clicked()
 */
 gboolean examine_all_check_checkboxes(GtkTreeModel *model,
-                                      GtkTreePath *path,
-                                      GtkTreeIter *iter,
-                                      gpointer data) {
+                                  GtkTreePath *path,
+                                  GtkTreeIter *iter,
+                                  gpointer data) {
     gboolean value;
-    gboolean *checkbox_checked = (gboolean *)data;
-    gtk_tree_model_get(model, iter, CHECK_CHECKBOX, &value, -1);
-    if (value == TRUE) {
-        *checkbox_checked = TRUE;
-        return TRUE;
+    CheckSelection *check_selection = (CheckSelection *)data;
+    gchar *path_string = gtk_tree_path_to_string (path);
+
+    if (gtk_tree_model_get_iter_from_string(model, iter, path_string)) {
+        if (gtk_tree_path_compare(path, check_selection->path) == 0) {
+            gtk_tree_model_get(model, iter, CHECK_RADIO, &value, -1);
+            gtk_list_store_set(GTK_LIST_STORE(model), iter, CHECK_RADIO, !value, -1);
+        } else {
+            gtk_list_store_set(GTK_LIST_STORE(model), iter, CHECK_RADIO, FALSE, -1);
+        }
     }
+    g_free(path_string);
     return FALSE;
 }
 
@@ -78,22 +84,27 @@ static void check_toggle_clicked(GtkCellRendererToggle *renderer,
     gboolean value;
     model = gtk_tree_view_get_model(treeview);
     if (gtk_tree_model_get_iter_from_string(model, &iter, path)) {
-        gtk_tree_model_get(model, &iter, CHECK_CHECKBOX, &value, -1);
-        gtk_list_store_set(GTK_LIST_STORE(model), &iter, CHECK_CHECKBOX, !value, -1);
+        gtk_tree_model_get(model, &iter, CHECK_RADIO, &value, -1);
+        gtk_list_store_set(GTK_LIST_STORE(model), &iter, CHECK_RADIO, !value, -1);
     }
 
-    gboolean at_least_one_checkbox_set = FALSE;
+    CheckSelection check_selection;
+    check_selection.path = gtk_tree_path_new_from_string(path);
+    check_selection.at_least_one_check_selected = FALSE;
 
-    gtk_tree_model_foreach(model, examine_all_check_checkboxes, &at_least_one_checkbox_set);
+    gtk_tree_model_foreach(model, examine_all_check_checkboxes, &check_selection);
 
     GtkWidget *slip_tab = gtk_widget_get_parent(GTK_WIDGET(treeview));
     GtkWidget *check_button_delete = get_child_from_parent(slip_tab, BUTTON_CHECK_DELETE);
 
-    if (at_least_one_checkbox_set == TRUE) {
+    if (check_selection.at_least_one_check_selected == TRUE) {
         gtk_widget_set_sensitive(check_button_delete, TRUE);
     } else {
         gtk_widget_set_sensitive(check_button_delete, FALSE);
     }
+
+    g_object_unref(check_selection.path);
+    g_free(&check_selection);
 }
 
 /**
@@ -102,14 +113,22 @@ static void check_toggle_clicked(GtkCellRendererToggle *renderer,
     @param data Void pointer to the temporary list store.
 */
 static void add_check_row(GtkWidget *widget, gpointer data) {
-    GtkListStore *list_store = (GtkListStore *)data;
+    GHashTable *pointer_passer = (GHashTable *)data;
+    GtkListStore *checks_store = (GtkListStore *)(g_hash_table_lookup(pointer_passer, &KEY_CHECKS_STORE)); /* Reference count decremented below */
 
     GtkTreeIter iter;
-    gtk_list_store_append(list_store, &iter);
-    gtk_list_store_set(list_store, &iter,
+    gtk_list_store_append(checks_store, &iter);
+    gtk_list_store_set(checks_store, &iter,
                        CHECK_AMOUNT, NEW_AMOUNT,
-                       CHECK_CHECKBOX, FALSE,
+                       CHECK_RADIO, FALSE,
                        -1);
+    /* We successfully added a row, and there is room for only two rows. Therefore,
+    set the button's sensitivity to FALSE to prevent the user from adding another row. */
+    gtk_widget_set_sensitive(widget, FALSE);
+
+    /* After adding a row, enable the radio buttons to delete one of the rows. */
+    GtkCellRenderer *rendererToggle = GTK_CELL_RENDERER(g_hash_table_lookup(pointer_passer, &KEY_RADIO_RENDERER));
+    g_object_set(rendererToggle, "activatable", TRUE, NULL);
 }
 
 /**
@@ -127,7 +146,7 @@ static void delete_check_row(GtkWidget *widget, gpointer data) {
     gboolean found_first = gtk_tree_model_get_iter_first(GTK_TREE_MODEL(data), &iter);
 
     do {
-        gtk_tree_model_get_value(GTK_TREE_MODEL(data), &iter, CHECK_CHECKBOX, &gvalue);
+        gtk_tree_model_get_value(GTK_TREE_MODEL(data), &iter, CHECK_RADIO, &gvalue);
 
         if (g_value_get_boolean(&gvalue) == TRUE) {
             removed_last_row = !gtk_list_store_remove(list_store, &iter);
@@ -138,4 +157,8 @@ static void delete_check_row(GtkWidget *widget, gpointer data) {
             still_in_list = gtk_tree_model_iter_next(GTK_TREE_MODEL(data), &iter);
         }
     } while (still_in_list && !removed_last_row);
+
+    /* We successfully deleted the second row, which means only the first row remains. Therefore,
+    set the button's sensitivity to FALSE to prevent the user from deleting this first row. */
+    gtk_widget_set_sensitive(widget, FALSE);
 }
