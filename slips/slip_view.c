@@ -129,11 +129,16 @@ GtkWidget *make_checks_view(GHashTable *pointer_passer) {
 
     columnToggle = gtk_tree_view_column_new_with_attributes("Delete",
                                                             rendererToggle,
-                                                            "active", CHECK_CHECKBOX,
+                                                            "active", CHECK_RADIO,
                                                             NULL);
 
+    gtk_cell_renderer_toggle_set_radio(GTK_CELL_RENDERER_TOGGLE(rendererToggle), TRUE);
+
     /* g_object_set sets a renderer's properties. */
-    g_object_set(rendererToggle, "activatable", TRUE, "active", FALSE, NULL);
+    g_object_set(rendererToggle, "activatable", FALSE, "active", FALSE, NULL);
+
+    /* Add the renderer to the pointer passer, as it is used in various callbacks. */
+    g_hash_table_insert(pointer_passer, &KEY_RADIO_RENDERER, rendererToggle);
 
     /* Every time a delete checkbox is toggled, set certain buttons to be sensitive. */
     g_signal_connect(G_OBJECT(rendererToggle), "toggled", G_CALLBACK(check_toggle_clicked), tree);
@@ -183,7 +188,6 @@ GtkWidget *make_slip_view(GHashTable *pointer_passer) {
     gtk_widget_set_halign(btnChecksDelete, GTK_ALIGN_CENTER);
     gtk_widget_set_halign(btnSlipPrint, GTK_ALIGN_CENTER);
 
-
     GtkWidget *drawing_area = gtk_drawing_area_new();
 
     g_hash_table_insert(pointer_passer, &KEY_DRAWING_AREA, drawing_area);
@@ -197,14 +201,14 @@ GtkWidget *make_slip_view(GHashTable *pointer_passer) {
     gtk_list_store_append(checks_store, &trashiter);
     gtk_list_store_set(checks_store, &trashiter,
                        CHECK_AMOUNT, "1.00",
-                       CHECK_CHECKBOX, FALSE,
+                       CHECK_RADIO, FALSE,
                        -1);
 
     g_hash_table_insert(pointer_passer, &KEY_CHECKS_STORE, checks_store);
 
     GtkWidget *tree_checks = make_checks_view(pointer_passer);
     /* When clicking the add button, add a row to the view */
-    g_signal_connect(btnChecksAdd, "clicked", G_CALLBACK(add_check_row), checks_store);
+    g_signal_connect(btnChecksAdd, "clicked", G_CALLBACK(add_check_row), pointer_passer);
     /* When clicking the delete button, remove rows whose checkbox is marked. */
     g_signal_connect(btnChecksDelete, "clicked", G_CALLBACK(delete_check_row), checks_store);
     /* When clicking the preint button, print the deposit slip. */

@@ -24,7 +24,7 @@ enum {
 */
 enum {
     CHECK_AMOUNT, /**< 0 */
-    CHECK_CHECKBOX,  /**< 1 */
+    CHECK_RADIO,  /**< 1 */
     SLIP_COLUMNS /**< 2 */
 };
 
@@ -58,5 +58,16 @@ void print_deposit_slip(GtkButton *self, gpointer data);
 gchar *comma_formatted_amount(gfloat *amount);
 
 GDestroyNotify free_gslist_account(gpointer data);
+
+
+
+/**
+ * Structure of an account record.
+ */
+typedef struct CheckSelections {
+    GtkTreePath *path; /**< Path to selected check. */
+    gboolean at_least_one_check_selected; /**< Indicates at least one check is selected */
+} CheckSelection;
+
 #endif
 

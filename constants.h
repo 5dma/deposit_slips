@@ -68,6 +68,8 @@ static gint KEY_CHECK_CELL_RENDERER = 10;
 static gint KEY_AT_LEAST_ONE_CHECK = 11;
 /** Hash key for the pointer to the application window.  */
 static gint KEY_APPLICATION_WINDOW = 12;
+/** Hash key for the pointer to the renderer for radio buttons.  */
+static gint KEY_RADIO_RENDERER = 13;
 
 
 /** Font size for dynamic info (name, account number, date) on printed slip. */

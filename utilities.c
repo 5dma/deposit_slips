@@ -28,7 +28,7 @@ GtkWidget *get_child_from_parent(GtkWidget *parent, const gchar *child_name) {
 
 /**
 Frees memory a GSList of accounts. Called from free_memory().
-@param data Pointer to user data, which is to an Account entry in a GSList.
+* @param data Pointer to user data, which is to an Account entry in a GSList.
 */
 GDestroyNotify free_gslist_account(gpointer data) {
     Account *account = (Account *)data;
