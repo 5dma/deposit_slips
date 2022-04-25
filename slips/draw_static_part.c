@@ -25,12 +25,12 @@ void deposit_amount_edited(GtkCellRendererText *self,
                            gchar *path,
                            gchar *new_text,
                            gpointer data) {
-    GHashTable *pointer_passer = (GHashTable *)data;
+    Data_passer *data_passer = (Data_passer *)data;
 
     GtkTreeIter iter;
     GtkTreeModel *model;
 
-    GtkTreeView *tree_view = (GtkTreeView *)g_hash_table_lookup(pointer_passer, &KEY_CHECK_TREE_VIEW);
+    GtkTreeView *tree_view = (GtkTreeView *)data_passer->check_tree_view;
     model = gtk_tree_view_get_model(tree_view);
 
     if (gtk_tree_model_get_iter_from_string(model, &iter, path)) {
@@ -40,7 +40,7 @@ void deposit_amount_edited(GtkCellRendererText *self,
         g_free(formatted_amount);
     }
 
-    GtkDrawingArea *drawing_area = (GtkDrawingArea *)g_hash_table_lookup(pointer_passer, &KEY_DRAWING_AREA);
+    GtkDrawingArea *drawing_area = (GtkDrawingArea *)data_passer->drawing_area;
     gtk_widget_queue_draw(GTK_WIDGET(drawing_area));
     
 }
@@ -58,8 +58,8 @@ gboolean preview_deposit_amounts(GtkTreeModel *model,
                                GtkTreePath *path,
                                GtkTreeIter *iter,
                                gpointer data) {
-    GHashTable *pointer_passer = (GHashTable *)data;
-    cairo_t *cr = (cairo_t *)g_hash_table_lookup(pointer_passer, &KEY_CAIRO_CONTEXT);
+    Data_passer *data_passer = (Data_passer *)data;
+
     gchar *amount;
     gtk_tree_model_get(model, iter, CHECK_AMOUNT, &amount, -1);
     gchar *pathstring = gtk_tree_path_to_string(path);
@@ -83,8 +83,8 @@ gboolean preview_deposit_amounts(GtkTreeModel *model,
         &gerror);    /* pointer for GError *. */
 
 
-    cairo_select_font_face(cr, "DejaVuMono", CAIRO_FONT_SLANT_NORMAL, CAIRO_FONT_WEIGHT_BOLD);
-    cairo_set_font_size(cr, 16);
+    cairo_select_font_face(data_passer->cairo_context, "DejaVuMono", CAIRO_FONT_SLANT_NORMAL, CAIRO_FONT_WEIGHT_BOLD);
+    cairo_set_font_size(data_passer->cairo_context, 16);
 
     /* Get the formatted string corresponding to this check's amount. */
     gfloat current_amount = atof(amount);
@@ -92,21 +92,20 @@ gboolean preview_deposit_amounts(GtkTreeModel *model,
 
     /* Move to the correct position to print the amount such that it is right-aligned. */
     cairo_text_extents_t extents;
-    cairo_text_extents(cr, formatted_total, &extents);
-    cairo_move_to(cr, RIGHT_MARGIN_SCREEN - extents.width, (row_number * (extents.height + 7)) + 40);
-    cairo_show_text(cr, formatted_total);
+    cairo_text_extents(data_passer->cairo_context, formatted_total, &extents);
+    cairo_move_to(data_passer->cairo_context, RIGHT_MARGIN_SCREEN - extents.width, (row_number * (extents.height + 7)) + 40);
+    cairo_show_text(data_passer->cairo_context, formatted_total);
     g_free(formatted_total);
 
     /* Increment the total of all amounts in the deposit slip and update its
     value in the hash table of passed pointers. */
-    gfloat *total_deposit = (gfloat *)g_hash_table_lookup(pointer_passer, &KEY_TOTAL_DEPOSIT);
 
-    gfloat current_total = *total_deposit;
+    gfloat current_total = data_passer->total_deposit;
 
     float amount_float = atof((char *)amount);
     current_total += amount_float;
 
-    *total_deposit = current_total;
+    data_passer->total_deposit = current_total;
 
     g_free(amount);
     g_free(pathstring);

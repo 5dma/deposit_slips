@@ -76,17 +76,14 @@ static void delete_row(GtkWidget *widget, gpointer data) {
     @param data Void pointer to hash table pointer passer. The hash table holds pointers to both stores, master and temporary.
 */
 static void revert_listing(GtkWidget *widget, gpointer data) {
-    GHashTable *pointer_passer = (GHashTable *)data;
+    Data_passer *data_passer = (Data_passer *)data;
 
-    GtkListStore *list_store_master = GTK_LIST_STORE(g_hash_table_lookup(pointer_passer, &KEY_LIST_STORE_MASTER));
-    GtkListStore *list_store_temporary = GTK_LIST_STORE(g_hash_table_lookup(pointer_passer, &KEY_LIST_STORE_TEMPORARY));
-
-    gtk_list_store_clear(list_store_temporary);
+    gtk_list_store_clear(data_passer->list_store_temporary);
 
     GtkTreeIter iter_master;
     GtkTreeIter iter_temporary;
 
-    gboolean found_first_iter_master = gtk_tree_model_get_iter_first(GTK_TREE_MODEL(list_store_master), &iter_master);
+    gboolean found_first_iter_master = gtk_tree_model_get_iter_first(GTK_TREE_MODEL(data_passer->list_store_master), &iter_master);
 
     if (found_first_iter_master) {
         /* gchar pointers for reading the entries from the master store */
@@ -95,8 +92,8 @@ static void revert_listing(GtkWidget *widget, gpointer data) {
         gchar *account_description = NULL;
         gchar *routing_number = NULL;
 
-        while (gtk_list_store_iter_is_valid(list_store_master, &iter_master)) {
-            gtk_tree_model_get(GTK_TREE_MODEL(list_store_master), &iter_master,
+        while (gtk_list_store_iter_is_valid(data_passer->list_store_master, &iter_master)) {
+            gtk_tree_model_get(GTK_TREE_MODEL(data_passer->list_store_master), &iter_master,
                                ACCOUNT_NUMBER, &account_number,
                                ACCOUNT_NAME, &account_name,
                                DESCRIPTION, &account_description,
@@ -104,16 +101,16 @@ static void revert_listing(GtkWidget *widget, gpointer data) {
                                -1);
 
             /* Add the entry from the master store to the temporary store */
-            gtk_list_store_append(list_store_temporary, &iter_temporary);
+            gtk_list_store_append(data_passer->list_store_temporary, &iter_temporary);
 
-            gtk_list_store_set(list_store_temporary, &iter_temporary,
+            gtk_list_store_set(data_passer->list_store_temporary, &iter_temporary,
                                ACCOUNT_NUMBER, account_number,
                                ACCOUNT_NAME, account_name,
                                DESCRIPTION, account_description,
                                ROUTING_NUMBER, routing_number,
                                -1);
 
-            gtk_tree_model_iter_next(GTK_TREE_MODEL(list_store_master), &iter_master);
+            gtk_tree_model_iter_next(GTK_TREE_MODEL(data_passer->list_store_master), &iter_master);
         }
         g_free(account_number);
         g_free(account_name);
@@ -140,15 +137,12 @@ static void revert_listing(GtkWidget *widget, gpointer data) {
     \sa save_account_numbers()
 */
 static void save_listing(GtkWidget *widget, gpointer data) {
-    GHashTable *pointer_passer = (GHashTable *)data;
-
-    GtkListStore *list_store_master = GTK_LIST_STORE(g_hash_table_lookup(pointer_passer, &KEY_LIST_STORE_MASTER));
-    GtkListStore *list_store_temporary = GTK_LIST_STORE(g_hash_table_lookup(pointer_passer, &KEY_LIST_STORE_TEMPORARY));
+    Data_passer *data_passer = (Data_passer *)data;
 
     GtkTreeIter iter_master;
     GtkTreeIter iter_temporary;
 
-    gboolean found_first_iter_temporary = gtk_tree_model_get_iter_first(GTK_TREE_MODEL(list_store_temporary), &iter_temporary);
+    gboolean found_first_iter_temporary = gtk_tree_model_get_iter_first(GTK_TREE_MODEL(data_passer->list_store_temporary), &iter_temporary);
 
     if (found_first_iter_temporary) {
         /* gchar pointers for reading the entries from the master store. These variables are freed below. */
@@ -160,10 +154,10 @@ static void save_listing(GtkWidget *widget, gpointer data) {
         /* A JSON array of accounts. Memory freed below. */
         JsonArray *account_array = json_array_new();
 
-        gtk_list_store_clear(list_store_master);
+        gtk_list_store_clear(data_passer->list_store_master);
 
-        while (gtk_list_store_iter_is_valid(list_store_temporary, &iter_temporary)) {
-            gtk_tree_model_get(GTK_TREE_MODEL(list_store_temporary), &iter_temporary,
+        while (gtk_list_store_iter_is_valid(data_passer->list_store_temporary, &iter_temporary)) {
+            gtk_tree_model_get(GTK_TREE_MODEL(data_passer->list_store_temporary), &iter_temporary,
                                ACCOUNT_NUMBER, &account_number,
                                ACCOUNT_NAME, &account_name,
                                DESCRIPTION, &account_description,
@@ -171,9 +165,9 @@ static void save_listing(GtkWidget *widget, gpointer data) {
                                -1);
 
             /* Add the entry from the master store to the temporary store */
-            gtk_list_store_append(list_store_master, &iter_master);
+            gtk_list_store_append(data_passer->list_store_master, &iter_master);
 
-            gtk_list_store_set(list_store_master, &iter_master,
+            gtk_list_store_set(data_passer->list_store_master, &iter_master,
                                ACCOUNT_NUMBER, account_number,
                                ACCOUNT_NAME, account_name,
                                DESCRIPTION, account_description,
@@ -191,7 +185,7 @@ static void save_listing(GtkWidget *widget, gpointer data) {
             json_array_add_object_element(account_array, account);
             //json_object_unref(account); /* This statement causes a seg fault. Why? Doesn't the json_array_add_object_element increase the reference count?*/
 
-            gtk_tree_model_iter_next(GTK_TREE_MODEL(list_store_temporary), &iter_temporary);
+            gtk_tree_model_iter_next(GTK_TREE_MODEL(data_passer->list_store_temporary), &iter_temporary);
         }
 
         /* Create the top-level JSON object. */
@@ -235,11 +229,11 @@ static void save_listing(GtkWidget *widget, gpointer data) {
 
 /**
     Constructs the view for the four buttons in the Accounts tab.
-    @param pointer_passer Pointer to hash table. This parameter
+    @param data_passer Pointer to hash table. This parameter
     is passed to the callbacks for adding, deleting, reverting, and saving changes.
     @return An HBox containing the four buttons and associated callbacks.
 */
-GtkWidget *make_accounts_buttons_hbox(GHashTable *pointer_passer) {
+GtkWidget *make_accounts_buttons_hbox(Data_passer *data_passer) {
     GtkWidget *local_hbox;
 
     GtkWidget *account_button_add = gtk_button_new_from_icon_name("gtk-add", GTK_ICON_SIZE_BUTTON);
@@ -269,12 +263,10 @@ GtkWidget *make_accounts_buttons_hbox(GHashTable *pointer_passer) {
     gtk_widget_set_sensitive(account_button_revert, FALSE);
     gtk_widget_set_sensitive(account_button_save, TRUE);
 
-    GtkListStore *list_store_temporary = GTK_LIST_STORE(g_hash_table_lookup(pointer_passer, &KEY_LIST_STORE_TEMPORARY));
-
-    g_signal_connect(account_button_add, "clicked", G_CALLBACK(add_row), list_store_temporary);
-    g_signal_connect(account_button_delete, "clicked", G_CALLBACK(delete_row), list_store_temporary);
-    g_signal_connect(account_button_revert, "clicked", G_CALLBACK(revert_listing), pointer_passer);
-    g_signal_connect(account_button_save, "clicked", G_CALLBACK(save_listing), pointer_passer);
+    g_signal_connect(account_button_add, "clicked", G_CALLBACK(add_row), data_passer->list_store_temporary);
+    g_signal_connect(account_button_delete, "clicked", G_CALLBACK(delete_row), data_passer->list_store_temporary);
+    g_signal_connect(account_button_revert, "clicked", G_CALLBACK(revert_listing), data_passer);
+    g_signal_connect(account_button_save, "clicked", G_CALLBACK(save_listing), data_passer);
 
     return local_hbox;
 }

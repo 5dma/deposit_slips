@@ -17,13 +17,11 @@
  * @param pointer_passer Hash table of pointers. This function uses the pointer to the master list of account numbers.
  * @return A tree view of account numbers.
 */
-GtkWidget *make_account_view(GHashTable *pointer_passer) {
+GtkWidget *make_account_view(Data_passer *data_passer) {
     GtkTreeIter iter;
     GtkWidget *tree_view;
 
-    GtkListStore *list_store_master = GTK_LIST_STORE(g_hash_table_lookup(pointer_passer, &KEY_LIST_STORE_MASTER));
-
-    tree_view = gtk_tree_view_new_with_model(GTK_TREE_MODEL(list_store_master));
+    tree_view = gtk_tree_view_new_with_model(GTK_TREE_MODEL(data_passer->list_store_master));
 
     g_object_set(tree_view, "enable-grid-lines", GTK_TREE_VIEW_GRID_LINES_BOTH, NULL);
 
@@ -90,15 +88,13 @@ void started_cell_editing(GtkCellRenderer *self, GtkCellEditable *editable, gcha
  * @param pointer_passer Hash table of pointers. This function uses the pointer to the `ListStore` of checks.
  * @return A tree view with two columns: one for amounts, another a checkbox to delete an amount.
 */
-GtkWidget *make_checks_view(GHashTable *pointer_passer) {
+GtkWidget *make_checks_view(Data_passer *data_passer) {
     GtkTreeIter iter;
     GtkWidget *tree;
 
-    GtkListStore *checks_store = (GtkListStore *)(g_hash_table_lookup(pointer_passer, &KEY_CHECKS_STORE)); /* Reference count decremented below */
+    tree = gtk_tree_view_new_with_model(GTK_TREE_MODEL(data_passer->checks_store));
 
-    tree = gtk_tree_view_new_with_model(GTK_TREE_MODEL(checks_store));
-
-    g_hash_table_insert(pointer_passer, &KEY_CHECK_TREE_VIEW, tree);
+    data_passer->checks_accounts_treeview = tree;
     g_object_set(tree, "enable-grid-lines", GTK_TREE_VIEW_GRID_LINES_BOTH, NULL);
 
     GtkCellRenderer *rendererChecks;
@@ -115,10 +111,10 @@ GtkWidget *make_checks_view(GHashTable *pointer_passer) {
     g_object_set(rendererChecks, "editable", TRUE, "editable-set", TRUE, NULL);
 
     /* Add the pointer to the cell renderer, because we need it in draw_preview */
-    g_hash_table_insert(pointer_passer, &KEY_CHECK_CELL_RENDERER, rendererChecks);
+    data_passer->check_cell_renderer = rendererChecks;
 
     /* Every time a cell in the Checks column is editing, redraw the preview. */
-    g_signal_connect(G_OBJECT(rendererChecks), "edited", G_CALLBACK(deposit_amount_edited), pointer_passer);
+    g_signal_connect(G_OBJECT(rendererChecks), "edited", G_CALLBACK(deposit_amount_edited), data_passer);
 
     /* Connect to a callback that captures the GtkEdit used to edit a cell. We use that callback to monitor the keys pressed inside the cell. */
     g_signal_connect(rendererChecks, "editing-started", G_CALLBACK(started_cell_editing), NULL);
@@ -138,7 +134,7 @@ GtkWidget *make_checks_view(GHashTable *pointer_passer) {
     g_object_set(rendererToggle, "activatable", FALSE, "active", FALSE, NULL);
 
     /* Add the renderer to the pointer passer, as it is used in various callbacks. */
-    g_hash_table_insert(pointer_passer, &KEY_RADIO_RENDERER, rendererToggle);
+    data_passer->radio_renderer = rendererToggle;
 
     /* Every time a delete checkbox is toggled, set certain buttons to be sensitive. */
     g_signal_connect(G_OBJECT(rendererToggle), "toggled", G_CALLBACK(check_toggle_clicked), tree);
@@ -146,7 +142,7 @@ GtkWidget *make_checks_view(GHashTable *pointer_passer) {
     gtk_tree_view_append_column(GTK_TREE_VIEW(tree), columnChecks);
     gtk_tree_view_append_column(GTK_TREE_VIEW(tree), columnToggle);
 
-    g_object_unref(checks_store); /* destroy model automatically with view */
+    g_object_unref(data_passer->checks_store); /* destroy model automatically with view */
 
     return tree;
 }
@@ -154,10 +150,10 @@ GtkWidget *make_checks_view(GHashTable *pointer_passer) {
 /**
  * Creates a view for the deposit slip. The view contains a list of accounts,
  * a list of checks to deposit (amount only), and a preview of the deposit slip.
- * @param pointer_passer Pointer to the hash table of passed pointers.
+ * @param data_passer Pointer to the hash table of passed pointers.
  * @return A widget containing the three widgets described above.
  */
-GtkWidget *make_slip_view(GHashTable *pointer_passer) {
+GtkWidget *make_slip_view(Data_passer *data_passer) {
     GtkWidget *lblAccount = gtk_label_new("Accounts");
     GtkWidget *lblChecks = gtk_label_new("Checks");
     GtkWidget *lblAccountDescription = gtk_label_new("Description");
@@ -190,11 +186,11 @@ GtkWidget *make_slip_view(GHashTable *pointer_passer) {
 
     GtkWidget *drawing_area = gtk_drawing_area_new();
 
-    g_hash_table_insert(pointer_passer, &KEY_DRAWING_AREA, drawing_area);
+    data_passer->drawing_area = drawing_area;
 
-    GtkWidget *treeAccounts = make_account_view(pointer_passer);
+    GtkWidget *treeAccounts = make_account_view(data_passer);
 
-    g_hash_table_insert(pointer_passer, &KEY_CHECKS_ACCOUNTS_TREEVIEW, treeAccounts);
+    data_passer->checks_accounts_treeview = treeAccounts;
 
     GtkListStore *checks_store = gtk_list_store_new(SLIP_COLUMNS, G_TYPE_STRING, G_TYPE_BOOLEAN);
     GtkTreeIter trashiter;
@@ -204,15 +200,15 @@ GtkWidget *make_slip_view(GHashTable *pointer_passer) {
                        CHECK_RADIO, FALSE,
                        -1);
 
-    g_hash_table_insert(pointer_passer, &KEY_CHECKS_STORE, checks_store);
+    data_passer->checks_store = checks_store;
 
-    GtkWidget *tree_checks = make_checks_view(pointer_passer);
+    GtkWidget *tree_checks = make_checks_view(data_passer);
     /* When clicking the add button, add a row to the view */
-    g_signal_connect(btnChecksAdd, "clicked", G_CALLBACK(add_check_row), pointer_passer);
+    g_signal_connect(btnChecksAdd, "clicked", G_CALLBACK(add_check_row), data_passer);
     /* When clicking the delete button, remove rows whose checkbox is marked. */
     g_signal_connect(btnChecksDelete, "clicked", G_CALLBACK(delete_check_row), checks_store);
     /* When clicking the preint button, print the deposit slip. */
-    g_signal_connect(btnSlipPrint, "clicked", G_CALLBACK(print_deposit_slip), pointer_passer);
+    g_signal_connect(btnSlipPrint, "clicked", G_CALLBACK(print_deposit_slip), data_passer);
 
     GtkWidget *gridSlip = gtk_grid_new();
     /* First column of grid */
@@ -231,11 +227,11 @@ GtkWidget *make_slip_view(GHashTable *pointer_passer) {
 
     gtk_widget_set_size_request(drawing_area, 500, 150);
 
-    /* When the draw signal is fired on the drawing area (which can happen billions of time)
+    /* When the draw signal is fired on the drawing area (which can happen billions of times)
     from GTKs internal messaging), go redraw the deposit slip preview. */
-    g_signal_connect(G_OBJECT(drawing_area), "draw", G_CALLBACK(draw_preview), pointer_passer);
+    g_signal_connect(G_OBJECT(drawing_area), "draw", G_CALLBACK(draw_preview), data_passer);
 
-    /* Need to prevent the the print button from expanding to the width of the grid column. */
+    /* Prevent the print button from expanding to the width of the grid column. */
     gtk_grid_attach(GTK_GRID(gridSlip), btnSlipPrint, 3, 3, 1, 1);
 
     gtk_grid_set_column_spacing(GTK_GRID(gridSlip), 20);

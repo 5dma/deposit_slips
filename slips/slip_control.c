@@ -113,12 +113,11 @@ static void check_toggle_clicked(GtkCellRendererToggle *renderer,
     @param data Void pointer to the temporary list store.
 */
 static void add_check_row(GtkWidget *widget, gpointer data) {
-    GHashTable *pointer_passer = (GHashTable *)data;
-    GtkListStore *checks_store = (GtkListStore *)(g_hash_table_lookup(pointer_passer, &KEY_CHECKS_STORE)); /* Reference count decremented below */
+    Data_passer *data_passer = (Data_passer *)data;
 
     GtkTreeIter iter;
-    gtk_list_store_append(checks_store, &iter);
-    gtk_list_store_set(checks_store, &iter,
+    gtk_list_store_append(data_passer->checks_store, &iter);
+    gtk_list_store_set(data_passer->checks_store, &iter,
                        CHECK_AMOUNT, NEW_AMOUNT,
                        CHECK_RADIO, FALSE,
                        -1);
@@ -127,8 +126,7 @@ static void add_check_row(GtkWidget *widget, gpointer data) {
     gtk_widget_set_sensitive(widget, FALSE);
 
     /* After adding a row, enable the radio buttons to delete one of the rows. */
-    GtkCellRenderer *rendererToggle = GTK_CELL_RENDERER(g_hash_table_lookup(pointer_passer, &KEY_RADIO_RENDERER));
-    g_object_set(rendererToggle, "activatable", TRUE, NULL);
+    g_object_set(data_passer->radio_renderer, "activatable", TRUE, NULL);
 }
 
 /**

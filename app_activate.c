@@ -17,7 +17,25 @@
  * @param data Pointer to passed data, `NULL` in this case.
 */
 void on_app_activate(GApplication *app, gpointer data) {
+
+     /* Structure for passing data to functions and callbacks */
+    Data_passer *data_passer = g_new(Data_passer, 1);
+
+    data_passer->list_store_master = NULL; 
+	data_passer->list_store_temporary = NULL; 
+	data_passer->cairo_context = NULL; 
+	data_passer->check_tree_view = NULL; 
+	data_passer->drawing_area = NULL; 
+	data_passer->checks_store = NULL; 
+	data_passer->total_deposit = 0; 
+	data_passer->checks_accounts_treeview = NULL;
+	data_passer->check_cell_renderer = NULL;
+	data_passer->at_least_one_check = TRUE;
+	data_passer->application_window = NULL;
+	data_passer->radio_renderer = NULL;
+
     GtkWidget *window = gtk_application_window_new(GTK_APPLICATION(app));
+    data_passer->application_window = window;
 
     GtkWidget *notebook = gtk_notebook_new();
 
@@ -32,9 +50,10 @@ void on_app_activate(GApplication *app, gpointer data) {
 
     /* This memory is free after application is destroyed in `free_memory()`. */
     GtkListStore *list_store_master = gtk_list_store_new(N_COLUMNS, G_TYPE_STRING, G_TYPE_STRING, G_TYPE_STRING, G_TYPE_STRING, G_TYPE_BOOLEAN);
-
+    data_passer->list_store_master = list_store_master;
     /* This memory is free after application is destroyed in `free_memory()`. */
     GtkListStore *list_store_temporary = gtk_list_store_new(N_COLUMNS, G_TYPE_STRING, G_TYPE_STRING, G_TYPE_STRING, G_TYPE_STRING, G_TYPE_BOOLEAN);
+    data_passer->list_store_temporary = list_store_temporary;
 
     /* Read account numbers from disk. This memory is freed  after adding the account numbers to list stores (a few lines down). */
     GSList *list_accounts_from_disk = read_account_numbers();
@@ -44,22 +63,18 @@ void on_app_activate(GApplication *app, gpointer data) {
     g_slist_foreach(list_accounts_from_disk, build_list_store, list_store_temporary);
     g_slist_free_full(list_accounts_from_disk, (GDestroyNotify)free_gslist_account);
 
-    /* A hash table for passing pointers to callbacks */
-    GHashTable *pointer_passer = g_hash_table_new(g_int_hash, g_int_equal);
-
-    g_hash_table_insert(pointer_passer, &KEY_LIST_STORE_MASTER, list_store_master);
-    g_hash_table_insert(pointer_passer, &KEY_LIST_STORE_TEMPORARY, list_store_temporary);
+   
 
     /* Make the view for the Accounts tab. */
     GtkWidget *accounts_tab_tree = make_tree_view(list_store_temporary);
     /* Make the view for the Slip  tab. */
-    GtkWidget *slips_tab_tree = make_slip_view(pointer_passer);
+    GtkWidget *slips_tab_tree = make_slip_view(data_passer);
 
     /* Upon destroying the application, free memory in data structures in pointer_passer. */
-    g_signal_connect(window, "destroy", G_CALLBACK(free_memory), pointer_passer);
+    g_signal_connect(window, "destroy", G_CALLBACK(free_memory), data_passer);
 
     /* Make buttons under the accounts in the Accounts tab. This should be part of make_tree_view. */
-    GtkWidget *accounts_buttons_hbox = make_accounts_buttons_hbox(pointer_passer);
+    GtkWidget *accounts_buttons_hbox = make_accounts_buttons_hbox(data_passer);
 
     /* Place the buttons in the Accounts tab. Again, should be part of make_tree_view. The TRUE parameter ensures the treeview maintains its initial height, even after deleting rows. */
     gtk_box_pack_start(GTK_BOX(vbox_accounts), accounts_tab_tree, TRUE, FALSE, 0);
@@ -68,28 +83,18 @@ void on_app_activate(GApplication *app, gpointer data) {
 
     gtk_container_add(GTK_CONTAINER(window), notebook);
 
-    /* Holds the total deposit, the sum of all deposited checks. */
-    gfloat total_deposit = 0.0;
-    g_hash_table_insert(pointer_passer, &KEY_TOTAL_DEPOSIT, &total_deposit);
-
-    /* This needs to be removed, because we want the UI to ensure there is at least one check. */
-    static gboolean at_least_one_check = TRUE;
-    g_hash_table_insert(pointer_passer, &KEY_AT_LEAST_ONE_CHECK, &at_least_one_check);
-
     gtk_widget_show_all(GTK_WIDGET(window));
-    g_hash_table_insert(pointer_passer, &KEY_APPLICATION_WINDOW, window);
 
     /* Select first row in accounts list of slips tab. */
     GtkTreePath *path = gtk_tree_path_new_from_string("0");
-    GtkTreeView *account_tree_view_deposit_slip = GTK_TREE_VIEW(g_hash_table_lookup(pointer_passer, &KEY_CHECKS_ACCOUNTS_TREEVIEW));
+    GtkTreeView *account_tree_view_deposit_slip = GTK_TREE_VIEW(data_passer->checks_accounts_treeview);
     gtk_tree_view_set_cursor(account_tree_view_deposit_slip, path, NULL, FALSE);
 
     /* Emit row-activated signal on the account tree in the slips tab to populate the description correctly.  */
-    GtkWidget *check_accounts_tree_view = (GtkWidget *)g_hash_table_lookup(pointer_passer, &KEY_CHECKS_ACCOUNTS_TREEVIEW);
-    g_signal_emit_by_name(G_OBJECT(check_accounts_tree_view), "row-activated", NULL);
+    g_signal_emit_by_name(G_OBJECT(data_passer->checks_accounts_treeview), "row-activated", NULL);
 
 
     /* Draw the preview. */
-    GtkDrawingArea *drawing_area = (GtkDrawingArea *)g_hash_table_lookup(pointer_passer, &KEY_DRAWING_AREA);
+    GtkDrawingArea *drawing_area = (GtkDrawingArea *)data_passer->drawing_area;
     gtk_widget_queue_draw(GTK_WIDGET(drawing_area));
 }

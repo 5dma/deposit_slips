@@ -34,7 +34,7 @@ gchar *comma_formatted_amount(gfloat *number) {
  * \li Adds the created `cairo_t` pointer to the has table of pointer passers so that the function can redraw the preview.
  * \li Draws the preview for the first time.
  * 
- * (There is a lot of commonality between this code and the one in draw_page(). However, the commonality was not enough to combine them into a single function.) 
+ * (There is a lot of commonality between this code and the one in draw_page(). However, the commonality is not enough to combine them into a single function.) 
  * @param widget Pointer to the preview area.
  * @param cr Pointer to the Cairo context.
  * @param data Pointer to the hash table of pointers.
@@ -42,13 +42,12 @@ gchar *comma_formatted_amount(gfloat *number) {
 */
 void draw_preview(GtkWidget *widget, cairo_t *cr, gpointer data) {
 
-    GHashTable *pointer_passer = (GHashTable *)data;
+    Data_passer *data_passer = (Data_passer *)data;
 
     GtkTreeIter iter;
     GtkTreeModel *model;
-    GtkListStore *checks_store = GTK_LIST_STORE(g_hash_table_lookup(pointer_passer, &KEY_CHECKS_STORE));
-    GtkWidget *accounts_tree = GTK_WIDGET(g_hash_table_lookup(pointer_passer, &KEY_CHECKS_ACCOUNTS_TREEVIEW));
-    GtkTreeSelection *tree_selection = gtk_tree_view_get_selection(GTK_TREE_VIEW(accounts_tree));
+
+    GtkTreeSelection *tree_selection = gtk_tree_view_get_selection(GTK_TREE_VIEW(data_passer->checks_accounts_treeview));
 
     gchar *routing_number = NULL;
     gchar *account_number = NULL;
@@ -144,9 +143,7 @@ void draw_preview(GtkWidget *widget, cairo_t *cr, gpointer data) {
 
     /* Check if any checks exist in the view. */
 
-    gboolean checks_exist = gtk_tree_model_get_iter_first(GTK_TREE_MODEL(checks_store), &iter);
-
-    gboolean *at_least_one_check = (gboolean *)(g_hash_table_lookup(pointer_passer, &KEY_AT_LEAST_ONE_CHECK));
+    gboolean checks_exist = gtk_tree_model_get_iter_first(GTK_TREE_MODEL(data_passer->checks_store), &iter);
 
     /* If any checks exist:
        a) Go print the deposit amounts of all existing checks.
@@ -154,12 +151,12 @@ void draw_preview(GtkWidget *widget, cairo_t *cr, gpointer data) {
        c) Print the total.
     */
 
-    if (*at_least_one_check == TRUE) {  // We need to get rid of this variable at_least_one_check because the UI should enforce at least one check.
-        g_hash_table_insert(pointer_passer, &KEY_CAIRO_CONTEXT, cr);
-        gtk_tree_model_foreach(GTK_TREE_MODEL(checks_store), preview_deposit_amounts, pointer_passer);
+    if (data_passer->at_least_one_check == TRUE) {  // We need to get rid of this variable at_least_one_check because the UI should enforce at least one check.
+        data_passer->cairo_context = cr;
+        gtk_tree_model_foreach(GTK_TREE_MODEL(data_passer->checks_store), preview_deposit_amounts, data_passer);
 
         /* Write total of checks deposited */
-        gfloat *current_total = (gfloat *)g_hash_table_lookup(pointer_passer, &KEY_TOTAL_DEPOSIT);
+        gfloat current_total = data_passer->total_deposit;
 
         /* Format the total string with thousands separators. There is similar code in
       draw_static_part.c:preview_deposit_amounts that should be put into a function. */
@@ -167,7 +164,7 @@ void draw_preview(GtkWidget *widget, cairo_t *cr, gpointer data) {
         
         /* Get the width of the total amount, and move to that point to print the total. */
         cairo_text_extents_t extents;
-        gchar *formatted_total = comma_formatted_amount(current_total);
+        gchar *formatted_total = comma_formatted_amount(&current_total);
         cairo_text_extents (cr, formatted_total, &extents);
         cairo_move_to(cr, RIGHT_MARGIN_SCREEN - extents.width, 125);
         cairo_show_text(cr, formatted_total);

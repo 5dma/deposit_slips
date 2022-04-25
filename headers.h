@@ -2,6 +2,9 @@
 #ifndef __HEADER
 #define __HEADER
 
+#include "constants.h"
+
+
 /**
  * @file headers.h
  * @brief C headers.
@@ -46,7 +49,7 @@ GtkWidget * make_tree_view(GtkListStore *list_store );
 
 GtkWidget * get_child_from_parent (GtkWidget * parent, const gchar * child_name);
 GSList *read_account_numbers();
-GtkWidget *make_accounts_buttons_hbox(GHashTable *pointer_passer);
+GtkWidget *make_accounts_buttons_hbox(Data_passer *data_passer);
 void free_memory (GtkWidget *window, gpointer user_data);
 
 gboolean preview_deposit_amounts(GtkTreeModel *model,

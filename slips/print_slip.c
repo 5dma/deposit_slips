@@ -22,8 +22,8 @@ gboolean print_deposit_amounts(GtkTreeModel *model,
                                GtkTreePath *path,
                                GtkTreeIter *iter,
                                gpointer data) {
-    GHashTable *pointer_passer = (GHashTable *)data;
-    cairo_t *cr = (cairo_t *)g_hash_table_lookup(pointer_passer, &KEY_CAIRO_CONTEXT);
+    Data_passer *data_passer = (Data_passer *)data;
+    cairo_t *cr = data_passer->cairo_context;
     gchar *amount;
     gtk_tree_model_get(model, iter, CHECK_AMOUNT, &amount, -1);
     gchar *pathstring = gtk_tree_path_to_string(path); /* Memory freed below. */
@@ -70,14 +70,13 @@ gboolean print_deposit_amounts(GtkTreeModel *model,
 
     /* Increment the total of all amounts in the deposit slip and update its
     value in the hash table of passed pointers. */
-    gfloat *total_deposit = (gfloat *)g_hash_table_lookup(pointer_passer, &KEY_TOTAL_DEPOSIT);
 
-    gfloat current_total = *total_deposit;
+    gfloat current_total = data_passer->total_deposit;
 
     float amount_float = atof((char *)amount);
     current_total += amount_float;
 
-    *total_deposit = current_total;
+    data_passer->total_deposit = current_total;
 
     g_free(amount);
     g_free(pathstring);
@@ -91,7 +90,8 @@ gboolean print_deposit_amounts(GtkTreeModel *model,
  * Callback fired when a print job prints a page. Prints the physical deposit slip. (There is a lot of commonality between this code and the one in draw_preview(). However, the commonality was not enough to combine them into a single function.) 
 */
 void draw_page(GtkPrintOperation *self, GtkPrintContext *context, gint page_nr, gpointer data) {
-    GHashTable *pointer_passer = (GHashTable *)data;
+
+    Data_passer *data_passer = (Data_passer *)data;
 
     gchar *routing_number = NULL;
     gchar *account_number = NULL;
@@ -100,8 +100,7 @@ void draw_page(GtkPrintOperation *self, GtkPrintContext *context, gint page_nr, 
     GtkTreeIter iter;
     GtkTreeModel *model;
 
-    GtkWidget *accounts_tree = GTK_WIDGET(g_hash_table_lookup(pointer_passer, &KEY_CHECKS_ACCOUNTS_TREEVIEW));
-    GtkTreeSelection *tree_selection = gtk_tree_view_get_selection(GTK_TREE_VIEW(accounts_tree));
+    GtkTreeSelection *tree_selection = gtk_tree_view_get_selection(GTK_TREE_VIEW(data_passer->checks_accounts_treeview));
 
     if (gtk_tree_selection_get_selected(tree_selection, &model, &iter)) {
         gtk_tree_model_get(model, &iter,
@@ -178,17 +177,16 @@ void draw_page(GtkPrintOperation *self, GtkPrintContext *context, gint page_nr, 
     cairo_restore(cr); /* Restore context 0 */
     g_free(account_with_transit);
 
-    g_hash_table_insert(pointer_passer, &KEY_CAIRO_CONTEXT, cr);
+    data_passer->cairo_context = cr;
     
-    GtkListStore *checks_store = GTK_LIST_STORE(g_hash_table_lookup(pointer_passer, &KEY_CHECKS_STORE));
-    gtk_tree_model_foreach(GTK_TREE_MODEL(checks_store), print_deposit_amounts, pointer_passer);
+    gtk_tree_model_foreach(GTK_TREE_MODEL(data_passer->checks_store), print_deposit_amounts, data_passer);
 
     /* Write total of checks deposited */
-    gfloat *current_total = (gfloat *)g_hash_table_lookup(pointer_passer, &KEY_TOTAL_DEPOSIT);
+    gfloat current_total =  data_passer->total_deposit;
 
     /* Get the width of the total amount, and move to that point to print the total. */
     cairo_text_extents_t extents;
-    gchar *formatted_total = comma_formatted_amount(current_total);
+    gchar *formatted_total = comma_formatted_amount(&current_total);
     cairo_text_extents(cr, formatted_total, &extents);
     cairo_move_to(cr, 153, extents.width + RIGHT_MARGIN_PRINT);
     cairo_save(cr); /* Save context 1 */
@@ -210,8 +208,7 @@ void draw_page(GtkPrintOperation *self, GtkPrintContext *context, gint page_nr, 
  * 
 */
 void print_deposit_slip(GtkButton *self, gpointer data) {
-    GHashTable *pointer_passer = (GHashTable *)data;
-    GtkWidget *application_window = GTK_WIDGET(g_hash_table_lookup(pointer_passer, &KEY_APPLICATION_WINDOW));
+    Data_passer *data_passer = (Data_passer *)data;
     GtkPrintOperation *operation;
     GError *error;
     gint res;
@@ -223,9 +220,9 @@ void print_deposit_slip(GtkButton *self, gpointer data) {
     gtk_print_operation_set_allow_async(operation, TRUE);
     gtk_print_operation_set_n_pages(operation, 1);
 
-    g_signal_connect(G_OBJECT(operation), "draw_page", G_CALLBACK(draw_page), pointer_passer);
+    g_signal_connect(G_OBJECT(operation), "draw_page", G_CALLBACK(draw_page), data_passer);
 
-    res = gtk_print_operation_run(operation, GTK_PRINT_OPERATION_ACTION_PRINT_DIALOG, GTK_WINDOW(application_window), &error);
+    res = gtk_print_operation_run(operation, GTK_PRINT_OPERATION_ACTION_PRINT_DIALOG, GTK_WINDOW(data_passer->application_window), &error);
     switch (res) {
         case GTK_PRINT_OPERATION_RESULT_ERROR:
             g_print("Error\n");

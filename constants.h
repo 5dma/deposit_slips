@@ -46,30 +46,35 @@ static const double RIGHT_MARGIN_SCREEN = 490;
 /** Right margin of printed deposit slip. */
 static const double RIGHT_MARGIN_PRINT = 5;
 
-/** Hash key for the pointer to master list store. */
-static gint KEY_LIST_STORE_MASTER = 0; 
-/** Hash key for the pointer to temporary list store. */
-static gint KEY_LIST_STORE_TEMPORARY = 1; 
-/** Hash key for the pointer to cairo context. */
-static gint KEY_CAIRO_CONTEXT = 2; 
-/** Hash key for the pointer to checks tree view. */
-static gint KEY_CHECK_TREE_VIEW = 3; 
-/** Hash key for the pointer to the drawing area. */
-static gint KEY_DRAWING_AREA = 4; 
-/** Hash key for the list store of the checks  */
-static gint KEY_CHECKS_STORE = 7; 
-/** Hash key for the sum of all checks deposited.  */
-static gint KEY_TOTAL_DEPOSIT = 8; 
-/** Hash key for the tree view of accounts in the deposit slip tab.  */
-static gint KEY_CHECKS_ACCOUNTS_TREEVIEW = 9;
-/** Hash key for the tree view of accounts in the deposit slip tab.  */
-static gint KEY_CHECK_CELL_RENDERER = 10;
-/** Hash key for the tree view of accounts in the deposit slip tab.  */
-static gint KEY_AT_LEAST_ONE_CHECK = 11;
-/** Hash key for the pointer to the application window.  */
-static gint KEY_APPLICATION_WINDOW = 12;
-/** Hash key for the pointer to the renderer for radio buttons.  */
-static gint KEY_RADIO_RENDERER = 13;
+/**
+ * Structure for passing data between functions.
+*/ 
+typedef struct {
+  /** Master list store. */
+    GtkListStore *list_store_master; 
+/** Temporary list store. */
+	GtkListStore *list_store_temporary; 
+/** Pointer to cairo context. */
+	cairo_t *cairo_context; 
+/** Pointer to checks tree view. */
+	GtkWidget *check_tree_view; 
+/** Pointer to the drawing area. */
+	GtkWidget *drawing_area; 
+/** List store of the checks  */
+	GtkListStore *checks_store; 
+/** Sum of all checks deposited.  */
+	gfloat total_deposit; 
+/** Tree view of accounts in the deposit slip tab.  */
+	GtkWidget *checks_accounts_treeview;
+/** Tree view of accounts in the deposit slip tab.  */
+	GtkCellRenderer *check_cell_renderer;
+/** Tree view of accounts in the deposit slip tab. This needs to be removed, because we want the UI to ensure there is at least one check. */
+	gboolean at_least_one_check;
+/** Pointer to the application window.  */
+	GtkWidget *application_window;
+/** Pointer to the renderer for radio buttons.  */
+	GtkCellRenderer *radio_renderer;
+} Data_passer;
 
 
 /** Font size for dynamic info (name, account number, date) on printed slip. */
