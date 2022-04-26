@@ -40,8 +40,8 @@ void deposit_amount_edited(GtkCellRendererText *self,
         g_free(formatted_amount);
     }
 
-    GtkDrawingArea *drawing_area = (GtkDrawingArea *)data_passer->drawing_area;
-    gtk_widget_queue_draw(GTK_WIDGET(drawing_area));
+   // GtkDrawingArea *drawing_area = (GtkDrawingArea *)data_passer->drawing_area;
+    gtk_widget_queue_draw(GTK_WIDGET(data_passer->drawing_area));
     
 }
 

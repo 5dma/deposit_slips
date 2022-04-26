@@ -184,12 +184,11 @@ GtkWidget *make_slip_view(Data_passer *data_passer) {
     gtk_widget_set_halign(btnSlipPrint, GTK_ALIGN_CENTER);
 
     GtkWidget *drawing_area = gtk_drawing_area_new();
-
     data_passer->drawing_area = drawing_area;
 
-    GtkWidget *treeAccounts = make_account_view(data_passer);
+  //  GtkWidget *treeAccounts = make_account_view(data_passer);
 
-    data_passer->checks_accounts_treeview = treeAccounts;
+    data_passer->checks_accounts_treeview = make_account_view(data_passer);
 
     GtkListStore *checks_store = gtk_list_store_new(SLIP_COLUMNS, G_TYPE_STRING, G_TYPE_BOOLEAN);
     GtkTreeIter trashiter;
@@ -201,7 +200,7 @@ GtkWidget *make_slip_view(Data_passer *data_passer) {
 
     data_passer->checks_store = checks_store;
 
-    GtkWidget *tree_checks = make_checks_view(data_passer);
+    make_checks_view(data_passer);
     /* When clicking the add button, add a row to the view */
     g_signal_connect(btnChecksAdd, "clicked", G_CALLBACK(add_check_row), data_passer);
     /* When clicking the delete button, remove rows whose checkbox is marked. */
@@ -212,12 +211,12 @@ GtkWidget *make_slip_view(Data_passer *data_passer) {
     GtkWidget *gridSlip = gtk_grid_new();
     /* First column of grid */
     gtk_grid_attach(GTK_GRID(gridSlip), lblAccount, 0, 0, 1, 1);
-    gtk_grid_attach(GTK_GRID(gridSlip), treeAccounts, 0, 1, 1, 1);
+    gtk_grid_attach(GTK_GRID(gridSlip), data_passer->checks_accounts_treeview, 0, 1, 1, 1);
     gtk_grid_attach(GTK_GRID(gridSlip), lblAccountDescription, 0, 2, 4, 1);
 
     /* Second column of grid */
     gtk_grid_attach(GTK_GRID(gridSlip), lblChecks, 1, 0, 2, 1);
-    gtk_grid_attach(GTK_GRID(gridSlip), tree_checks, 1, 1, 2, 1);
+    gtk_grid_attach(GTK_GRID(gridSlip), data_passer-> check_tree_view, 1, 1, 2, 1);
     gtk_grid_attach(GTK_GRID(gridSlip), btnChecksDelete, 1, 3, 1, 1);
     gtk_grid_attach(GTK_GRID(gridSlip), btnChecksAdd, 2, 3, 1, 1);
 

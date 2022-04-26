@@ -95,6 +95,5 @@ void on_app_activate(GApplication *app, gpointer data) {
 
 
     /* Draw the preview. */
-    GtkDrawingArea *drawing_area = (GtkDrawingArea *)data_passer->drawing_area;
-    gtk_widget_queue_draw(GTK_WIDGET(drawing_area));
+    gtk_widget_queue_draw(data_passer->drawing_area);
 }
