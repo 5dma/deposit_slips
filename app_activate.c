@@ -55,7 +55,7 @@ void on_app_activate(GApplication *app, gpointer data) {
     GtkListStore *list_store_temporary = gtk_list_store_new(N_COLUMNS, G_TYPE_STRING, G_TYPE_STRING, G_TYPE_STRING, G_TYPE_STRING, G_TYPE_BOOLEAN);
     data_passer->list_store_temporary = list_store_temporary;
 
-    /* Read account numbers from disk. This memory is freed  after adding the account numbers to list stores (a few lines down). */
+    /* Read account numbers from disk. This memory is freed after adding the account numbers to list stores (a few lines down). */
     GSList *list_accounts_from_disk = read_account_numbers();
 
     /* Place items in the temporary account list into list_builder. */
