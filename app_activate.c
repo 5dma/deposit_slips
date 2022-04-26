@@ -49,24 +49,24 @@ void on_app_activate(GApplication *app, gpointer data) {
     gtk_notebook_append_page(GTK_NOTEBOOK(notebook), vbox_accounts, label_account);
 
     /* This memory is free after application is destroyed in `free_memory()`. */
-    GtkListStore *list_store_master = gtk_list_store_new(N_COLUMNS, G_TYPE_STRING, G_TYPE_STRING, G_TYPE_STRING, G_TYPE_STRING, G_TYPE_BOOLEAN);
-    data_passer->list_store_master = list_store_master;
+    data_passer->list_store_master  = gtk_list_store_new(N_COLUMNS, G_TYPE_STRING, G_TYPE_STRING, G_TYPE_STRING, G_TYPE_STRING, G_TYPE_BOOLEAN);
+ //   data_passer->list_store_master = list_store_master;
     /* This memory is free after application is destroyed in `free_memory()`. */
-    GtkListStore *list_store_temporary = gtk_list_store_new(N_COLUMNS, G_TYPE_STRING, G_TYPE_STRING, G_TYPE_STRING, G_TYPE_STRING, G_TYPE_BOOLEAN);
-    data_passer->list_store_temporary = list_store_temporary;
+    data_passer->list_store_temporary = gtk_list_store_new(N_COLUMNS, G_TYPE_STRING, G_TYPE_STRING, G_TYPE_STRING, G_TYPE_STRING, G_TYPE_BOOLEAN);
+ //   data_passer->list_store_temporary = list_store_temporary;
 
     /* Read account numbers from disk. This memory is freed after adding the account numbers to list stores (a few lines down). */
     GSList *list_accounts_from_disk = read_account_numbers();
 
     /* Place items in the temporary account list into list_builder. */
-    g_slist_foreach(list_accounts_from_disk, build_list_store, list_store_master);
-    g_slist_foreach(list_accounts_from_disk, build_list_store, list_store_temporary);
+    g_slist_foreach(list_accounts_from_disk, build_list_store, data_passer->list_store_master);
+    g_slist_foreach(list_accounts_from_disk, build_list_store, data_passer->list_store_temporary);
     g_slist_free_full(list_accounts_from_disk, (GDestroyNotify)free_gslist_account);
 
    
 
     /* Make the view for the Accounts tab. */
-    GtkWidget *accounts_tab_tree = make_tree_view(list_store_temporary);
+    GtkWidget *accounts_tab_tree = make_tree_view(data_passer->list_store_temporary);
     /* Make the view for the Slip  tab. */
     GtkWidget *slips_tab_tree = make_slip_view(data_passer);
 

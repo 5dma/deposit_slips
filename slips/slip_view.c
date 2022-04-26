@@ -88,13 +88,13 @@ void started_cell_editing(GtkCellRenderer *self, GtkCellEditable *editable, gcha
  * @param pointer_passer Hash table of pointers. This function uses the pointer to the `ListStore` of checks.
  * @return A tree view with two columns: one for amounts, another a checkbox to delete an amount.
 */
-GtkWidget *make_checks_view(Data_passer *data_passer) {
+void make_checks_view(Data_passer *data_passer) {
     GtkTreeIter iter;
     GtkWidget *tree;
 
     tree = gtk_tree_view_new_with_model(GTK_TREE_MODEL(data_passer->checks_store));
 
-    data_passer->checks_accounts_treeview = tree;
+    data_passer->check_tree_view = tree;
     g_object_set(tree, "enable-grid-lines", GTK_TREE_VIEW_GRID_LINES_BOTH, NULL);
 
     GtkCellRenderer *rendererChecks;
@@ -144,7 +144,6 @@ GtkWidget *make_checks_view(Data_passer *data_passer) {
 
     g_object_unref(data_passer->checks_store); /* destroy model automatically with view */
 
-    return tree;
 }
 
 /**
