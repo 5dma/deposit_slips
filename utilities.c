@@ -40,11 +40,11 @@ GDestroyNotify free_gslist_account(gpointer data) {
 * the user destroys the main application windows.
 * @param window The parent node.
 * @param data Pointer to user data
-* @return A widget corresponding to the passed name of the child node.
 */
 void free_memory(GtkWidget *window, gpointer data) {
     Data_passer *data_passer = (Data_passer *)data;
 
     gtk_list_store_clear(data_passer->list_store_master);
     gtk_list_store_clear(data_passer->list_store_temporary);
+    g_free(data_passer);
 }
