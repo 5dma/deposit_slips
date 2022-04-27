@@ -54,7 +54,7 @@ gboolean print_deposit_amounts(GtkTreeModel *model,
 
     /* Get the formatted string corresponding to this check's amount. */
     gfloat current_amount = atof(amount);
-    gchar *formatted_amount = comma_formatted_amount(&current_amount); /* Memory freed below. */
+    gchar *formatted_amount = comma_formatted_amount(current_amount); /* Memory freed below. */
 
     /* Move to the correct position to print the amount such that it is right-aligned. */
     cairo_text_extents_t extents;
@@ -186,7 +186,7 @@ void draw_page(GtkPrintOperation *self, GtkPrintContext *context, gint page_nr, 
 
     /* Get the width of the total amount, and move to that point to print the total. */
     cairo_text_extents_t extents;
-    gchar *formatted_total = comma_formatted_amount(&current_total);
+    gchar *formatted_total = comma_formatted_amount(current_total);
     cairo_text_extents(cr, formatted_total, &extents);
     cairo_move_to(cr, 153, extents.width + RIGHT_MARGIN_PRINT);
     cairo_save(cr); /* Save context 1 */

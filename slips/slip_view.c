@@ -226,7 +226,7 @@ GtkWidget *make_slip_view(Data_passer *data_passer) {
     gtk_widget_set_size_request(drawing_area, 500, 150);
 
     /* When the draw signal is fired on the drawing area (which can happen billions of times)
-    from GTKs internal messaging), go redraw the deposit slip preview. */
+    from GTK's internal messaging), go redraw the deposit slip preview. */
     g_signal_connect(G_OBJECT(drawing_area), "draw", G_CALLBACK(draw_preview), data_passer);
 
     /* Prevent the print button from expanding to the width of the grid column. */

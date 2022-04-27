@@ -40,8 +40,7 @@ void deposit_amount_edited(GtkCellRendererText *self,
         g_free(formatted_amount);
     }
 
-   // GtkDrawingArea *drawing_area = (GtkDrawingArea *)data_passer->drawing_area;
-    gtk_widget_queue_draw(GTK_WIDGET(data_passer->drawing_area));
+    gtk_widget_queue_draw(data_passer->drawing_area);
     
 }
 
@@ -88,7 +87,7 @@ gboolean preview_deposit_amounts(GtkTreeModel *model,
 
     /* Get the formatted string corresponding to this check's amount. */
     gfloat current_amount = atof(amount);
-    gchar *formatted_total = comma_formatted_amount(&current_amount);
+    gchar *formatted_total = comma_formatted_amount(current_amount);
 
     /* Move to the correct position to print the amount such that it is right-aligned. */
     cairo_text_extents_t extents;

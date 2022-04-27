@@ -7,22 +7,22 @@
 /**
  * @file draw_functions.c
  * @brief Contains a callback to draw the deposit slip's preview.
-*/
+ */
 
 /**
  * Formats a passed float number into a familiar currency value. For example, takes 51003.34 and formats it into 51,003.34.
  * @param number Any gfloat less than 999999.99
- * @return The formatted string. 
-*/
-gchar *comma_formatted_amount(gfloat *number) {
-    gfloat amount = *number;
+ * @return The formatted string.
+ */
+gchar *comma_formatted_amount(gfloat number) {
+    //    gfloat amount = *number;
     gchar formatted_amount[100];
     int num;
-    if (amount < 1000) {
-        num = g_snprintf(formatted_amount, 11, "%.2f", *number);
+    if (number < 1000) {
+        num = g_snprintf(formatted_amount, 11, "%.2f", number);
     } else {
-        gdouble first_group = floor(amount / 1000);
-        gfloat second_group = amount - (first_group * 1000);
+        gdouble first_group = floor(number / 1000);
+        gfloat second_group = number - (first_group * 1000);
         num = g_snprintf(formatted_amount, sizeof(formatted_amount), "%.0f,%06.2f", first_group, second_group);
     }
     return g_strdup(formatted_amount);
@@ -33,15 +33,14 @@ gchar *comma_formatted_amount(gfloat *number) {
  * This callback does two things:
  * \li Adds the created `cairo_t` pointer to the has table of pointer passers so that the function can redraw the preview.
  * \li Draws the preview for the first time.
- * 
- * (There is a lot of commonality between this code and the one in draw_page(). However, the commonality is not enough to combine them into a single function.) 
+ *
+ * (There is a lot of commonality between this code and the one in draw_page(). However, the commonality is not enough to combine them into a single function.)
  * @param widget Pointer to the preview area.
  * @param cr Pointer to the Cairo context.
  * @param data Pointer to the hash table of pointers.
  * \sa preview_deposit_amounts()
-*/
+ */
 void draw_preview(GtkWidget *widget, cairo_t *cr, gpointer data) {
-
     Data_passer *data_passer = (Data_passer *)data;
 
     GtkTreeIter iter;
@@ -72,7 +71,6 @@ void draw_preview(GtkWidget *widget, cairo_t *cr, gpointer data) {
     cairo_set_source_rgb(cr, 1, 1, 1);
     cairo_fill(cr);
 
-
     /* Write "Deposit Ticket" */
     cairo_set_source_rgb(cr, 0.0, 0.0, 0.0);
     cairo_select_font_face(cr, "DejaVuSans", CAIRO_FONT_SLANT_NORMAL, CAIRO_FONT_WEIGHT_NORMAL);
@@ -89,12 +87,10 @@ void draw_preview(GtkWidget *widget, cairo_t *cr, gpointer data) {
     cairo_set_font_size(cr, 10);
     cairo_move_to(cr, 41, 38);
     cairo_show_text(cr, account_name);
- 
+
     cairo_move_to(cr, 41, 39);
-    cairo_line_to(cr,200,39);
+    cairo_line_to(cr, 200, 39);
     cairo_stroke(cr);
-
-
 
     /* Write Account Number */
     cairo_select_font_face(cr, "DejaVuSans", CAIRO_FONT_SLANT_NORMAL, CAIRO_FONT_WEIGHT_BOLD);
@@ -107,7 +103,7 @@ void draw_preview(GtkWidget *widget, cairo_t *cr, gpointer data) {
     cairo_show_text(cr, account_number);
 
     cairo_move_to(cr, 60, 71);
-    cairo_line_to(cr,200,71);
+    cairo_line_to(cr, 200, 71);
     cairo_stroke(cr);
 
     /* Write Date */
@@ -122,8 +118,8 @@ void draw_preview(GtkWidget *widget, cairo_t *cr, gpointer data) {
     cairo_show_text(cr, date_time_string);
     g_free(date_time_string);
 
-    cairo_move_to(cr, 40,106);
-    cairo_line_to(cr,200,106);
+    cairo_move_to(cr, 40, 106);
+    cairo_line_to(cr, 200, 106);
     cairo_stroke(cr);
 
     /* Write Routing number */
@@ -152,6 +148,7 @@ void draw_preview(GtkWidget *widget, cairo_t *cr, gpointer data) {
     */
 
     if (data_passer->at_least_one_check == TRUE) {  // We need to get rid of this variable at_least_one_check because the UI should enforce at least one check.
+        data_passer->total_deposit = 0;
         data_passer->cairo_context = cr;
         gtk_tree_model_foreach(GTK_TREE_MODEL(data_passer->checks_store), preview_deposit_amounts, data_passer);
 
@@ -161,11 +158,11 @@ void draw_preview(GtkWidget *widget, cairo_t *cr, gpointer data) {
         /* Format the total string with thousands separators. There is similar code in
       draw_static_part.c:preview_deposit_amounts that should be put into a function. */
         cairo_set_font_size(cr, 15);
-        
+
         /* Get the width of the total amount, and move to that point to print the total. */
         cairo_text_extents_t extents;
-        gchar *formatted_total = comma_formatted_amount(&current_total);
-        cairo_text_extents (cr, formatted_total, &extents);
+        gchar *formatted_total = comma_formatted_amount(current_total);
+        cairo_text_extents(cr, formatted_total, &extents);
         cairo_move_to(cr, RIGHT_MARGIN_SCREEN - extents.width, 125);
         cairo_show_text(cr, formatted_total);
         g_free(formatted_total);
@@ -174,6 +171,5 @@ void draw_preview(GtkWidget *widget, cairo_t *cr, gpointer data) {
     g_free(account_name);
     g_free(routing_number);
     g_free(account_number);
-
 
 }
