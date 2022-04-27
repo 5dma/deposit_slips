@@ -186,8 +186,6 @@ GtkWidget *make_slip_view(Data_passer *data_passer) {
     GtkWidget *drawing_area = gtk_drawing_area_new();
     data_passer->drawing_area = drawing_area;
 
-  //  GtkWidget *treeAccounts = make_account_view(data_passer);
-
     data_passer->checks_accounts_treeview = make_account_view(data_passer);
 
     GtkListStore *checks_store = gtk_list_store_new(SLIP_COLUMNS, G_TYPE_STRING, G_TYPE_BOOLEAN);
@@ -225,7 +223,7 @@ GtkWidget *make_slip_view(Data_passer *data_passer) {
 
     gtk_widget_set_size_request(drawing_area, 500, 150);
 
-    /* When the draw signal is fired on the drawing area (which can happen billions of times)
+    /* When the draw signal is fired on the drawing area (which can happen billions of times
     from GTK's internal messaging), go redraw the deposit slip preview. */
     g_signal_connect(G_OBJECT(drawing_area), "draw", G_CALLBACK(draw_preview), data_passer);
 
