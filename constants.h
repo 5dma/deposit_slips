@@ -68,8 +68,6 @@ typedef struct {
 	GtkWidget *checks_accounts_treeview;
 /** Tree view of accounts in the deposit slip tab.  */
 	GtkCellRenderer *check_cell_renderer;
-/** Tree view of accounts in the deposit slip tab. This needs to be removed, because we want the UI to ensure there is at least one check. */
-	gboolean at_least_one_check;
 /** Pointer to the application window.  */
 	GtkWidget *application_window;
 /** Pointer to the renderer for radio buttons.  */

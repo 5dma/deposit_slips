@@ -30,11 +30,11 @@ void on_app_activate(GApplication *app, gpointer data) {
 	data_passer->total_deposit = 0; 
 	data_passer->checks_accounts_treeview = NULL;
 	data_passer->check_cell_renderer = NULL;
-	data_passer->at_least_one_check = TRUE;
 	data_passer->application_window = NULL;
 	data_passer->radio_renderer = NULL;
 
     GtkWidget *window = gtk_application_window_new(GTK_APPLICATION(app));
+    gtk_window_set_resizable(GTK_WINDOW(window), FALSE);
     data_passer->application_window = window;
 
     GtkWidget *notebook = gtk_notebook_new();

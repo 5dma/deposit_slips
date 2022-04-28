@@ -121,9 +121,13 @@ static void add_check_row(GtkWidget *widget, gpointer data) {
                        CHECK_AMOUNT, NEW_AMOUNT,
                        CHECK_RADIO, FALSE,
                        -1);
-    /* We successfully added a row, and there is room for only two rows. Therefore,
-    set the button's sensitivity to FALSE to prevent the user from adding another row. */
-    gtk_widget_set_sensitive(widget, FALSE);
+ 
+    /* If we added a 15th row, set the button's sensitivity to FALSE to prevent the user from adding another row. */
+    gint number_of_checks = gtk_tree_model_iter_n_children(GTK_TREE_MODEL(data_passer->checks_store), NULL);
+    if (number_of_checks >= 15) {
+        gtk_widget_set_sensitive(widget, FALSE);
+    }
+
 
     /* After adding a row, enable the radio buttons to delete one of the rows. */
     g_object_set(data_passer->radio_renderer, "activatable", TRUE, NULL);

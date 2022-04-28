@@ -63,7 +63,6 @@ gchar *comma_formatted_amount(gfloat amount);
 GDestroyNotify free_gslist_account(gpointer data);
 
 
-
 /**
  * Current UI state of a selected check.
  */

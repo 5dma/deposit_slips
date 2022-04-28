@@ -22,7 +22,6 @@ GtkWidget *make_account_view(Data_passer *data_passer) {
     GtkWidget *tree_view;
 
     tree_view = gtk_tree_view_new_with_model(GTK_TREE_MODEL(data_passer->list_store_master));
-
     g_object_set(tree_view, "enable-grid-lines", GTK_TREE_VIEW_GRID_LINES_BOTH, NULL);
 
     GtkCellRenderer *rendererAccount;
@@ -206,6 +205,14 @@ GtkWidget *make_slip_view(Data_passer *data_passer) {
     /* When clicking the preint button, print the deposit slip. */
     g_signal_connect(btnSlipPrint, "clicked", G_CALLBACK(print_deposit_slip), data_passer);
 
+    /* Make a scrolled window for the checks being deposited. */
+    GtkWidget *scrolled_window = gtk_scrolled_window_new(NULL, NULL);
+    gtk_scrolled_window_set_policy(GTK_SCROLLED_WINDOW(scrolled_window), GTK_POLICY_AUTOMATIC, GTK_POLICY_AUTOMATIC);
+    gtk_container_add(GTK_CONTAINER(scrolled_window), data_passer->check_tree_view);
+    gtk_widget_set_size_request(scrolled_window, 125, -1);
+
+
+
     GtkWidget *gridSlip = gtk_grid_new();
     /* First column of grid */
     gtk_grid_attach(GTK_GRID(gridSlip), lblAccount, 0, 0, 1, 1);
@@ -214,7 +221,7 @@ GtkWidget *make_slip_view(Data_passer *data_passer) {
 
     /* Second column of grid */
     gtk_grid_attach(GTK_GRID(gridSlip), lblChecks, 1, 0, 2, 1);
-    gtk_grid_attach(GTK_GRID(gridSlip), data_passer-> check_tree_view, 1, 1, 2, 1);
+    gtk_grid_attach(GTK_GRID(gridSlip), scrolled_window, 1, 1, 2, 1);
     gtk_grid_attach(GTK_GRID(gridSlip), btnChecksDelete, 1, 3, 1, 1);
     gtk_grid_attach(GTK_GRID(gridSlip), btnChecksAdd, 2, 3, 1, 1);
 
