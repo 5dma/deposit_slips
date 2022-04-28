@@ -7,7 +7,7 @@
 /**
  * @file slip_control.c
  * @brief Contains code for managing interactions with the controls in the deposit slip view.
-*/
+ */
 
 /**
  * Callback fired during a `gtk_tree_model_foreach`. The function
@@ -19,14 +19,14 @@
  * @param data Void pointer to user data.
  * @return `TRUE` if at least one of the checkboxes in the delete column is checked, `FALSE` otherwise.
  * \sa check_toggle_clicked()
-*/
+ */
 gboolean examine_all_check_checkboxes(GtkTreeModel *model,
-                                  GtkTreePath *path,
-                                  GtkTreeIter *iter,
-                                  gpointer data) {
+                                      GtkTreePath *path,
+                                      GtkTreeIter *iter,
+                                      gpointer data) {
     gboolean value;
     CheckSelection *check_selection = (CheckSelection *)data;
-    gchar *path_string = gtk_tree_path_to_string (path);
+    gchar *path_string = gtk_tree_path_to_string(path);
 
     if (gtk_tree_model_get_iter_from_string(model, iter, path_string)) {
         if (gtk_tree_path_compare(path, check_selection->path) == 0) {
@@ -41,12 +41,12 @@ gboolean examine_all_check_checkboxes(GtkTreeModel *model,
 }
 
 /**
- * Callback fired after changing the selection in the accounts listing in the Slips tab. 
+ * Callback fired after changing the selection in the accounts listing in the Slips tab.
  * The function changes the label under the accounts list to show the selected
  * account's name and description.
  * @param tree_view Pointer to tree view whose selection was changed.
  * @param user_data Pointer to passed user data (not used).
-*/
+ */
 void update_label(GtkTreeView *tree_view, gpointer user_data) {
     GtkWidget *tree_parent = gtk_widget_get_parent(GTK_WIDGET(tree_view));
     GtkTreeSelection *tree_selection = gtk_tree_view_get_selection(tree_view);
@@ -74,7 +74,7 @@ void update_label(GtkTreeView *tree_view, gpointer user_data) {
  * @param renderer Pointer to the checkbox's cell renderer.
  * @param path Pointer to the path associated with the current iteration.
  * @param data Void ointer to associated treeview.
-*/
+ */
 static void check_toggle_clicked(GtkCellRendererToggle *renderer,
                                  gchar *path,
                                  gpointer data) {
@@ -89,7 +89,7 @@ static void check_toggle_clicked(GtkCellRendererToggle *renderer,
     }
 
     CheckSelection check_selection;
-    check_selection.path = gtk_tree_path_new_from_string(path);
+    check_selection.path = gtk_tree_path_new_from_string(path); /* Memory freed below. */
     check_selection.at_least_one_check_selected = FALSE;
 
     gtk_tree_model_foreach(model, examine_all_check_checkboxes, &check_selection);
@@ -103,8 +103,8 @@ static void check_toggle_clicked(GtkCellRendererToggle *renderer,
         gtk_widget_set_sensitive(check_button_delete, FALSE);
     }
 
-    g_object_unref(check_selection.path);
-    g_free(&check_selection);
+    gtk_tree_path_free(check_selection.path);
+
 }
 
 /**
@@ -121,13 +121,12 @@ static void add_check_row(GtkWidget *widget, gpointer data) {
                        CHECK_AMOUNT, NEW_AMOUNT,
                        CHECK_RADIO, FALSE,
                        -1);
- 
+
     /* If we added a 15th row, set the button's sensitivity to FALSE to prevent the user from adding another row. */
     gint number_of_checks = gtk_tree_model_iter_n_children(GTK_TREE_MODEL(data_passer->checks_store), NULL);
     if (number_of_checks >= 15) {
         gtk_widget_set_sensitive(widget, FALSE);
     }
-
 
     /* After adding a row, enable the radio buttons to delete one of the rows. */
     g_object_set(data_passer->radio_renderer, "activatable", TRUE, NULL);
