@@ -137,39 +137,32 @@ void draw_preview(GtkWidget *widget, cairo_t *cr, gpointer data) {
     cairo_show_text(cr, account_with_transit);
     g_free(account_with_transit);
 
-    /* Check if any checks exist in the view. */
-
-    gboolean checks_exist = gtk_tree_model_get_iter_first(GTK_TREE_MODEL(data_passer->checks_store), &iter);
-
-    /* If any checks exist:
+    /* Remaining tasks:
        a) Go print the deposit amounts of all existing checks.
        b) Compute the total for all existing chekcs.
        c) Print the total.
     */
 
-    if (data_passer->at_least_one_check == TRUE) {  // We need to get rid of this variable at_least_one_check because the UI should enforce at least one check.
-        data_passer->total_deposit = 0;
-        data_passer->cairo_context = cr;
-        gtk_tree_model_foreach(GTK_TREE_MODEL(data_passer->checks_store), preview_deposit_amounts, data_passer);
+    data_passer->total_deposit = 0;
+    data_passer->cairo_context = cr;
+    gtk_tree_model_foreach(GTK_TREE_MODEL(data_passer->checks_store), preview_deposit_amounts, data_passer);
 
-        /* Write total of checks deposited */
-        gfloat current_total = data_passer->total_deposit;
+    /* Write total of checks deposited */
+    gfloat current_total = data_passer->total_deposit;
 
-        /* Format the total string with thousands separators. There is similar code in
-      draw_static_part.c:preview_deposit_amounts that should be put into a function. */
-        cairo_set_font_size(cr, 15);
+    /* Format the total string with thousands separators. There is similar code in
+  draw_static_part.c:preview_deposit_amounts that should be put into a function. */
+    cairo_set_font_size(cr, 15);
 
-        /* Get the width of the total amount, and move to that point to print the total. */
-        cairo_text_extents_t extents;
-        gchar *formatted_total = comma_formatted_amount(current_total);
-        cairo_text_extents(cr, formatted_total, &extents);
-        cairo_move_to(cr, RIGHT_MARGIN_SCREEN - extents.width, 125);
-        cairo_show_text(cr, formatted_total);
-        g_free(formatted_total);
-    }
+    /* Get the width of the total amount, and move to that point to print the total. */
+    cairo_text_extents_t extents;
+    gchar *formatted_total = comma_formatted_amount(current_total);
+    cairo_text_extents(cr, formatted_total, &extents);
+    cairo_move_to(cr, RIGHT_MARGIN_SCREEN - extents.width, 125);
+    cairo_show_text(cr, formatted_total);
+    g_free(formatted_total);
 
     g_free(account_name);
     g_free(routing_number);
     g_free(account_number);
-
 }
