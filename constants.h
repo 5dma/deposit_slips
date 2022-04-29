@@ -60,6 +60,8 @@ typedef struct {
 	GtkWidget *check_tree_view; 
 /** Pointer to the drawing area, front side of deposit slip. */
 	GtkWidget *drawing_area_front; 
+/** Pointer to the drawing area, back side of deposit slip. */
+	GtkWidget *drawing_area_back; 
 /** List store of the checks  */
 	GtkListStore *checks_store; 
 /** Sum of all checks deposited.  */
@@ -74,6 +76,10 @@ typedef struct {
 	GtkCellRenderer *radio_renderer;
 /** Pointer to the delete button in the checks view.  */
 	GtkWidget *btn_checks_delete;
+/** Pointer to the go_to_first button in the checks view.  */
+	GtkWidget *btn_go_to_first;
+/** Pointer to the go_to_last button in the checks view.  */
+	GtkWidget *btn_go_to_last;
 } Data_passer;
 
 

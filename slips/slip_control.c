@@ -66,7 +66,7 @@ void update_label(GtkTreeView *tree_view, gpointer user_data) {
  * Callback fired if one of the checkboxes in the Delete column is toggled on or off. The function
  * changes the view to marked or cleared depending on the checkboxes previous state. However, if there is only one
  * check in the check store, we do not toggle it because we must maintain at least one check in the store.
- * 
+ *
  * @param renderer Pointer to the checkbox's cell renderer.
  * @param path Pointer to the path associated with the current iteration.
  * @param data Void pointer to associated treeview.
@@ -126,6 +126,11 @@ static void add_check_row(GtkWidget *widget, gpointer data) {
         gtk_widget_set_sensitive(widget, FALSE);
     }
 
+    if (number_of_checks > 2) {
+        gtk_widget_show(data_passer->btn_go_to_first);
+        gtk_widget_show(data_passer->btn_go_to_last);
+    }
+
     /* After adding a row, enable the radio buttons to delete one of the rows. */
     g_object_set(data_passer->radio_renderer, "activatable", TRUE, NULL);
 }
@@ -137,26 +142,36 @@ static void add_check_row(GtkWidget *widget, gpointer data) {
     @param data Void pointer to the temporary list store.
 */
 static void delete_check_rows(GtkWidget *widget, gpointer data) {
-    GtkListStore *list_store = (GtkListStore *)data;
+
+    Data_passer *data_passer = (Data_passer *)data;
+
+  //  GtkListStore *list_store = (GtkListStore *)data;
     GtkTreeIter iter;
     GValue gvalue = G_VALUE_INIT;
     gboolean still_in_list = TRUE;
     gboolean removed_last_row = FALSE;
 
-    gboolean found_first = gtk_tree_model_get_iter_first(GTK_TREE_MODEL(data), &iter);
+    gboolean found_first = gtk_tree_model_get_iter_first(GTK_TREE_MODEL(data_passer->checks_store), &iter);
 
     do {
         g_value_unset(&gvalue);
 
-        gtk_tree_model_get_value(GTK_TREE_MODEL(data), &iter, CHECK_RADIO, &gvalue);
+        gtk_tree_model_get_value(GTK_TREE_MODEL(data_passer->checks_store), &iter, CHECK_RADIO, &gvalue);
 
         if (g_value_get_boolean(&gvalue) == TRUE) {
-            removed_last_row = !gtk_list_store_remove(list_store, &iter);
+            removed_last_row = !gtk_list_store_remove(data_passer->checks_store, &iter);
         } else {
-            still_in_list = gtk_tree_model_iter_next(GTK_TREE_MODEL(data), &iter);
+            still_in_list = gtk_tree_model_iter_next(GTK_TREE_MODEL(data_passer->checks_store), &iter);
         }
     } while (still_in_list && !removed_last_row);
 
     /* After deleting the checked rows, set the delete button's sensitivity (passed to this function) to FALSE. */
     gtk_widget_set_sensitive(widget, FALSE);
+
+
+    gint number_of_checks = gtk_tree_model_iter_n_children(GTK_TREE_MODEL(data_passer->checks_store), NULL);
+    if (number_of_checks <= 2) {
+        gtk_widget_hide(data_passer->btn_go_to_first);
+        gtk_widget_hide(data_passer->btn_go_to_last);
+    }
 }

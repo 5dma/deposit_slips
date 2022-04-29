@@ -10,13 +10,13 @@
 /**
  * @file slip_view.c
  * @brief Creates the view for creating the deposit slip.
-*/
+ */
 
 /**
  * Creates the view of account numbers in the deposit list tab.
  * @param pointer_passer Hash table of pointers. This function uses the pointer to the master list of account numbers.
  * @return A tree view of account numbers.
-*/
+ */
 GtkWidget *make_account_view(Data_passer *data_passer) {
     GtkTreeIter iter;
     GtkWidget *tree_view;
@@ -45,13 +45,13 @@ GtkWidget *make_account_view(Data_passer *data_passer) {
 }
 
 /**
-* Callback that prevents the user from entering anything in a `GtkCellEditable` other than digits and a decimal point. The actual allowed keys are [0-9], decimal point, backspace, delete, cursor right, and cursor left.
-* @param widget Widget where the edit is occurring.
-* @param event Key that was pressed.
-* @param user_data `NULL` in this case.
-* @return  `FALSE` if an allowed key was pressed, `TRUE` otherwise.
-* \sa started_cell_editing()
-*/
+ * Callback that prevents the user from entering anything in a `GtkCellEditable` other than digits and a decimal point. The actual allowed keys are [0-9], decimal point, backspace, delete, cursor right, and cursor left.
+ * @param widget Widget where the edit is occurring.
+ * @param event Key that was pressed.
+ * @param user_data `NULL` in this case.
+ * @return  `FALSE` if an allowed key was pressed, `TRUE` otherwise.
+ * \sa started_cell_editing()
+ */
 static gboolean number_formatter(GtkWidget *widget, GdkEventKey *event, gpointer user_data) {
     if (
         (event->keyval >= GDK_KEY_0) && (event->keyval <= GDK_KEY_9) ||
@@ -76,7 +76,7 @@ static gboolean number_formatter(GtkWidget *widget, GdkEventKey *event, gpointer
  * @param path Path within the tree view the editing occurs.
  * @param user_data `NULL` in this case.
  * \sa number_formatter()
-*/
+ */
 void started_cell_editing(GtkCellRenderer *self, GtkCellEditable *editable, gchar *path, gpointer user_data) {
     g_signal_connect(GTK_WIDGET(editable), "key-press-event",
                      G_CALLBACK(number_formatter), user_data);
@@ -86,7 +86,7 @@ void started_cell_editing(GtkCellRenderer *self, GtkCellEditable *editable, gcha
  * Creates the view of checks appearing in a deposit slip.
  * @param pointer_passer Hash table of pointers. This function uses the pointer to the `ListStore` of checks.
  * @return A tree view with two columns: one for amounts, another a checkbox to delete an amount.
-*/
+ */
 void make_checks_view(Data_passer *data_passer) {
     GtkTreeIter iter;
     GtkWidget *tree;
@@ -127,7 +127,7 @@ void make_checks_view(Data_passer *data_passer) {
                                                             "active", CHECK_RADIO,
                                                             NULL);
     /* Set alignment of column title. */
-    gtk_tree_view_column_set_alignment (columnToggle, 0.5);
+    gtk_tree_view_column_set_alignment(columnToggle, 0.5);
 
     gtk_cell_renderer_toggle_set_radio(GTK_CELL_RENDERER_TOGGLE(rendererToggle), FALSE);
 
@@ -144,7 +144,6 @@ void make_checks_view(Data_passer *data_passer) {
     gtk_tree_view_append_column(GTK_TREE_VIEW(tree), columnToggle);
 
     g_object_unref(data_passer->checks_store); /* destroy model automatically with view */
-
 }
 
 /**
@@ -163,6 +162,11 @@ GtkWidget *make_slip_view(Data_passer *data_passer) {
     ;
     data_passer->btn_checks_delete = btnChecksDelete;
     GtkWidget *btnSlipPrint = gtk_button_new_from_icon_name("gtk-print", GTK_ICON_SIZE_BUTTON);
+
+    GtkWidget *btnGotoFirst = gtk_button_new_from_icon_name("gtk-goto-first-ltr", GTK_ICON_SIZE_BUTTON);
+    GtkWidget *btnGotoLast = gtk_button_new_from_icon_name("gtk-goto-last-ltr", GTK_ICON_SIZE_BUTTON);
+	data_passer->btn_go_to_first = btnGotoFirst;
+	data_passer->btn_go_to_last = btnGotoLast;
 
     gtk_widget_set_name(btnChecksAdd, BUTTON_CHECK_ADD);
     gtk_widget_set_name(btnChecksDelete, BUTTON_CHECK_DELETE);
@@ -185,8 +189,21 @@ GtkWidget *make_slip_view(Data_passer *data_passer) {
     gtk_widget_set_halign(btnChecksDelete, GTK_ALIGN_CENTER);
     gtk_widget_set_halign(btnSlipPrint, GTK_ALIGN_CENTER);
 
+    /* Prevent btnGotoFirst and btnGotoLast from appearing when showing the application window. */
+    gtk_widget_set_no_show_all(btnGotoFirst, TRUE);
+    gtk_widget_set_no_show_all(btnGotoLast, TRUE);
+
+    gtk_widget_hide(btnGotoFirst);
+    gtk_widget_hide(btnGotoLast);
+
+
+
+
     GtkWidget *drawing_area_front = gtk_drawing_area_new();
     data_passer->drawing_area_front = drawing_area_front;
+
+    GtkWidget *drawing_area_back = gtk_drawing_area_new();
+    data_passer->drawing_area_back = drawing_area_back;
 
     data_passer->checks_accounts_treeview = make_account_view(data_passer);
 
@@ -204,7 +221,7 @@ GtkWidget *make_slip_view(Data_passer *data_passer) {
     /* When clicking the add button, add a row to the view */
     g_signal_connect(btnChecksAdd, "clicked", G_CALLBACK(add_check_row), data_passer);
     /* When clicking the delete button, remove rows whose checkbox is marked. */
-    g_signal_connect(btnChecksDelete, "clicked", G_CALLBACK(delete_check_rows), checks_store);
+    g_signal_connect(btnChecksDelete, "clicked", G_CALLBACK(delete_check_rows), data_passer);
     /* When clicking the preint button, print the deposit slip. */
     g_signal_connect(btnSlipPrint, "clicked", G_CALLBACK(print_deposit_slip), data_passer);
 
@@ -213,8 +230,6 @@ GtkWidget *make_slip_view(Data_passer *data_passer) {
     gtk_scrolled_window_set_policy(GTK_SCROLLED_WINDOW(scrolled_window), GTK_POLICY_AUTOMATIC, GTK_POLICY_AUTOMATIC);
     gtk_container_add(GTK_CONTAINER(scrolled_window), data_passer->check_tree_view);
     gtk_widget_set_size_request(scrolled_window, 125, -1);
-
-
 
     GtkWidget *gridSlip = gtk_grid_new();
     /* First column of grid */
@@ -233,12 +248,20 @@ GtkWidget *make_slip_view(Data_passer *data_passer) {
 
     gtk_widget_set_size_request(drawing_area_front, 500, 150);
 
+    gtk_widget_set_size_request(drawing_area_back, 500, 150);
+
     /* When the draw signal is fired on the drawing area (which can happen billions of times
     from GTK's internal messaging), go redraw the deposit slip preview. */
     g_signal_connect(G_OBJECT(drawing_area_front), "draw", G_CALLBACK(draw_preview), data_passer);
 
     /* Prevent the print button from expanding to the width of the grid column. */
-    gtk_grid_attach(GTK_GRID(gridSlip), btnSlipPrint, 3, 3, 1, 1);
+
+    GtkWidget *box_first_last_print = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 5);
+    gtk_box_pack_start(GTK_BOX(box_first_last_print), btnGotoFirst, FALSE, FALSE, 5);
+    gtk_box_pack_start(GTK_BOX(box_first_last_print), btnGotoLast, FALSE, FALSE, 5);
+    gtk_box_pack_start(GTK_BOX(box_first_last_print), btnSlipPrint, TRUE, FALSE, 5);
+
+    gtk_grid_attach(GTK_GRID(gridSlip), box_first_last_print, 3, 3, 1, 1);
 
     gtk_grid_set_column_spacing(GTK_GRID(gridSlip), 20);
     gtk_grid_set_row_spacing(GTK_GRID(gridSlip), 20);
