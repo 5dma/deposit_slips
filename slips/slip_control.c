@@ -11,32 +11,26 @@
 
 /**
  * Callback fired during a `gtk_tree_model_foreach`. The function
- * examines the checkbox in the model's passed iteration, and returns true or false depending
- * if the checkbox is marked.
+ * determines if the passed checkbox is checked. If it is, set the flag `CheckSelection.at_least_one_check_selected` to `TRUE`.
  * @param model Pointer to the model being iterated.
  * @param path Pointer to the path associated with the current iteration.
  * @param iter Pointer to the iterator associated with the current iteration.
- * @param data Void pointer to user data.
- * @return `TRUE` if at least one of the checkboxes in the delete column is checked, `FALSE` otherwise.
+ * @param data Void pointer to a CheckSelection structure.
  * \sa check_toggle_clicked()
  */
 gboolean examine_all_check_checkboxes(GtkTreeModel *model,
                                       GtkTreePath *path,
                                       GtkTreeIter *iter,
                                       gpointer data) {
-    gboolean value;
     CheckSelection *check_selection = (CheckSelection *)data;
-    gchar *path_string = gtk_tree_path_to_string(path);
-
-    if (gtk_tree_model_get_iter_from_string(model, iter, path_string)) {
-        if (gtk_tree_path_compare(path, check_selection->path) == 0) {
-            gtk_tree_model_get(model, iter, CHECK_RADIO, &value, -1);
-            gtk_list_store_set(GTK_LIST_STORE(model), iter, CHECK_RADIO, !value, -1);
-        } else {
-            gtk_list_store_set(GTK_LIST_STORE(model), iter, CHECK_RADIO, FALSE, -1);
+    gboolean value;
+    if (gtk_tree_model_get_iter (model, iter, path)) {
+        gtk_tree_model_get(model, iter, CHECK_RADIO, &value, -1);
+        if (value == TRUE) {
+            check_selection->at_least_one_check_selected = TRUE;
+            return TRUE;
         }
     }
-    g_free(path_string);
     return FALSE;
 }
 
@@ -73,16 +67,17 @@ void update_label(GtkTreeView *tree_view, gpointer user_data) {
  * changes the view to marked or cleared depending on the checkboxes previous state.
  * @param renderer Pointer to the checkbox's cell renderer.
  * @param path Pointer to the path associated with the current iteration.
- * @param data Void ointer to associated treeview.
+ * @param data Void pointer to associated treeview.
  */
 static void check_toggle_clicked(GtkCellRendererToggle *renderer,
                                  gchar *path,
                                  gpointer data) {
-    GtkTreeView *treeview = (GtkTreeView *)data;
+    Data_passer *data_passer = (Data_passer *)data;
+//    GtkTreeView *treeview = (GtkTreeView *)data;
     GtkTreeIter iter;
     GtkTreeModel *model;
     gboolean value;
-    model = gtk_tree_view_get_model(treeview);
+    model = gtk_tree_view_get_model(GTK_TREE_VIEW(data_passer->check_tree_view));
     if (gtk_tree_model_get_iter_from_string(model, &iter, path)) {
         gtk_tree_model_get(model, &iter, CHECK_RADIO, &value, -1);
         gtk_list_store_set(GTK_LIST_STORE(model), &iter, CHECK_RADIO, !value, -1);
@@ -94,13 +89,10 @@ static void check_toggle_clicked(GtkCellRendererToggle *renderer,
 
     gtk_tree_model_foreach(model, examine_all_check_checkboxes, &check_selection);
 
-    GtkWidget *slip_tab = gtk_widget_get_parent(GTK_WIDGET(treeview));
-    GtkWidget *check_button_delete = get_child_from_parent(slip_tab, BUTTON_CHECK_DELETE);
-
     if (check_selection.at_least_one_check_selected == TRUE) {
-        gtk_widget_set_sensitive(check_button_delete, TRUE);
+        gtk_widget_set_sensitive(data_passer->btn_checks_delete, TRUE);
     } else {
-        gtk_widget_set_sensitive(check_button_delete, FALSE);
+        gtk_widget_set_sensitive(data_passer->btn_checks_delete, FALSE);
     }
 
     gtk_tree_path_free(check_selection.path);
@@ -126,11 +118,6 @@ static void add_check_row(GtkWidget *widget, gpointer data) {
     gint number_of_checks = gtk_tree_model_iter_n_children(GTK_TREE_MODEL(data_passer->checks_store), NULL);
     if (number_of_checks >= 15) {
         gtk_widget_set_sensitive(widget, FALSE);
-    }
-
-    /* If clicking the Add button results in more than one row, set the delete check button's sensitivity to TRUE. */
-    if (number_of_checks > 1) {
-        gtk_widget_set_sensitive(data_passer->btn_checks_delete, TRUE);
     }
 
     /* After adding a row, enable the radio buttons to delete one of the rows. */

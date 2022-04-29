@@ -138,7 +138,7 @@ void make_checks_view(Data_passer *data_passer) {
     data_passer->radio_renderer = rendererToggle;
 
     /* Every time a delete checkbox is toggled, set certain buttons to be sensitive. */
-    g_signal_connect(G_OBJECT(rendererToggle), "toggled", G_CALLBACK(check_toggle_clicked), tree);
+    g_signal_connect(G_OBJECT(rendererToggle), "toggled", G_CALLBACK(check_toggle_clicked), data_passer);
 
     gtk_tree_view_append_column(GTK_TREE_VIEW(tree), columnChecks);
     gtk_tree_view_append_column(GTK_TREE_VIEW(tree), columnToggle);
