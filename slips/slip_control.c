@@ -24,7 +24,7 @@ gboolean examine_all_check_checkboxes(GtkTreeModel *model,
                                       gpointer data) {
     CheckSelection *check_selection = (CheckSelection *)data;
     gboolean value;
-    if (gtk_tree_model_get_iter (model, iter, path)) {
+    if (gtk_tree_model_get_iter(model, iter, path)) {
         gtk_tree_model_get(model, iter, CHECK_RADIO, &value, -1);
         if (value == TRUE) {
             check_selection->at_least_one_check_selected = TRUE;
@@ -64,7 +64,9 @@ void update_label(GtkTreeView *tree_view, gpointer user_data) {
 
 /**
  * Callback fired if one of the checkboxes in the Delete column is toggled on or off. The function
- * changes the view to marked or cleared depending on the checkboxes previous state.
+ * changes the view to marked or cleared depending on the checkboxes previous state. However, if there is only one
+ * check in the check store, we do not toggle it because we must maintain at least one check in the store.
+ * 
  * @param renderer Pointer to the checkbox's cell renderer.
  * @param path Pointer to the path associated with the current iteration.
  * @param data Void pointer to associated treeview.
@@ -73,11 +75,16 @@ static void check_toggle_clicked(GtkCellRendererToggle *renderer,
                                  gchar *path,
                                  gpointer data) {
     Data_passer *data_passer = (Data_passer *)data;
-//    GtkTreeView *treeview = (GtkTreeView *)data;
     GtkTreeIter iter;
     GtkTreeModel *model;
     gboolean value;
     model = gtk_tree_view_get_model(GTK_TREE_VIEW(data_passer->check_tree_view));
+
+    gint number_of_checks = gtk_tree_model_iter_n_children(GTK_TREE_MODEL(data_passer->checks_store), NULL);
+    if (number_of_checks == 1) {
+        return;
+    }
+
     if (gtk_tree_model_get_iter_from_string(model, &iter, path)) {
         gtk_tree_model_get(model, &iter, CHECK_RADIO, &value, -1);
         gtk_list_store_set(GTK_LIST_STORE(model), &iter, CHECK_RADIO, !value, -1);
@@ -96,7 +103,6 @@ static void check_toggle_clicked(GtkCellRendererToggle *renderer,
     }
 
     gtk_tree_path_free(check_selection.path);
-
 }
 
 /**
@@ -125,12 +131,12 @@ static void add_check_row(GtkWidget *widget, gpointer data) {
 }
 
 /**
-    Deletes a checked row from the model (and reflected in the treeview) after user clicks the Delete button. Inspiration for this loop is from [198. How to iterate through a GtkListStore - Part 2?](https://www.kksou.com/php-gtk2/sample-codes/iterate-through-a-GtkListStore-Part-2.php).
+    Deletes all checked rows from the model (and reflected in the treeview) after user clicks the Delete button. Inspiration for this loop is from [198. How to iterate through a GtkListStore - Part 2?](https://www.kksou.com/php-gtk2/sample-codes/iterate-through-a-GtkListStore-Part-2.php). This function also sets the delete button's sensitivity to `FALSE`.
 
     @param widget Pointer to the clicked Delete button.
     @param data Void pointer to the temporary list store.
 */
-static void delete_check_row(GtkWidget *widget, gpointer data) {
+static void delete_check_rows(GtkWidget *widget, gpointer data) {
     GtkListStore *list_store = (GtkListStore *)data;
     GtkTreeIter iter;
     GValue gvalue = G_VALUE_INIT;
@@ -140,23 +146,17 @@ static void delete_check_row(GtkWidget *widget, gpointer data) {
     gboolean found_first = gtk_tree_model_get_iter_first(GTK_TREE_MODEL(data), &iter);
 
     do {
+        g_value_unset(&gvalue);
+
         gtk_tree_model_get_value(GTK_TREE_MODEL(data), &iter, CHECK_RADIO, &gvalue);
 
         if (g_value_get_boolean(&gvalue) == TRUE) {
             removed_last_row = !gtk_list_store_remove(list_store, &iter);
-        }
-        g_value_unset(&gvalue);
-
-        if (!removed_last_row) {
+        } else {
             still_in_list = gtk_tree_model_iter_next(GTK_TREE_MODEL(data), &iter);
         }
     } while (still_in_list && !removed_last_row);
 
-
-     /* If deleted all but one row, set the button's sensitivity to FALSE to prevent the user from deleting the last existing row. */
-    gint number_of_checks = gtk_tree_model_iter_n_children(GTK_TREE_MODEL(list_store), NULL);
-    if (number_of_checks < 2) {
-        gtk_widget_set_sensitive(widget, FALSE);
-    }
-
+    /* After deleting the checked rows, set the delete button's sensitivity (passed to this function) to FALSE. */
+    gtk_widget_set_sensitive(widget, FALSE);
 }

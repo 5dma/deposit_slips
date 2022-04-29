@@ -204,7 +204,7 @@ GtkWidget *make_slip_view(Data_passer *data_passer) {
     /* When clicking the add button, add a row to the view */
     g_signal_connect(btnChecksAdd, "clicked", G_CALLBACK(add_check_row), data_passer);
     /* When clicking the delete button, remove rows whose checkbox is marked. */
-    g_signal_connect(btnChecksDelete, "clicked", G_CALLBACK(delete_check_row), checks_store);
+    g_signal_connect(btnChecksDelete, "clicked", G_CALLBACK(delete_check_rows), checks_store);
     /* When clicking the preint button, print the deposit slip. */
     g_signal_connect(btnSlipPrint, "clicked", G_CALLBACK(print_deposit_slip), data_passer);
 
