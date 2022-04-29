@@ -126,8 +126,10 @@ void make_checks_view(Data_passer *data_passer) {
                                                             rendererToggle,
                                                             "active", CHECK_RADIO,
                                                             NULL);
+    /* Set alignment of column title. */
+    gtk_tree_view_column_set_alignment (columnToggle, 0.5);
 
-    gtk_cell_renderer_toggle_set_radio(GTK_CELL_RENDERER_TOGGLE(rendererToggle), TRUE);
+    gtk_cell_renderer_toggle_set_radio(GTK_CELL_RENDERER_TOGGLE(rendererToggle), FALSE);
 
     /* g_object_set sets a renderer's properties. */
     g_object_set(rendererToggle, "activatable", FALSE, "active", FALSE, NULL);
@@ -159,6 +161,7 @@ GtkWidget *make_slip_view(Data_passer *data_passer) {
     GtkWidget *btnChecksAdd = gtk_button_new_from_icon_name("gtk-add", GTK_ICON_SIZE_BUTTON);
     GtkWidget *btnChecksDelete = gtk_button_new_from_icon_name("gtk-delete", GTK_ICON_SIZE_BUTTON);
     ;
+    data_passer->btn_checks_delete = btnChecksDelete;
     GtkWidget *btnSlipPrint = gtk_button_new_from_icon_name("gtk-print", GTK_ICON_SIZE_BUTTON);
 
     gtk_widget_set_name(btnChecksAdd, BUTTON_CHECK_ADD);

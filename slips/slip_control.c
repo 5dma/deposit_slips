@@ -128,14 +128,20 @@ static void add_check_row(GtkWidget *widget, gpointer data) {
         gtk_widget_set_sensitive(widget, FALSE);
     }
 
+    /* If clicking the Add button results in more than one row, set the delete check button's sensitivity to TRUE. */
+    if (number_of_checks > 1) {
+        gtk_widget_set_sensitive(data_passer->btn_checks_delete, TRUE);
+    }
+
     /* After adding a row, enable the radio buttons to delete one of the rows. */
     g_object_set(data_passer->radio_renderer, "activatable", TRUE, NULL);
 }
 
 /**
-Deletes a checked row from the model (and reflected in the treeview) after user clicks the Delete button. Inspiration for this loop is from [198. How to iterate through a GtkListStore - Part 2?](https://www.kksou.com/php-gtk2/sample-codes/iterate-through-a-GtkListStore-Part-2.php).
-@param widget Pointer to the clicked Delete button.
-@param data Void pointer to the temporary list store.
+    Deletes a checked row from the model (and reflected in the treeview) after user clicks the Delete button. Inspiration for this loop is from [198. How to iterate through a GtkListStore - Part 2?](https://www.kksou.com/php-gtk2/sample-codes/iterate-through-a-GtkListStore-Part-2.php).
+
+    @param widget Pointer to the clicked Delete button.
+    @param data Void pointer to the temporary list store.
 */
 static void delete_check_row(GtkWidget *widget, gpointer data) {
     GtkListStore *list_store = (GtkListStore *)data;
@@ -159,7 +165,11 @@ static void delete_check_row(GtkWidget *widget, gpointer data) {
         }
     } while (still_in_list && !removed_last_row);
 
-    /* We successfully deleted the second row, which means only the first row remains. Therefore,
-    set the button's sensitivity to FALSE to prevent the user from deleting this first row. */
-    gtk_widget_set_sensitive(widget, FALSE);
+
+     /* If deleted all but one row, set the button's sensitivity to FALSE to prevent the user from deleting the last existing row. */
+    gint number_of_checks = gtk_tree_model_iter_n_children(GTK_TREE_MODEL(list_store), NULL);
+    if (number_of_checks < 2) {
+        gtk_widget_set_sensitive(widget, FALSE);
+    }
+
 }

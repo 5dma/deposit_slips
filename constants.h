@@ -72,6 +72,8 @@ typedef struct {
 	GtkWidget *application_window;
 /** Pointer to the renderer for radio buttons.  */
 	GtkCellRenderer *radio_renderer;
+/** Pointer to the delete button in the checks view.  */
+	GtkWidget *btn_checks_delete;
 } Data_passer;
 
 
