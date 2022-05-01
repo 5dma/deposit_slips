@@ -29,8 +29,7 @@ gchar *comma_formatted_amount(gfloat number) {
 }
 
 /**
- * Callback fired when the `draw` signal is fired to redraw the preview area of the deposit slip.
- * This callback does two things:
+ * Drawing function for the front of the deposit slip. This function does:
  * \li Adds the created `cairo_t` pointer to the has table of pointer passers so that the function can redraw the preview.
  * \li Draws the preview for the first time.
  *
@@ -40,7 +39,7 @@ gchar *comma_formatted_amount(gfloat number) {
  * @param data Pointer to the hash table of pointers.
  * \sa preview_deposit_amounts()
  */
-void draw_preview(GtkWidget *widget, cairo_t *cr, gpointer data) {
+void draw_front_preview(GtkWidget *widget, cairo_t *cr, gpointer data) {
     Data_passer *data_passer = (Data_passer *)data;
 
     GtkTreeIter iter;
@@ -165,4 +164,27 @@ void draw_preview(GtkWidget *widget, cairo_t *cr, gpointer data) {
     g_free(account_name);
     g_free(routing_number);
     g_free(account_number);
+}
+
+/**
+ * Callback fired when the `draw` signal is fired to redraw the preview area of the deposit slip.
+ * This callback does two things:
+ * \li Adds the created `cairo_t` pointer to the has table of pointer passers so that the function can redraw the preview.
+ * \li Draws the preview for the first time.
+ *
+ * (There is a lot of commonality between this code and the one in draw_page(). However, the commonality is not enough to combine them into a single function.)
+ * @param widget Pointer to the preview area.
+ * @param cr Pointer to the Cairo context.
+ * @param data Pointer to the hash table of pointers.
+ * \sa preview_deposit_amounts()
+ */
+void draw_preview(GtkWidget *widget, cairo_t *cr, gpointer data) {
+    Data_passer *data_passer = (Data_passer *)data;
+
+    if (data_passer->front_slip_active == TRUE) {
+        draw_front_preview (widget, cr, data);
+    } else {
+        g_print("Drawing back\n");
+    }
+
 }

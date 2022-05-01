@@ -167,6 +167,9 @@ GtkWidget *make_slip_view(Data_passer *data_passer) {
     GtkWidget *btnGotoLast = gtk_button_new_from_icon_name("gtk-goto-last-ltr", GTK_ICON_SIZE_BUTTON);
 	data_passer->btn_go_to_first = btnGotoFirst;
 	data_passer->btn_go_to_last = btnGotoLast;
+    g_signal_connect(btnGotoFirst, "clicked", G_CALLBACK(toggle_slip_view), data_passer);
+    g_signal_connect(btnGotoLast, "clicked", G_CALLBACK(toggle_slip_view), data_passer);
+
 
     gtk_widget_set_name(btnChecksAdd, BUTTON_CHECK_ADD);
     gtk_widget_set_name(btnChecksDelete, BUTTON_CHECK_DELETE);

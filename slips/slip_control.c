@@ -105,6 +105,28 @@ static void check_toggle_clicked(GtkCellRendererToggle *renderer,
     gtk_tree_path_free(check_selection.path);
 }
 
+
+/**
+    Toggles between drawing the front side of the deposit slip and the back side.
+    @param widget Pointer to the clicked Add button.
+    @param data Void pointer to the temporary list store.
+*/
+static void toggle_slip_view(GtkWidget *widget, gpointer data) {
+    Data_passer *data_passer = (Data_passer *)data;
+
+    if (widget == data_passer->btn_go_to_first) {
+        gtk_widget_set_sensitive(data_passer->btn_go_to_first, FALSE);
+        gtk_widget_set_sensitive(data_passer->btn_go_to_last, TRUE);
+        data_passer->front_slip_active = TRUE;
+
+    } else {
+        gtk_widget_set_sensitive(data_passer->btn_go_to_last, FALSE);
+        gtk_widget_set_sensitive(data_passer->btn_go_to_first, TRUE);
+        data_passer->front_slip_active = FALSE;
+
+    }
+}
+
 /**
     Adds a row to the checks model after user clicks the Add button.
     @param widget Pointer to the clicked Add button.
@@ -127,10 +149,18 @@ static void add_check_row(GtkWidget *widget, gpointer data) {
     }
 
     if (number_of_checks > 2) {
+    /* If have more than two rows in the store:
+
+        a) Show the page first/last buttons.
+        b) Set their sensitivities.
+    */
         gtk_widget_show(data_passer->btn_go_to_first);
         gtk_widget_show(data_passer->btn_go_to_last);
-    }
 
+        gtk_widget_set_sensitive(data_passer->btn_go_to_first, FALSE);
+        gtk_widget_set_sensitive(data_passer->btn_go_to_last, TRUE);
+
+    }
     /* After adding a row, enable the radio buttons to delete one of the rows. */
     g_object_set(data_passer->radio_renderer, "activatable", TRUE, NULL);
 }
