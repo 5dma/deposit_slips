@@ -29,7 +29,7 @@ gchar *comma_formatted_amount(gfloat number) {
 }
 
 /**
- * Drawing function for the front of the deposit slip. This function does:
+ * Drawing function for the front of the deposit slip. This function does the following:
  * \li Adds the created `cairo_t` pointer to the has table of pointer passers so that the function can redraw the preview.
  * \li Draws the preview for the first time.
  *
@@ -167,6 +167,113 @@ void draw_front_preview(GtkWidget *widget, cairo_t *cr, gpointer data) {
 }
 
 /**
+ * Drawing function for the back of the deposit slip. This function does the following:
+ * \li Adds the created `cairo_t` pointer to the has table of pointer passers so that the function can redraw the preview.
+ * \li Draws the preview for the first time.
+ *
+ * (There is a lot of commonality between this code and the one in draw_page(). However, the commonality is not enough to combine them into a single function.)
+ * @param widget Pointer to the preview area.
+ * @param cr Pointer to the Cairo context.
+ * @param data Pointer to the hash table of pointers.
+ * \sa preview_deposit_amounts()
+ */
+void draw_back_preview(GtkWidget *widget, cairo_t *cr, gpointer data) {
+    Data_passer *data_passer = (Data_passer *)data;
+
+    GtkTreeIter iter;
+    GtkTreeModel *model;
+
+    guint width = gtk_widget_get_allocated_width(widget);
+    guint height = 0.45 * width;
+
+    g_print ("Width: %d, height: %d\n", width, height);
+
+    /* Draw white background */
+    cairo_rectangle(cr, 0.0, 0.0, width, height);
+    cairo_set_line_width(cr, 1.0);
+    cairo_set_source_rgb(cr, 0, 0, 0);
+    cairo_stroke_preserve(cr);
+    cairo_set_source_rgb(cr, 1, 1, 1);
+    cairo_fill(cr);
+
+    cairo_save(cr); /* Save passed context */
+
+    /* Write "CHECKS" */
+    cairo_set_source_rgb(cr, 0.0, 0.0, 0.0);
+    cairo_select_font_face(cr, "DejaVuSans", CAIRO_FONT_SLANT_NORMAL, CAIRO_FONT_WEIGHT_NORMAL);
+    cairo_set_font_size(cr, 6);
+    cairo_move_to(cr, 145, 136);
+    cairo_save(cr); /* Save context 1 */
+    cairo_rotate(cr, -G_PI_2);
+    cairo_show_text(cr, "CHECKS");
+    cairo_restore(cr); /* Restore context 1 */
+ 
+ /* Write "LIST SINGLY" */
+    cairo_move_to(cr, 150, 136);
+    cairo_save(cr); /* Save context 1 */
+    cairo_set_font_size(cr, 5);
+    cairo_rotate(cr, -G_PI_2);
+    cairo_show_text(cr, "LIST SINGLY");
+    cairo_restore(cr); /* Restore context 1 */
+
+
+    /* Write "TOTAL" */
+    cairo_save(cr); /* Save context 1 */
+    cairo_set_font_size(cr, 5);
+   cairo_move_to(cr, 469, 126);
+    cairo_rotate(cr, -G_PI_2);
+    cairo_show_text(cr, "TOTAL");
+    cairo_restore(cr); /* Restore context 1 */
+
+    /* Write "MUST BE ENTERED" */
+    cairo_save(cr); /* Save context 1 */
+    cairo_set_font_size(cr, 4);
+   cairo_move_to(cr, 474, 136);
+    cairo_rotate(cr, -G_PI_2);
+    cairo_show_text(cr, "MUST BE ENTERED");
+    cairo_restore(cr); /* Restore context 1 */
+
+    /* Write "ON FRONT SIDE" */
+    cairo_save(cr); /* Save context 1 */
+    cairo_set_font_size(cr, 4);
+   cairo_move_to(cr, 479, 133);
+    cairo_rotate(cr, -G_PI_2);
+    cairo_show_text(cr, "ON FRONT SIDE");
+    cairo_restore(cr); /* Restore context 1 */
+
+
+
+    /* Remaining tasks:
+       a) Go print the deposit amounts of all existing checks.
+       b) Compute the total for all existing chekcs.
+       c) Print the total.
+    */
+
+ //   data_passer->total_deposit = 0;
+ //   data_passer->cairo_context = cr;
+//    gtk_tree_model_foreach(GTK_TREE_MODEL(data_passer->checks_store), preview_deposit_amounts, data_passer);
+
+    /* Write total of checks deposited */
+    gfloat current_total = data_passer->total_deposit;
+
+    /* Format the total string with thousands separators. There is similar code in
+  draw_static_part.c:preview_deposit_amounts that should be put into a function. */
+  //  cairo_set_font_size(cr, 15);
+
+    /* Get the width of the total amount, and move to that point to print the total. */
+  //  cairo_text_extents_t extents;
+  //  gchar *formatted_total = comma_formatted_amount(current_total);
+  //  cairo_text_extents(cr, formatted_total, &extents);
+  //  cairo_move_to(cr, RIGHT_MARGIN_SCREEN - extents.width, 125);
+  //  cairo_show_text(cr, formatted_total);
+  //  g_free(formatted_total);
+
+      cairo_restore(cr); /* Restore passed context */
+
+
+}
+
+/**
  * Callback fired when the `draw` signal is fired to redraw the preview area of the deposit slip.
  * This callback does two things:
  * \li Adds the created `cairo_t` pointer to the has table of pointer passers so that the function can redraw the preview.
@@ -182,9 +289,9 @@ void draw_preview(GtkWidget *widget, cairo_t *cr, gpointer data) {
     Data_passer *data_passer = (Data_passer *)data;
 
     if (data_passer->front_slip_active == TRUE) {
-        draw_front_preview (widget, cr, data);
+        draw_front_preview(widget, cr, data);
     } else {
         g_print("Drawing back\n");
+        draw_back_preview(widget, cr, data);
     }
-
 }
