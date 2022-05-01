@@ -199,11 +199,8 @@ GtkWidget *make_slip_view(Data_passer *data_passer) {
 
 
 
-    GtkWidget *drawing_area_front = gtk_drawing_area_new();
-    data_passer->drawing_area_front = drawing_area_front;
-
-    GtkWidget *drawing_area_back = gtk_drawing_area_new();
-    data_passer->drawing_area_back = drawing_area_back;
+    GtkWidget *drawing_area = gtk_drawing_area_new();
+    data_passer->drawing_area = drawing_area;
 
     data_passer->checks_accounts_treeview = make_account_view(data_passer);
 
@@ -244,15 +241,13 @@ GtkWidget *make_slip_view(Data_passer *data_passer) {
     gtk_grid_attach(GTK_GRID(gridSlip), btnChecksAdd, 2, 3, 1, 1);
 
     /* Third column of grid */
-    gtk_grid_attach(GTK_GRID(gridSlip), drawing_area_front, 3, 1, 1, 1);
+    gtk_grid_attach(GTK_GRID(gridSlip), drawing_area, 3, 1, 1, 1);
 
-    gtk_widget_set_size_request(drawing_area_front, 500, 150);
-
-    gtk_widget_set_size_request(drawing_area_back, 500, 150);
+    gtk_widget_set_size_request(drawing_area, 500, 150);
 
     /* When the draw signal is fired on the drawing area (which can happen billions of times
     from GTK's internal messaging), go redraw the deposit slip preview. */
-    g_signal_connect(G_OBJECT(drawing_area_front), "draw", G_CALLBACK(draw_preview), data_passer);
+    g_signal_connect(G_OBJECT(drawing_area), "draw", G_CALLBACK(draw_preview), data_passer);
 
     /* Prevent the print button from expanding to the width of the grid column. */
 

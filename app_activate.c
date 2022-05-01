@@ -24,8 +24,8 @@ void on_app_activate(GApplication *app, gpointer data) {
     data_passer->list_store_temporary = NULL;
     data_passer->cairo_context = NULL;
     data_passer->check_tree_view = NULL;
-    data_passer->drawing_area_front = NULL;
-    data_passer->drawing_area_back = NULL;
+    data_passer->front_slip_active = TRUE;
+    data_passer->drawing_area = NULL;
     data_passer->checks_store = NULL;
     data_passer->total_deposit = 0;
     data_passer->checks_accounts_treeview = NULL;
@@ -94,5 +94,5 @@ void on_app_activate(GApplication *app, gpointer data) {
     g_signal_emit_by_name(G_OBJECT(data_passer->checks_accounts_treeview), "row-activated", NULL);
 
     /* Draw the preview. */
-    gtk_widget_queue_draw(data_passer->drawing_area_front);
+    gtk_widget_queue_draw(data_passer->drawing_area);
 }

@@ -58,10 +58,10 @@ typedef struct {
 	cairo_t *cairo_context; 
 /** Pointer to checks tree view. */
 	GtkWidget *check_tree_view; 
-/** Pointer to the drawing area, front side of deposit slip. */
-	GtkWidget *drawing_area_front; 
-/** Pointer to the drawing area, back side of deposit slip. */
-	GtkWidget *drawing_area_back; 
+/** Indicates currently drawing the front of the slip. */
+	gboolean front_slip_active;
+/** Pointer to drawing area for slip. */
+	GtkWidget *drawing_area; 
 /** List store of the checks  */
 	GtkListStore *checks_store; 
 /** Sum of all checks deposited.  */

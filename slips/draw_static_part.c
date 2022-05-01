@@ -40,7 +40,7 @@ void deposit_amount_edited(GtkCellRendererText *self,
         g_free(formatted_amount);
     }
 
-    gtk_widget_queue_draw(data_passer->drawing_area_front);
+    gtk_widget_queue_draw(data_passer->drawing_area);
     
 }
 
