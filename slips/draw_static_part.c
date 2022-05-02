@@ -104,12 +104,8 @@ gboolean preview_deposit_amounts_front(GtkTreeModel *model,
     /* Increment the total of all amounts in the deposit slip and update its
     value in the hash table of passed pointers. */
 
-    gfloat current_total = data_passer->total_deposit;
-
     float amount_float = atof((char *)amount);
-    current_total += amount_float;
-
-    data_passer->total_deposit = current_total;
+    data_passer->total_deposit += amount_float;
 
     g_free(amount);
     g_free(pathstring);
@@ -179,15 +175,10 @@ gboolean preview_deposit_amounts_back(GtkTreeModel *model,
 
     g_free(formatted_total);
 
-    /* Increment the total of all amounts in the deposit slip and update its
-    value in the hash table of passed pointers. */
-
-    gfloat current_total = data_passer->total_back_side;
-
     float amount_float = atof((char *)amount);
-    current_total += amount_float;
 
-    data_passer->total_back_side = current_total;
+    data_passer->total_back_side += amount_float;
+
 
     g_free(amount);
     g_free(pathstring);
