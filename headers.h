@@ -71,5 +71,8 @@ typedef struct CheckSelections {
     gboolean at_least_one_check_selected; /**< Indicates at least one check is selected */
 } CheckSelection;
 
+
+gint number_of_checks (Data_passer *data_passer);
+
 #endif
 

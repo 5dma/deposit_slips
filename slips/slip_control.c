@@ -80,8 +80,7 @@ static void check_toggle_clicked(GtkCellRendererToggle *renderer,
     gboolean value;
     model = gtk_tree_view_get_model(GTK_TREE_VIEW(data_passer->check_tree_view));
 
-    gint number_of_checks = gtk_tree_model_iter_n_children(GTK_TREE_MODEL(data_passer->checks_store), NULL);
-    if (number_of_checks == 1) {
+    if (number_of_checks(data_passer) == 1) {
         return;
     }
 
@@ -143,12 +142,12 @@ static void add_check_row(GtkWidget *widget, gpointer data) {
                        -1);
 
     /* If we added a 15th row, set the button's sensitivity to FALSE to prevent the user from adding another row. */
-    gint number_of_checks = gtk_tree_model_iter_n_children(GTK_TREE_MODEL(data_passer->checks_store), NULL);
-    if (number_of_checks >= 15) {
+    gint local_number_of_checks = number_of_checks(data_passer);
+    if (local_number_of_checks >= 15) {
         gtk_widget_set_sensitive(widget, FALSE);
     }
 
-    if (number_of_checks > 2) {
+    if (local_number_of_checks > 2) {
     /* If have more than two rows in the store:
 
         a) Show the page first/last buttons.
@@ -199,8 +198,7 @@ static void delete_check_rows(GtkWidget *widget, gpointer data) {
     gtk_widget_set_sensitive(widget, FALSE);
 
 
-    gint number_of_checks = gtk_tree_model_iter_n_children(GTK_TREE_MODEL(data_passer->checks_store), NULL);
-    if (number_of_checks <= 2) {
+    if (number_of_checks(data_passer) <= 2) {
         gtk_widget_hide(data_passer->btn_go_to_first);
         gtk_widget_hide(data_passer->btn_go_to_last);
     }

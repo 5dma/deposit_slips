@@ -200,8 +200,7 @@ void draw_page(GtkPrintOperation *self, GtkPrintContext *context, gint page_nr, 
     cairo_restore(cr); /* Trash context 0 */
 
 
-    gint number_of_checks = gtk_tree_model_iter_n_children(GTK_TREE_MODEL(data_passer->checks_store), NULL);
-    if (number_of_checks > 2) {
+    if (number_of_checks(data_passer) > 2) {
     //    gtk_print_operation_draw_page_finish (self);
     //    gtk_tree_model_foreach(GTK_TREE_MODEL(data_passer->checks_store), print_deposit_amounts_back, data_passer);
     }
