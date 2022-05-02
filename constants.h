@@ -66,6 +66,8 @@ typedef struct {
 	GtkListStore *checks_store; 
 /** Sum of all checks deposited.  */
 	gfloat total_deposit; 
+/** Sum of all checks listed on back of slip.  */
+	gfloat total_back_side; 
 /** Tree view of accounts in the deposit slip tab.  */
 	GtkWidget *checks_accounts_treeview;
 /** Tree view of accounts in the deposit slip tab.  */

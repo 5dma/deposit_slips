@@ -52,7 +52,7 @@ GSList *read_account_numbers();
 GtkWidget *make_accounts_buttons_hbox(Data_passer *data_passer);
 void free_memory (GtkWidget *window, gpointer user_data);
 
-gboolean preview_deposit_amounts(GtkTreeModel *model,
+gboolean preview_deposit_amounts_front(GtkTreeModel *model,
                                GtkTreePath *path,
                                GtkTreeIter *iter,
                                gpointer data);
