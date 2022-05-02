@@ -45,15 +45,16 @@ void deposit_amount_edited(GtkCellRendererText *self,
 }
 
 /**
- * Callback fired while iterating over all checks.
+ * Callback fired while iterating over all checks on front side of slip. This function prints the
+ * amounts of the first two checks on the front side of the preview. 
  * @param model Pointer to the model containing the checks.
  * @param path Path to the current check.
  * @param iter Iterator for the current check.
  * @param data Void pointer to the hash table of passed pointers.
- * @return No value is returned.
+ * @return `FALSE` to continue iterating, `TRUE` to stop iterating.
  * \sa draw_preview()
 */
-gboolean preview_deposit_amounts(GtkTreeModel *model,
+gboolean preview_deposit_amounts_front(GtkTreeModel *model,
                                GtkTreePath *path,
                                GtkTreeIter *iter,
                                gpointer data) {
@@ -63,7 +64,7 @@ gboolean preview_deposit_amounts(GtkTreeModel *model,
     gtk_tree_model_get(model, iter, CHECK_AMOUNT, &amount, -1);
     gchar *pathstring = gtk_tree_path_to_string(path);
 
-    guint64 row_number;
+    guint64 row_number; /* Current row number passed to this function. */
     GError *gerror = NULL;
 
     /* The current amount needs to be printed at a particular coordinate
@@ -82,6 +83,10 @@ gboolean preview_deposit_amounts(GtkTreeModel *model,
         &gerror);    /* pointer for GError *. */
 
 
+    /* Stop printing check amounts after the second one in the store. */
+    if (row_number > 1) {
+        return TRUE;
+    }
     cairo_select_font_face(data_passer->cairo_context, "DejaVuMono", CAIRO_FONT_SLANT_NORMAL, CAIRO_FONT_WEIGHT_BOLD);
     cairo_set_font_size(data_passer->cairo_context, 16);
 
@@ -108,4 +113,5 @@ gboolean preview_deposit_amounts(GtkTreeModel *model,
 
     g_free(amount);
     g_free(pathstring);
+    return FALSE;
 }
