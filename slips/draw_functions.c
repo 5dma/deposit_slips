@@ -62,6 +62,8 @@ void draw_front_preview(GtkWidget *widget, cairo_t *cr, gpointer data) {
     guint width = gtk_widget_get_allocated_width(widget);
     guint height = 0.45 * width;
 
+    gint number_of_checks_local = number_of_checks(data_passer);
+
     /* Draw white background */
     cairo_rectangle(cr, 0.0, 0.0, width, height);
     cairo_set_line_width(cr, 1.0);
@@ -145,8 +147,20 @@ void draw_front_preview(GtkWidget *widget, cairo_t *cr, gpointer data) {
     cairo_move_to(cr, 350, 80);
     cairo_show_text(cr, "OTHER SIDE");
 
-    /* Write the subtotal line from the back side. */
-    if (number_of_checks(data_passer) > 2) {
+  
+    /* Remaining tasks:
+       a) Go print the deposit amounts of all existing checks.
+       b) Compute the total for all existing chekcs.
+       c) Print the total.
+    */
+
+    data_passer->total_deposit = 0;
+    data_passer->cairo_context = cr;
+     data_passer->total_back_side = 0;
+    gtk_tree_model_foreach(GTK_TREE_MODEL(data_passer->checks_store), preview_deposit_amounts_front, data_passer);
+
+  /* Write the subtotal line from the back side. */
+    if (number_of_checks_local > 2) {
         cairo_select_font_face(data_passer->cairo_context, "DejaVuMono", CAIRO_FONT_SLANT_NORMAL, CAIRO_FONT_WEIGHT_BOLD);
         cairo_set_font_size(data_passer->cairo_context, 16);
 
@@ -159,27 +173,19 @@ void draw_front_preview(GtkWidget *widget, cairo_t *cr, gpointer data) {
         cairo_show_text(data_passer->cairo_context, formatted_total);
         g_free(formatted_total);
     }
-    /* Remaining tasks:
-       a) Go print the deposit amounts of all existing checks.
-       b) Compute the total for all existing chekcs.
-       c) Print the total.
-    */
 
-    data_passer->total_deposit = 0;
-    data_passer->cairo_context = cr;
-    gtk_tree_model_foreach(GTK_TREE_MODEL(data_passer->checks_store), preview_deposit_amounts_front, data_passer);
 
-    /* Write total of checks deposited */
-    gfloat current_total = data_passer->total_deposit;
+    if (number_of_checks_local > 2) {
+        data_passer->total_deposit += data_passer->total_back_side;
+    }
 
     /* Format the total string with thousands separators. There is similar code in
   draw_static_part.c:preview_deposit_amounts_front that should be put into a function. */
 
-
     /* Get the width of the total amount, and move to that point to print the total. */
     cairo_set_font_size(cr, 15);
     cairo_text_extents_t extents;
-    gchar *formatted_total = comma_formatted_amount(current_total);
+    gchar *formatted_total = comma_formatted_amount(data_passer->total_deposit);
     cairo_text_extents(cr, formatted_total, &extents);
     cairo_move_to(cr, RIGHT_MARGIN_SCREEN - extents.width, 125);
     cairo_show_text(cr, formatted_total);
@@ -272,29 +278,24 @@ void draw_back_preview(GtkWidget *widget, cairo_t *cr, gpointer data) {
     gtk_tree_model_foreach(GTK_TREE_MODEL(data_passer->checks_store), preview_deposit_amounts_back, data_passer);
 
     /* Write total of checks deposited */
-  //  gfloat current_total = data_passer->total_back_side;
+    //  gfloat current_total = data_passer->total_back_side;
 
     /* Format the total string with thousands separators. There is similar code in
   draw_static_part.c:preview_deposit_amounts_front that should be put into a function. */
-      cairo_set_font_size(cr, 15);
+    cairo_set_font_size(cr, 15);
 
     /* Get the width of the total amount, and move to that point to print the total. */
-      cairo_text_extents_t extents;
-      gchar *formatted_total = comma_formatted_amount(data_passer->total_back_side);
-      cairo_text_extents(cr, formatted_total, &extents);
-      cairo_move_to(cr, 478, extents.width + 12);
-    
+    cairo_text_extents_t extents;
+    gchar *formatted_total = comma_formatted_amount(data_passer->total_back_side);
+    cairo_text_extents(cr, formatted_total, &extents);
+    cairo_move_to(cr, 478, extents.width + 12);
+
     cairo_save(data_passer->cairo_context); /* Save context 1 */
     cairo_rotate(data_passer->cairo_context, -G_PI_2);
     cairo_show_text(data_passer->cairo_context, formatted_total);
     cairo_restore(data_passer->cairo_context); /* Restore context 1 */
 
-
-
-      g_free(formatted_total);
-
-
-
+    g_free(formatted_total);
 
     cairo_restore(cr); /* Restore passed context */
 }

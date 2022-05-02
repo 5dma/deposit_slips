@@ -51,7 +51,7 @@ void free_memory(GtkWidget *window, gpointer data) {
 
 
 /**
- * Retrns the number of checks in the checks list store (the number of checks being deposited).
+ * Returns the number of checks in the checks list store (the number of checks being deposited).
  * @param data_passer User data
 */
 gint number_of_checks (Data_passer *data_passer) {

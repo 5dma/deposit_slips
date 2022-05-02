@@ -63,6 +63,7 @@ gboolean preview_deposit_amounts_front(GtkTreeModel *model,
     gchar *amount;
     gtk_tree_model_get(model, iter, CHECK_AMOUNT, &amount, -1);
     gchar *pathstring = gtk_tree_path_to_string(path);
+    gfloat current_amount = atof(amount);
 
     guint64 row_number; /* Current row number passed to this function. */
     GError *gerror = NULL;
@@ -83,15 +84,15 @@ gboolean preview_deposit_amounts_front(GtkTreeModel *model,
         &gerror);    /* pointer for GError *. */
 
 
-    /* Stop printing check amounts after the second one in the store. */
+    /* After the second check in the store, only accumulate the totals from the back side. */
     if (row_number > 1) {
-        return TRUE;
+        data_passer->total_back_side += current_amount;
+        return FALSE;
     }
     cairo_select_font_face(data_passer->cairo_context, "DejaVuMono", CAIRO_FONT_SLANT_NORMAL, CAIRO_FONT_WEIGHT_BOLD);
     cairo_set_font_size(data_passer->cairo_context, 16);
 
     /* Get the formatted string corresponding to this check's amount. */
-    gfloat current_amount = atof(amount);
     gchar *formatted_total = comma_formatted_amount(current_amount);
 
     /* Move to the correct position to print the amount such that it is right-aligned. */
