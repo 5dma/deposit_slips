@@ -115,3 +115,81 @@ gboolean preview_deposit_amounts_front(GtkTreeModel *model,
     g_free(pathstring);
     return FALSE;
 }
+
+
+/**
+ * Callback fired while iterating over all checks on back side of slip. This function prints the
+ * amounts of checks 3-15 on the back side of the preview. 
+ * @param model Pointer to the model containing the checks.
+ * @param path Path to the current check.
+ * @param iter Iterator for the current check.
+ * @param data Void pointer to the hash table of passed pointers.
+ * @return `FALSE` to continue iterating, `TRUE` to stop iterating.
+ * \sa draw_preview()
+*/
+gboolean preview_deposit_amounts_back(GtkTreeModel *model,
+                               GtkTreePath *path,
+                               GtkTreeIter *iter,
+                               gpointer data) {
+    Data_passer *data_passer = (Data_passer *)data;
+
+    gchar *amount;
+    gtk_tree_model_get(model, iter, CHECK_AMOUNT, &amount, -1);
+    gchar *pathstring = gtk_tree_path_to_string(path);
+
+    guint64 row_number; /* Current row number passed to this function. */
+    GError *gerror = NULL;
+
+    /* The current amount needs to be printed at a particular coordinate
+    in the preview. The vertical coordinate is fixed, but the horizontal coordinate
+    changes depending on index of the current check in the list. The farther down
+    the current check is, the farther to the right it is in the preview. The horizontal coordinate
+    is therefore a function of the `path` passed to the callback. */
+
+    /* First, determine the row number in the list of checks for the current check. */
+    gboolean string_to_int = g_ascii_string_to_unsigned(
+        pathstring,  /* path of the current row */
+        10,          /* Base 10 */
+        0,           /* minimum value */
+        100,         /* maximum value */
+        &row_number, /* returned row number */
+        &gerror);    /* pointer for GError *. */
+
+
+    /* Stop printing check amounts after the second one in the store. */
+    if (row_number < 2) {
+        return FALSE;
+    }
+    cairo_select_font_face(data_passer->cairo_context, "DejaVuMono", CAIRO_FONT_SLANT_NORMAL, CAIRO_FONT_WEIGHT_BOLD);
+    cairo_set_font_size(data_passer->cairo_context, 16);
+
+    /* Get the formatted string corresponding to this check's amount. */
+    gfloat current_amount = atof(amount);
+    gchar *formatted_total = comma_formatted_amount(current_amount);
+
+    /* Move to the correct position to print the amount such that it is right-aligned. */
+    cairo_text_extents_t extents;
+    cairo_text_extents(data_passer->cairo_context, formatted_total, &extents);
+    cairo_move_to(data_passer->cairo_context, (row_number * (extents.height + 12)) + 115, extents.width + 10);
+
+    cairo_save(data_passer->cairo_context); /* Save context 1 */
+    cairo_rotate(data_passer->cairo_context, -G_PI_2);
+    cairo_show_text(data_passer->cairo_context, formatted_total);
+    cairo_restore(data_passer->cairo_context); /* Restore context 1 */
+
+    g_free(formatted_total);
+
+    /* Increment the total of all amounts in the deposit slip and update its
+    value in the hash table of passed pointers. */
+
+    gfloat current_total = data_passer->total_back_side;
+
+    float amount_float = atof((char *)amount);
+    current_total += amount_float;
+
+    data_passer->total_back_side = current_total;
+
+    g_free(amount);
+    g_free(pathstring);
+    return FALSE;
+}

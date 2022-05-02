@@ -209,9 +209,7 @@ void draw_back_preview(GtkWidget *widget, cairo_t *cr, gpointer data) {
 
     guint width = gtk_widget_get_allocated_width(widget);
     guint height = 0.45 * width;
-
-    g_print("Width: %d, height: %d\n", width, height);
-
+    
     /* Draw white background */
     cairo_rectangle(cr, 0.0, 0.0, width, height);
     cairo_set_line_width(cr, 1.0);
@@ -271,7 +269,7 @@ void draw_back_preview(GtkWidget *widget, cairo_t *cr, gpointer data) {
     */
 
     data_passer->total_back_side = 0;
-    gtk_tree_model_foreach(GTK_TREE_MODEL(data_passer->checks_store), preview_deposit_amounts_front, data_passer);
+    gtk_tree_model_foreach(GTK_TREE_MODEL(data_passer->checks_store), preview_deposit_amounts_back, data_passer);
 
     /* Write total of checks deposited */
     gfloat current_total = data_passer->total_deposit;
@@ -309,7 +307,6 @@ void draw_preview(GtkWidget *widget, cairo_t *cr, gpointer data) {
     if (data_passer->front_slip_active == TRUE) {
         draw_front_preview(widget, cr, data);
     } else {
-        g_print("Drawing back\n");
         draw_back_preview(widget, cr, data);
     }
 }

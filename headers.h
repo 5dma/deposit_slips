@@ -57,6 +57,11 @@ gboolean preview_deposit_amounts_front(GtkTreeModel *model,
                                GtkTreeIter *iter,
                                gpointer data);
 
+gboolean preview_deposit_amounts_back(GtkTreeModel *model,
+                               GtkTreePath *path,
+                               GtkTreeIter *iter,
+                               gpointer data);
+
 void print_deposit_slip(GtkButton *self, gpointer data);
 gchar *comma_formatted_amount(gfloat amount);
 
