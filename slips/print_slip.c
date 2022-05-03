@@ -241,15 +241,15 @@ void draw_page(GtkPrintOperation *self, GtkPrintContext *context, gint page_nr, 
 
     data_passer->cairo_context = cr;
     data_passer->total_deposit = 0;
-    
+
     gtk_tree_model_foreach(GTK_TREE_MODEL(data_passer->checks_store), print_deposit_amounts_front, data_passer);
 
     /* Write total of checks deposited */
-    gfloat current_total = data_passer->total_deposit;
+   data_passer->total_deposit += data_passer->total_back_side;
 
     /* Get the width of the total amount, and move to that point to print the total. */
     cairo_text_extents_t extents;
-    gchar *formatted_total = comma_formatted_amount(current_total);
+    gchar *formatted_total = comma_formatted_amount(data_passer->total_deposit);
     cairo_text_extents(cr, formatted_total, &extents);
     cairo_move_to(cr, 153, extents.width + RIGHT_MARGIN_PRINT_FRONT);
     cairo_save(cr); /* Save context 1 */
@@ -262,6 +262,8 @@ void draw_page(GtkPrintOperation *self, GtkPrintContext *context, gint page_nr, 
 
     cairo_restore(cr); /* Trash context 0 */
 
+    /* If there are more than two checks, print them on the back side of the deposit slip
+    as well as the subtotal on the front side. */
     if (number_of_checks(data_passer) > 2) {
 
         gchar *formatted_total = comma_formatted_amount(data_passer->total_back_side);
