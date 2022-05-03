@@ -74,12 +74,10 @@ gboolean print_deposit_amounts_front(GtkTreeModel *model,
     /* Increment the total of all amounts in the deposit slip and update its
     value in the hash table of passed pointers. */
 
-    gfloat current_total = data_passer->total_deposit;
-
+  
     float amount_float = atof((char *)amount);
-    current_total += amount_float;
-
-    data_passer->total_deposit = current_total;
+  
+    data_passer->total_deposit += amount_float;
 
     g_free(amount);
     g_free(pathstring);
@@ -242,7 +240,8 @@ void draw_page(GtkPrintOperation *self, GtkPrintContext *context, gint page_nr, 
     g_free(account_with_transit);
 
     data_passer->cairo_context = cr;
-
+    data_passer->total_deposit = 0;
+    
     gtk_tree_model_foreach(GTK_TREE_MODEL(data_passer->checks_store), print_deposit_amounts_front, data_passer);
 
     /* Write total of checks deposited */

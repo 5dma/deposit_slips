@@ -147,7 +147,6 @@ void draw_front_preview(GtkWidget *widget, cairo_t *cr, gpointer data) {
     cairo_move_to(cr, 350, 80);
     cairo_show_text(cr, "OTHER SIDE");
 
-  
     /* Remaining tasks:
        a) Go print the deposit amounts of all existing checks.
        b) Compute the total for all existing chekcs.
@@ -156,10 +155,10 @@ void draw_front_preview(GtkWidget *widget, cairo_t *cr, gpointer data) {
 
     data_passer->total_deposit = 0;
     data_passer->cairo_context = cr;
-     data_passer->total_back_side = 0;
+    data_passer->total_back_side = 0;
     gtk_tree_model_foreach(GTK_TREE_MODEL(data_passer->checks_store), preview_deposit_amounts_front, data_passer);
 
-  /* Write the subtotal line from the back side. */
+    /* Write the subtotal line from the back side. */
     if (number_of_checks_local > 2) {
         cairo_select_font_face(data_passer->cairo_context, "DejaVuMono", CAIRO_FONT_SLANT_NORMAL, CAIRO_FONT_WEIGHT_BOLD);
         cairo_set_font_size(data_passer->cairo_context, 16);
@@ -172,10 +171,8 @@ void draw_front_preview(GtkWidget *widget, cairo_t *cr, gpointer data) {
         cairo_move_to(data_passer->cairo_context, RIGHT_MARGIN_SCREEN - extents.width, 81);
         cairo_show_text(data_passer->cairo_context, formatted_total);
         g_free(formatted_total);
-    }
 
-
-    if (number_of_checks_local > 2) {
+        /* Add amount from back side to the total deposit. */
         data_passer->total_deposit += data_passer->total_back_side;
     }
 
