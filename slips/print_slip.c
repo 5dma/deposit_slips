@@ -18,7 +18,7 @@
  * @return No value is returned.
  * \sa draw_preview()
 */
-gboolean print_deposit_amounts(GtkTreeModel *model,
+gboolean print_deposit_amounts_front(GtkTreeModel *model,
                                GtkTreePath *path,
                                GtkTreeIter *iter,
                                gpointer data) {
@@ -31,6 +31,20 @@ gboolean print_deposit_amounts(GtkTreeModel *model,
     guint64 row_number;
     GError *gerror = NULL;
 
+  /* First, determine the row number in the list of checks for the current check. */
+    gboolean string_to_int = g_ascii_string_to_unsigned(
+        pathstring,  /* path of the current row */
+        10,          /* Base 10 */
+        0,           /* minimum value */
+        100,         /* maximum value */
+        &row_number, /* returned row number */
+        &gerror);    /* pointer for GError *. */
+
+    /* Stop rendering of checks after the second one in the store. */
+    if (row_number > 1) {
+        return TRUE;
+    }
+
     cairo_save(cr); /* Save passed context */
 
     /* The current amount needs to be printed at a particular coordinate
@@ -39,14 +53,7 @@ gboolean print_deposit_amounts(GtkTreeModel *model,
     the current check is, the farther down it is in the preview. The vertical coordinate
     is therefore a function of the `path` passed to the callback. */
 
-    /* First, determine the row number in the list of checks for the current check. */
-    gboolean string_to_int = g_ascii_string_to_unsigned(
-        pathstring,  /* path of the current row */
-        10,          /* Base 10 */
-        0,           /* minimum value */
-        100,         /* maximum value */
-        &row_number, /* returned row number */
-        &gerror);    /* pointer for GError *. */
+  
 
 
     cairo_select_font_face(cr, "DejaVuSansMono", CAIRO_FONT_SLANT_NORMAL, CAIRO_FONT_WEIGHT_BOLD);
@@ -85,6 +92,74 @@ gboolean print_deposit_amounts(GtkTreeModel *model,
 
 }
 
+/**
+ * Callback fired while iterating over all checks.
+ * @param model Pointer to the model containing the checks.
+ * @param path Path to the current check.
+ * @param iter Iterator for the current check.
+ * @param data Void pointer to the hash table of passed pointers.
+ * @return No value is returned.
+ * \sa draw_preview()
+*/
+gboolean print_deposit_amounts_back(GtkTreeModel *model,
+                               GtkTreePath *path,
+                               GtkTreeIter *iter,
+                               gpointer data) {
+    Data_passer *data_passer = (Data_passer *)data;
+    cairo_t *cr = data_passer->cairo_context;
+    gchar *amount;
+    gtk_tree_model_get(model, iter, CHECK_AMOUNT, &amount, -1);
+    gchar *pathstring = gtk_tree_path_to_string(path); /* Memory freed below. */
+
+    guint64 row_number;
+    GError *gerror = NULL;
+
+ /* First, determine the row number in the list of checks for the current check. */
+    gboolean string_to_int = g_ascii_string_to_unsigned(
+        pathstring,  /* path of the current row */
+        10,          /* Base 10 */
+        0,           /* minimum value */
+        100,         /* maximum value */
+        &row_number, /* returned row number */
+        &gerror);    /* pointer for GError *. */
+    
+    /* Ignore rendering of checks before the second one in the store. */
+    if (row_number < 2) {
+        return FALSE;
+    }
+
+
+    cairo_save(cr); /* Save passed context */
+
+    /* The current amount needs to be printed at a particular coordinate
+    in the preview. The horizontal coordinate is fixed, but the vertical coordinate
+    changes depending on index of the current check in the list. The farther down
+    the current check is, the farther down it is in the preview. The vertical coordinate
+    is therefore a function of the `path` passed to the callback. */
+
+    cairo_select_font_face(cr, "DejaVuSansMono", CAIRO_FONT_SLANT_NORMAL, CAIRO_FONT_WEIGHT_BOLD);
+    cairo_set_font_size(cr, FONT_SIZE_AMOUNT);
+
+    /* Get the formatted string corresponding to this check's amount. */
+    gfloat current_amount = atof(amount);
+    gchar *formatted_amount = comma_formatted_amount(current_amount); /* Memory freed below. */
+
+    /* Move to the correct position to print the amount such that it is right-aligned. */
+    cairo_text_extents_t extents;
+    cairo_text_extents(cr, formatted_amount, &extents);
+    cairo_move_to(cr, (row_number * 22.5) + 167,  RIGHT_MARGIN_PRINT - extents.width);
+    
+    cairo_show_text(cr, formatted_amount);
+   
+    g_free(formatted_amount);
+
+    g_free(amount);
+    g_free(pathstring);
+
+    cairo_save(cr); /* Restore passed context */
+    return FALSE;
+
+}
 
 /**
  * Callback fired when a print job prints a page. Prints the physical deposit slip. (There is a lot of commonality between this code and the one in draw_preview(). However, the commonality was not enough to combine them into a single function.) 
@@ -179,7 +254,7 @@ void draw_page(GtkPrintOperation *self, GtkPrintContext *context, gint page_nr, 
 
     data_passer->cairo_context = cr;
     
-    gtk_tree_model_foreach(GTK_TREE_MODEL(data_passer->checks_store), print_deposit_amounts, data_passer);
+    gtk_tree_model_foreach(GTK_TREE_MODEL(data_passer->checks_store), print_deposit_amounts_front, data_passer);
 
     /* Write total of checks deposited */
     gfloat current_total =  data_passer->total_deposit;
@@ -201,8 +276,20 @@ void draw_page(GtkPrintOperation *self, GtkPrintContext *context, gint page_nr, 
 
 
     if (number_of_checks(data_passer) > 2) {
-    //    gtk_print_operation_draw_page_finish (self);
-    //    gtk_tree_model_foreach(GTK_TREE_MODEL(data_passer->checks_store), print_deposit_amounts_back, data_passer);
+       // gtk_print_operation_draw_page_finish(self);
+        gtk_tree_model_foreach(GTK_TREE_MODEL(data_passer->checks_store), print_deposit_amounts_back, data_passer);
+        
+        gchar *formatted_total = comma_formatted_amount(data_passer->total_back_side);
+
+        /* Move to the correct position to print the amount such that it is right-aligned. */
+        cairo_text_extents_t extents;
+        cairo_text_extents(data_passer->cairo_context, formatted_total, &extents);
+        cairo_move_to(cr, 85, extents.width + RIGHT_MARGIN_PRINT);
+        cairo_save(cr);
+         cairo_rotate(cr, -G_PI_2);
+        cairo_show_text(data_passer->cairo_context, formatted_total);
+        cairo_restore(cr); /* Restore context 0 */
+        g_free(formatted_total);
     }
 }
 

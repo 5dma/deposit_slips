@@ -153,7 +153,7 @@ gboolean preview_deposit_amounts_back(GtkTreeModel *model,
         &gerror);    /* pointer for GError *. */
 
 
-    /* Stop printing check amounts after the second one in the store. */
+    /* Stop rendering of checks before the second one in the store. */
     if (row_number < 2) {
         return FALSE;
     }
