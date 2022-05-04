@@ -51,11 +51,11 @@ static const double RIGHT_MARGIN_PRINT_BACK = 180;
  * Structure for passing data between functions.
 */ 
 typedef struct {
-  /** Master list store. */
+  /** Master list store of checking accounts. */
     GtkListStore *list_store_master; 
-/** Temporary list store. */
+/** Temporary list store of checking accounts. */
 	GtkListStore *list_store_temporary; 
-/** Pointer to cairo context. */
+/** Pointer to cairo context for previewing and printing checks. */
 	cairo_t *cairo_context; 
 /** Pointer to checks tree view. */
 	GtkWidget *check_tree_view; 
@@ -63,7 +63,7 @@ typedef struct {
 	gboolean front_slip_active;
 /** Pointer to drawing area for slip. */
 	GtkWidget *drawing_area; 
-/** List store of the checks  */
+/** List store of the checks.  */
 	GtkListStore *checks_store; 
 /** Sum of all checks deposited.  */
 	gfloat total_deposit; 
@@ -71,8 +71,6 @@ typedef struct {
 	gfloat total_back_side; 
 /** Tree view of accounts in the deposit slip tab.  */
 	GtkWidget *checks_accounts_treeview;
-/** Tree view of accounts in the deposit slip tab.  */
-	GtkCellRenderer *check_cell_renderer;
 /** Pointer to the application window.  */
 	GtkWidget *application_window;
 /** Pointer to the renderer for radio buttons.  */

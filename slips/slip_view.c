@@ -14,7 +14,7 @@
 
 /**
  * Creates the view of account numbers in the deposit list tab.
- * @param pointer_passer Hash table of pointers. This function uses the pointer to the master list of account numbers.
+ * @param data_passer Hash table of pointers. This function uses the pointer to the master list of account numbers.
  * @return A tree view of account numbers.
  */
 GtkWidget *make_account_view(Data_passer *data_passer) {
@@ -84,7 +84,7 @@ void started_cell_editing(GtkCellRenderer *self, GtkCellEditable *editable, gcha
 
 /**
  * Creates the view of checks appearing in a deposit slip.
- * @param pointer_passer Hash table of pointers. This function uses the pointer to the `ListStore` of checks.
+ * @param data_passer Hash table of pointers. This function uses the pointer to the `ListStore` of checks.
  * @return A tree view with two columns: one for amounts, another a checkbox to delete an amount.
  */
 void make_checks_view(Data_passer *data_passer) {
@@ -108,9 +108,6 @@ void make_checks_view(Data_passer *data_passer) {
     gtk_cell_renderer_set_alignment(rendererChecks, 1.0, 0.5);
 
     g_object_set(rendererChecks, "editable", TRUE, "editable-set", TRUE, NULL);
-
-    /* Add the pointer to the cell renderer, because we need it in draw_preview */
-    data_passer->check_cell_renderer = rendererChecks;
 
     /* Every time a cell in the Checks column is editing, redraw the preview. */
     g_signal_connect(G_OBJECT(rendererChecks), "edited", G_CALLBACK(deposit_amount_edited), data_passer);

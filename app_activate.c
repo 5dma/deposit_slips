@@ -30,7 +30,6 @@ void on_app_activate(GApplication *app, gpointer data) {
     data_passer->total_deposit = 0;
     data_passer->total_back_side = 0;
     data_passer->checks_accounts_treeview = NULL;
-    data_passer->check_cell_renderer = NULL;
     data_passer->application_window = NULL;
     data_passer->radio_renderer = NULL;
     data_passer->btn_go_to_first = NULL;
