@@ -14,7 +14,7 @@
 
 /**
  * Creates the view of account numbers in the deposit list tab.
- * @param data_passer Hash table of pointers. This function uses the pointer to the master list of account numbers.
+ * @param data_passer Pointer to user data.
  * @return A tree view of account numbers.
  */
 GtkWidget *make_account_view(Data_passer *data_passer) {
@@ -48,7 +48,7 @@ GtkWidget *make_account_view(Data_passer *data_passer) {
  * Callback that prevents the user from entering anything in a `GtkCellEditable` other than digits and a decimal point. The actual allowed keys are [0-9], decimal point, backspace, delete, cursor right, and cursor left.
  * @param widget Widget where the edit is occurring.
  * @param event Key that was pressed.
- * @param user_data `NULL` in this case.
+ * @param user_data Pointer to user data. `NULL` in this case.
  * @return  `FALSE` if an allowed key was pressed, `TRUE` otherwise.
  * \sa started_cell_editing()
  */
@@ -74,7 +74,7 @@ static gboolean number_formatter(GtkWidget *widget, GdkEventKey *event, gpointer
  * @param self Cell where the editing started.
  * @param editable `GtkCellEditable` in which user performs edits.
  * @param path Path within the tree view the editing occurs.
- * @param user_data `NULL` in this case.
+ * @param user_data Pointer to user data. `NULL` in this case.
  * \sa number_formatter()
  */
 void started_cell_editing(GtkCellRenderer *self, GtkCellEditable *editable, gchar *path, gpointer user_data) {
@@ -84,7 +84,7 @@ void started_cell_editing(GtkCellRenderer *self, GtkCellEditable *editable, gcha
 
 /**
  * Creates the view of checks appearing in a deposit slip.
- * @param data_passer Hash table of pointers. This function uses the pointer to the `ListStore` of checks.
+ * @param data_passer Pointer to user data.
  * @return A tree view with two columns: one for amounts, another a checkbox to delete an amount.
  */
 void make_checks_view(Data_passer *data_passer) {
@@ -146,7 +146,7 @@ void make_checks_view(Data_passer *data_passer) {
 /**
  * Creates a view for the deposit slip. The view contains a list of accounts,
  * a list of checks to deposit (amount only), and a preview of the deposit slip.
- * @param data_passer Pointer to the hash table of passed pointers.
+ * @param data_passer Pointer to user data.
  * @return A widget containing the three widgets described above.
  */
 GtkWidget *make_slip_view(Data_passer *data_passer) {

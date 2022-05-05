@@ -93,7 +93,7 @@ void save_account_numbers(JsonGenerator *generator) {
 }
 
 /**
- * Callback fired while itering each member of a `GSList` of list of
+ * Callback fired while iterating over each member of a `GSList` of list of
  * accounts read from disk. The accounts are added to the passed `ListStore`.
  * @param account List of accounts in a `GSList`.
  * @param data The ListStore into which the accounts are copied.

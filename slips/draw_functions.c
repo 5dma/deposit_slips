@@ -6,11 +6,11 @@
 
 /**
  * @file draw_functions.c
- * @brief Contains a callback to draw the deposit slip's preview.
+ * @brief Contains callbacks to draw the deposit slip's preview, front side or back side.
  */
 
 /**
- * Formats a passed float number into a familiar currency value. For example, takes 51003.34 and formats it into 51,003.34.
+ * Formats a passed float number into a familiar currency value. For example, takes 51003 and formats it into 51,003.00.
  * @param number Any gfloat less than 999999.99
  * @return The formatted string.
  */
@@ -33,11 +33,10 @@ gchar *comma_formatted_amount(gfloat number) {
  * \li Adds the created `cairo_t` pointer to the has table of pointer passers so that the function can redraw the preview.
  * \li Draws the preview for the first time.
  *
- * (There is a lot of commonality between this code and the one in draw_page(). However, the commonality is not enough to combine them into a single function.)
+ * (There is a lot of commonality between this code and the one in print_deposit_amounts_front(). However, the commonality is not enough to combine them into a single function.)
  * @param widget Pointer to the preview area.
  * @param cr Pointer to the Cairo context.
- * @param data Pointer to the hash table of pointers.
- * \sa preview_deposit_amounts_front()
+ * @param data Pointer to user data.
  */
 void draw_front_preview(GtkWidget *widget, cairo_t *cr, gpointer data) {
     Data_passer *data_passer = (Data_passer *)data;
@@ -147,11 +146,7 @@ void draw_front_preview(GtkWidget *widget, cairo_t *cr, gpointer data) {
     cairo_move_to(cr, 350, 80);
     cairo_show_text(cr, "OTHER SIDE");
 
-    /* Remaining tasks:
-       a) Go print the deposit amounts of all existing checks.
-       b) Compute the total for all existing chekcs.
-       c) Print the total.
-    */
+    /* Print the deposit amounts of all existing checks.    */
 
     data_passer->total_deposit = 0;
     data_passer->cairo_context = cr;
@@ -176,7 +171,7 @@ void draw_front_preview(GtkWidget *widget, cairo_t *cr, gpointer data) {
         data_passer->total_deposit += data_passer->total_back_side;
     }
 
-    /* Format the total string with thousands separators. There is similar code in
+    /* Format the total string with thousands separators and draw it. There is similar code in
   draw_static_part.c:preview_deposit_amounts_front that should be put into a function. */
 
     /* Get the width of the total amount, and move to that point to print the total. */
@@ -194,15 +189,12 @@ void draw_front_preview(GtkWidget *widget, cairo_t *cr, gpointer data) {
 }
 
 /**
- * Drawing function for the back of the deposit slip. This function does the following:
- * \li Adds the created `cairo_t` pointer to the has table of pointer passers so that the function can redraw the preview.
- * \li Draws the preview for the first time.
+ * Drawing function for the back of the deposit slip. This function draws the check amounts in the store (starting with the third check), and also draws a subtotal. 
  *
- * (There is a lot of commonality between this code and the one in draw_page(). However, the commonality is not enough to combine them into a single function.)
+ * (There is a lot of commonality between this code and the one in print_deposit_amounts_back(). However, the commonality is not enough to combine them into a single function.)
  * @param widget Pointer to the preview area.
  * @param cr Pointer to the Cairo context.
- * @param data Pointer to the hash table of pointers.
- * \sa preview_deposit_amounts_front()
+ * @param data Pointer to user data.
  */
 void draw_back_preview(GtkWidget *widget, cairo_t *cr, gpointer data) {
     Data_passer *data_passer = (Data_passer *)data;
@@ -265,20 +257,13 @@ void draw_back_preview(GtkWidget *widget, cairo_t *cr, gpointer data) {
     cairo_show_text(cr, "ON FRONT SIDE");
     cairo_restore(cr); /* Restore context 1 */
 
-    /* Remaining tasks:
-       a) Go print the deposit amounts of all existing checks.
-       b) Compute the total for all existing chekcs.
-       c) Print the total.
-    */
+    /* Go print the deposit amounts of all checks starting with the third one.   */
 
     data_passer->total_back_side = 0;
     gtk_tree_model_foreach(GTK_TREE_MODEL(data_passer->checks_store), preview_deposit_amounts_back, data_passer);
 
-    /* Write total of checks deposited */
-    //  gfloat current_total = data_passer->total_back_side;
-
     /* Format the total string with thousands separators. There is similar code in
-  draw_static_part.c:preview_deposit_amounts_front that should be put into a function. */
+  draw_static_part.c:preview_deposit_amounts_back that should be put into a function. */
     cairo_set_font_size(cr, 15);
 
     /* Get the width of the total amount, and move to that point to print the total. */
@@ -299,15 +284,14 @@ void draw_back_preview(GtkWidget *widget, cairo_t *cr, gpointer data) {
 
 /**
  * Callback fired when the `draw` signal is fired to redraw the preview area of the deposit slip.
- * This callback does two things:
- * \li Adds the created `cairo_t` pointer to the has table of pointer passers so that the function can redraw the preview.
- * \li Draws the preview for the first time.
+ * This callback examines the flag \ref Data_passer.front_slip_active.
+ * \li If the flag is `TRUE`, we are drawing the front of the deposit slip. In that case, call draw_front_preview().
+ * \li If the flag is `FALSE`, we are drawing the back of the deposit slip. In that case, call draw_back_preview().
  *
- * (There is a lot of commonality between this code and the one in draw_page(). However, the commonality is not enough to combine them into a single function.)
  * @param widget Pointer to the preview area.
  * @param cr Pointer to the Cairo context.
- * @param data Pointer to the hash table of pointers.
- * \sa preview_deposit_amounts_front()
+ * @param data Pointer to user data.
+ * \sa print_deposit_slip()
  */
 void draw_preview(GtkWidget *widget, cairo_t *cr, gpointer data) {
     Data_passer *data_passer = (Data_passer *)data;

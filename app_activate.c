@@ -14,7 +14,7 @@
 /**
  * Function that starts the GTK loop.
  * @param app Pointer to the GTK application
- * @param data Pointer to passed data, `NULL` in this case.
+ * @param data Pointer to user data, `NULL` in this case.
  */
 void on_app_activate(GApplication *app, gpointer data) {
     /* Structure for passing data to functions and callbacks */

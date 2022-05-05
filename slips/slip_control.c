@@ -15,7 +15,8 @@
  * @param model Pointer to the model being iterated.
  * @param path Pointer to the path associated with the current iteration.
  * @param iter Pointer to the iterator associated with the current iteration.
- * @param data Void pointer to a CheckSelection structure.
+ * @param data Pointer to a \ref CheckSelection structure.
+ * @return `TRUE` upon being passed a checkbox that is checked, indicating that at least one checkbox is checked. We can then activate the Delete button. `FALSE` if the current checkbox is not checked, implying we can possibly iterate over all checkboxes.
  * \sa check_toggle_clicked()
  */
 gboolean examine_all_check_checkboxes(GtkTreeModel *model,
@@ -39,7 +40,7 @@ gboolean examine_all_check_checkboxes(GtkTreeModel *model,
  * The function changes the label under the accounts list to show the selected
  * account's name and description.
  * @param tree_view Pointer to tree view whose selection was changed.
- * @param user_data Pointer to passed user data (not used).
+ * @param user_data Pointer to user data (not used).
  */
 void update_label(GtkTreeView *tree_view, gpointer user_data) {
     GtkWidget *tree_parent = gtk_widget_get_parent(GTK_WIDGET(tree_view));
@@ -64,12 +65,12 @@ void update_label(GtkTreeView *tree_view, gpointer user_data) {
 
 /**
  * Callback fired if one of the checkboxes in the Delete column is toggled on or off. The function
- * changes the view to marked or cleared depending on the checkboxes previous state. However, if there is only one
+ * changes the view to marked or cleared depending on the checkbox's previous state. However, if there is only one
  * check in the check store, we do not toggle it because we must maintain at least one check in the store.
  *
  * @param renderer Pointer to the checkbox's cell renderer.
  * @param path Pointer to the path associated with the current iteration.
- * @param data Void pointer to associated treeview.
+ * @param data Pointer to associated treeview.
  */
 static void check_toggle_clicked(GtkCellRendererToggle *renderer,
                                  gchar *path,
@@ -108,7 +109,7 @@ static void check_toggle_clicked(GtkCellRendererToggle *renderer,
 /**
     Toggles between drawing the front side of the deposit slip and the back side.
     @param widget Pointer to the clicked Add button.
-    @param data Void pointer to the temporary list store.
+    @param data Pointer to the temporary list store.
 */
 static void toggle_slip_view(GtkWidget *widget, gpointer data) {
     Data_passer *data_passer = (Data_passer *)data;
@@ -129,7 +130,7 @@ static void toggle_slip_view(GtkWidget *widget, gpointer data) {
 /**
     Adds a row to the checks model after user clicks the Add button.
     @param widget Pointer to the clicked Add button.
-    @param data Void pointer to the temporary list store.
+    @param data Pointer to the temporary list store.
 */
 static void add_check_row(GtkWidget *widget, gpointer data) {
     Data_passer *data_passer = (Data_passer *)data;
@@ -168,7 +169,7 @@ static void add_check_row(GtkWidget *widget, gpointer data) {
     Deletes all checked rows from the model (and reflected in the treeview) after user clicks the Delete button. Inspiration for this loop is from [198. How to iterate through a GtkListStore - Part 2?](https://www.kksou.com/php-gtk2/sample-codes/iterate-through-a-GtkListStore-Part-2.php). This function also sets the delete button's sensitivity to `FALSE`.
 
     @param widget Pointer to the clicked Delete button.
-    @param data Void pointer to the temporary list store.
+    @param data Pointer to the temporary list store.
 */
 static void delete_check_rows(GtkWidget *widget, gpointer data) {
 

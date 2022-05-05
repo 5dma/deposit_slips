@@ -9,13 +9,14 @@
  */
 
 /**
- * Callback fired while iterating over all checks.
+ * Callback fired while iterating over all checks. This function prints the first two checks in the store, subtotal from back side (if any), and total deposited. This function also prints the account number, account name, and current date.
  * @param model Pointer to the model containing the checks.
  * @param path Path to the current check.
  * @param iter Iterator for the current check.
- * @param data Void pointer to the hash table of passed pointers.
- * @return No value is returned.
- * \sa draw_preview()
+ * @param data Pointer to user data.
+ * @return `FALSE` while we are printing the first two checks, `TRUE` if we were passed the third check, thereby halting the iteration.
+ * \sa draw_page()
+ * \sa print_deposit_amounts_back()
  */
 gboolean print_deposit_amounts_front(GtkTreeModel *model,
                                      GtkTreePath *path,
@@ -86,13 +87,14 @@ gboolean print_deposit_amounts_front(GtkTreeModel *model,
 }
 
 /**
- * Callback fired while iterating over all checks.
+ * Callback fired while iterating over all checks. This function prints the third through last checks (if any) and subtotal on the back side of the deposit slip.
  * @param model Pointer to the model containing the checks.
  * @param path Path to the current check.
  * @param iter Iterator for the current check.
- * @param data Void pointer to the hash table of passed pointers.
- * @return No value is returned.
- * \sa draw_preview()
+ * @param data Pointer to user data.
+ * @return Always returns `FALSE` as we want to examine every check in the store.
+ * \sa draw_page()
+ * \sa print_deposit_amounts_front()
  */
 gboolean print_deposit_amounts_back(GtkTreeModel *model,
                                     GtkTreePath *path,
@@ -150,7 +152,14 @@ gboolean print_deposit_amounts_back(GtkTreeModel *model,
 }
 
 /**
- * Callback fired when a print job prints a page. Prints the physical deposit slip. (There is a lot of commonality between this code and the one in draw_preview(). However, the commonality was not enough to combine them into a single function.)
+ * Callback fired when a print job prints a page. It calls functions to print the front and the back of the deposit slip. (There is a lot of commonality between this code and the one in draw_preview(). However, the commonality was not enough to combine them into a single function.)
+ * 
+ * @param self A Gtk print operation.
+ * @param context A GTK print context.
+ * @param page_nr Current page number.
+ * @param data Pointer to user data.
+ * \sa print_deposit_amounts_front()
+ * \sa print_deposit_amounts_back()
  */
 void draw_page(GtkPrintOperation *self, GtkPrintContext *context, gint page_nr, gpointer data) {
     Data_passer *data_passer = (Data_passer *)data;
@@ -289,11 +298,9 @@ void draw_page(GtkPrintOperation *self, GtkPrintContext *context, gint page_nr, 
 }
 
 /**
- * Callback fired when user clicks the print button.
- * @param self Pointer to the clikced button.
- * @param data to the passed hash table.
- * \sa draw_page()
- *
+ * Callback fired when user clicks the print button. This function instantiates a GTK Print Operation, applies settings, and associates a callback draw_page().
+ * @param self Pointer to the clicked button.
+ * @param data Pointer to user data.
  */
 void print_deposit_slip(GtkButton *self, gpointer data) {
     Data_passer *data_passer = (Data_passer *)data;

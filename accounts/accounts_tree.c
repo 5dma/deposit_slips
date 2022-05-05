@@ -10,13 +10,13 @@
 */
 
 /**
- * Callback fired to format each row in the Account Number column in the Accounts tab. The callback
- * retrieves the text associated with the passed `iter`. If the text is `(Number)`, the text is formatted in light gray and italic; otherwise the text is formatted as normal and black.
+ * Callback fired from a `gtk_tree_view_column_set_cell_data_func()` to format each row in the Account Number column in the Accounts tab. The callback
+ * retrieves the text associated with the passed `iter`. If the text is the literal `(Number)`, it is formatted in light gray and italic; otherwise the text is formatted as normal and black.
  * @param col Pointer to the account's column.
  * @param renderer Pointer to the account's cell renderer.
  * @param model Pointer to model associated with the tree view.
  * @param iter Pointer to iterator associated with the model.
- * @param user_data Void pointer to passed user data, `NULL` in this case.
+ * @param user_data Pointer to user data, `NULL` in this case.
 */
 void account_column_formatter(GtkTreeViewColumn *col,
                               GtkCellRenderer *renderer,
@@ -44,7 +44,7 @@ void account_column_formatter(GtkTreeViewColumn *col,
  * @param renderer Pointer to the name's cell renderer.
  * @param model Pointer to model associated with the tree view.
  * @param iter Pointer to iterator associated with the model.
- * @param user_data Void pointer to passed user data, `NULL` in this case.
+ * @param user_data Pointer to user data, `NULL` in this case.
 */
 void name_column_formatter(GtkTreeViewColumn *col,
                            GtkCellRenderer *renderer,
@@ -71,7 +71,7 @@ void name_column_formatter(GtkTreeViewColumn *col,
  * @param renderer Pointer to the description's cell renderer.
  * @param model Pointer to model associated with the tree view.
  * @param iter Pointer to iterator associated with the model.
- * @param user_data Void pointer to passed user data, `NULL` in this case.
+ * @param user_data Pointer to user data, `NULL` in this case.
 */
 void description_column_formatter(GtkTreeViewColumn *col,
                                   GtkCellRenderer *renderer,
@@ -97,7 +97,7 @@ void description_column_formatter(GtkTreeViewColumn *col,
  * @param renderer Pointer to the description's cell renderer.
  * @param model Pointer to model associated with the tree view.
  * @param iter Pointer to iterator associated with the model.
- * @param user_data Void pointer to passed user data, `NULL` in this case.
+ * @param user_data Pointer to user data, `NULL` in this case.
 */
 void routing_column_formatter(GtkTreeViewColumn *col,
                               GtkCellRenderer *renderer,
@@ -122,7 +122,7 @@ void routing_column_formatter(GtkTreeViewColumn *col,
  * @param renderer Pointer to the number's cell renderer.
  * @param path Pointer to the model's path where the editing took place.
  * @param new_account_number Pointer to the new account number.
- * @param user_data Void pointer to the account tree view.
+ * @param user_data Pointer to the account tree view.
 */
 static void number_edited(GtkCellRendererText *renderer,
                           gchar *path,
@@ -145,7 +145,7 @@ static void number_edited(GtkCellRendererText *renderer,
  * @param renderer Pointer to the name's cell renderer.
  * @param path Pointer to the model's path where the editing took place.
  * @param new_account_name Pointer to the new account name.
- * @param user_data Void pointer to the tree view.
+ * @param user_data Pointer to the tree view.
 */
 static void name_edited(GtkCellRendererText *renderer,
                         gchar *path,
@@ -168,7 +168,7 @@ static void name_edited(GtkCellRendererText *renderer,
  * @param renderer Pointer to the description's cell renderer.
  * @param path Pointer to the model's path where the editing took place.
  * @param new_description Pointer to the new account description.
- * @param user_data Void pointer to the tree view.
+ * @param user_data Pointer to the tree view.
 */
 static void description_edited(GtkCellRendererText *renderer,
                                gchar *path,
@@ -191,7 +191,7 @@ static void description_edited(GtkCellRendererText *renderer,
  * @param renderer Pointer to the name's cell renderer.
  * @param path Pointer to the model's path where the editing took place.
  * @param new_routing_number Pointer to the new account name.
- * @param user_data Void pointer to the tree view.
+ * @param user_data Pointer to the tree view.
 */
 static void routing_edited(GtkCellRendererText *renderer,
                            gchar *path,
@@ -215,7 +215,7 @@ static void routing_edited(GtkCellRendererText *renderer,
  * @param model Pointer to the model being iterated.
  * @param path Pointer to the path associated with the current iteration.
  * @param iter Pointer to the iterator associated with the current iteration.
- * @param data Void pointer to user data.
+ * @param data Pointer to user data.
  * @return `TRUE` if at least one of the checkboxes in the delete column is checked, `FALSE` otherwise.
  * \sa toggle_clicked()
 */
@@ -235,7 +235,7 @@ gboolean examine_all_checkboxes(GtkTreeModel *model,
 
 /**
  * Callback fired if one of the checkboxes in the Delete column is toggled on or off. The function
- * changes the view to marked or cleared depending on the checkboxes previous state.
+ * changes the view to marked or cleared depending on the checkbox's previous state.
  * @param renderer Pointer to the checkbox's cell renderer.
  * @param path Pointer to the path associated with the current iteration.
  * @param user_data Pointer to associated treeview.

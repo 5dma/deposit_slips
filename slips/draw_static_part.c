@@ -5,7 +5,7 @@
 
 /**
  * @file draw_static_part.c
- * @brief Contains callbacks to draw the deposit slip's preview.
+ * @brief Contains ancillary callbacks to draw the deposit slip's preview.
 */
 
 /**
@@ -18,7 +18,7 @@
  * clicks the add button to add the first check.
  * @param path Path to the edited cell.
  * @param new_text Text in the cell renderer after the editing is complete.
- * @param data Void pointer to the hash table of passed pointers.
+ * @param data Pointer to user data.
  * \sa make_checks_view()
 */
 void deposit_amount_edited(GtkCellRendererText *self,
@@ -46,13 +46,13 @@ void deposit_amount_edited(GtkCellRendererText *self,
 
 /**
  * Callback fired while iterating over all checks on front side of slip. This function prints the
- * amounts of the first two checks on the front side of the preview. 
+ * amounts of the first two checks on the front side of the preview. This function also accumulates into \ref Data_passer.total_back_side amounts of checks appearing on the rear of the preview.
  * @param model Pointer to the model containing the checks.
  * @param path Path to the current check.
  * @param iter Iterator for the current check.
- * @param data Void pointer to the hash table of passed pointers.
- * @return `FALSE` to continue iterating, `TRUE` to stop iterating.
- * \sa draw_preview()
+ * @param data Pointer to user data.
+ * @return Always returns `FALSE`, as we want to examine every check in the store.
+ * \sa draw_front_preview()
 */
 gboolean preview_deposit_amounts_front(GtkTreeModel *model,
                                GtkTreePath *path,
@@ -120,9 +120,9 @@ gboolean preview_deposit_amounts_front(GtkTreeModel *model,
  * @param model Pointer to the model containing the checks.
  * @param path Path to the current check.
  * @param iter Iterator for the current check.
- * @param data Void pointer to the hash table of passed pointers.
- * @return `FALSE` to continue iterating, `TRUE` to stop iterating.
- * \sa draw_preview()
+ * @param data Pointer to user data.
+ * @return Always returns `FALSE`, because we examine every check in the store.
+ * \sa draw_back_preview()
 */
 gboolean preview_deposit_amounts_back(GtkTreeModel *model,
                                GtkTreePath *path,

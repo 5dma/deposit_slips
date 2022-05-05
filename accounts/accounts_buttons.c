@@ -13,7 +13,7 @@
 /**
     Adds a row to the tree model after user clicks the Add button.
     @param widget Pointer to the clicked Add button.
-    @param data Void pointer to the temporary list store.
+    @param data Pointer to the temporary list store.
 */
 static void add_row(GtkWidget *widget, gpointer data) {
     GtkListStore *list_store = (GtkListStore *)data;
@@ -36,8 +36,9 @@ static void add_row(GtkWidget *widget, gpointer data) {
 
 /**
 Deletes a checked row from the model (and reflected in the treeview) after user clicks the Delete button. Inspiration for this loop is from [198. How to iterate through a GtkListStore - Part 2?](https://www.kksou.com/php-gtk2/sample-codes/iterate-through-a-GtkListStore-Part-2.php).
-@param widget Pointer to the clicked Delete button.
-@param data Void pointer to the temporary list store.
+
+    @param widget Pointer to the clicked Delete button.
+    @param data Pointer to the temporary list store.
 */
 static void delete_row(GtkWidget *widget, gpointer data) {
     GtkListStore *list_store = (GtkListStore *)data;
@@ -73,7 +74,7 @@ static void delete_row(GtkWidget *widget, gpointer data) {
     the listing that was read from disk or last written to disk. This function clears the temporary
     store, and then copies the contents of the master store into the temporary store.
     @param widget Pointer to the clicked button.
-    @param data Void pointer to hash table pointer passer. The hash table holds pointers to both stores, master and temporary.
+    @param data Pointer to the data passer.
 */
 static void revert_listing(GtkWidget *widget, gpointer data) {
     Data_passer *data_passer = (Data_passer *)data;
@@ -133,7 +134,7 @@ static void revert_listing(GtkWidget *widget, gpointer data) {
     after user clicks the Save button. Also sets the master store to the listing in the
     temporary store.
     @param widget Pointer to the clicked Delete button.
-    @param data Void pointer the hash table containing the pointer to the temporary list store.
+    @param data Pointer to the data passer.
     \sa save_account_numbers()
 */
 static void save_listing(GtkWidget *widget, gpointer data) {
