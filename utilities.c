@@ -37,7 +37,7 @@ GDestroyNotify free_gslist_account(gpointer data) {
 }
 
 /**
-* Frees memory in the master and temporary account lists. This callback fires after
+* Frees memory in the master and temporary account lists and other string data in a `Data_passer`. This callback fires after
 * the user destroys the main application window.
 * @param window The parent node.
 * @param data Pointer to user data
@@ -47,6 +47,7 @@ void free_memory(GtkWidget *window, gpointer data) {
 
     gtk_list_store_clear(data_passer->list_store_master);
     gtk_list_store_clear(data_passer->list_store_temporary);
+    g_free(data_passer->font_face);
     g_free(data_passer);
 }
 

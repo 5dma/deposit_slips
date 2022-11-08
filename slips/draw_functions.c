@@ -73,13 +73,13 @@ void draw_front_preview(GtkWidget *widget, cairo_t *cr, gpointer data) {
 
     /* Write "Deposit Ticket" */
     cairo_set_source_rgb(cr, 0.0, 0.0, 0.0);
-    cairo_select_font_face(cr, "DejaVuSans", CAIRO_FONT_SLANT_NORMAL, CAIRO_FONT_WEIGHT_NORMAL);
+    cairo_select_font_face(cr, data_passer->font_face, CAIRO_FONT_SLANT_NORMAL, CAIRO_FONT_WEIGHT_NORMAL);
     cairo_set_font_size(cr, 6);
     cairo_move_to(cr, 104, 10);
     cairo_show_text(cr, "DEPOSIT TICKET");
 
     /* Write Name */
-    cairo_select_font_face(cr, "DejaVuSans", CAIRO_FONT_SLANT_NORMAL, CAIRO_FONT_WEIGHT_BOLD);
+    cairo_select_font_face(cr, data_passer->font_face, CAIRO_FONT_SLANT_NORMAL, CAIRO_FONT_WEIGHT_BOLD);
     cairo_set_font_size(cr, 6);
     cairo_move_to(cr, 15, 38);
     cairo_show_text(cr, "Name");
@@ -93,7 +93,7 @@ void draw_front_preview(GtkWidget *widget, cairo_t *cr, gpointer data) {
     cairo_stroke(cr);
 
     /* Write Account Number */
-    cairo_select_font_face(cr, "DejaVuSans", CAIRO_FONT_SLANT_NORMAL, CAIRO_FONT_WEIGHT_BOLD);
+    cairo_select_font_face(cr, data_passer->font_face, CAIRO_FONT_SLANT_NORMAL, CAIRO_FONT_WEIGHT_BOLD);
     cairo_set_font_size(cr, 6);
     cairo_move_to(cr, 15, 70);
     cairo_show_text(cr, "Account No");
@@ -139,7 +139,7 @@ void draw_front_preview(GtkWidget *widget, cairo_t *cr, gpointer data) {
 
     /* Write "Total from other side" */
     cairo_set_source_rgb(cr, 0.0, 0.0, 0.0);
-    cairo_select_font_face(cr, "DejaVuSans", CAIRO_FONT_SLANT_NORMAL, CAIRO_FONT_WEIGHT_NORMAL);
+    cairo_select_font_face(cr, data_passer->font_face, CAIRO_FONT_SLANT_NORMAL, CAIRO_FONT_WEIGHT_NORMAL);
     cairo_set_font_size(cr, 6);
     cairo_move_to(cr, 350, 75);
     cairo_show_text(cr, "TOTAL FROM");
