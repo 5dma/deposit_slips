@@ -7,12 +7,11 @@
 /**
  * @file account_store.c
  * @brief Sets up the store for accounts.
-*/
+ */
 
-/** 
- * Reads a CSV file in `~/.deposit_slip/deposit_slips.csv` into a `GSList`.
- * @return Returns a `GSList *` of account numbers read from disk.
-*/
+/**
+ * Reads configuration from a JSON file in `~/.deposit_slip/deposit_slips.json`.
+ */
 void read_configuration_data(Data_passer *data_passer) {
     GSList *local_struct_list = NULL;
     JsonParser *parser;
@@ -36,6 +35,9 @@ void read_configuration_data(Data_passer *data_passer) {
 
         JsonNode *root = json_parser_get_root(parser);
         JsonObject *obj = json_node_get_object(root);
+
+        /* Read the account information. */
+
         JsonArray *array = (JsonArray *)json_object_get_array_member(obj, "accounts");
         guint len = json_array_get_length(array);
 
@@ -56,30 +58,31 @@ void read_configuration_data(Data_passer *data_passer) {
             local_struct_list = g_slist_append(local_struct_list, account_entry);
         }
 
+        /* Place items in the temporary account list into list_builder. */
+        g_slist_foreach(local_struct_list, build_list_store, data_passer->list_store_master);
+        g_slist_foreach(local_struct_list, build_list_store, data_passer->list_store_temporary);
+        g_slist_free_full(local_struct_list, (GDestroyNotify)free_gslist_account);
+
+        /* Read the layout parameters. */
+        JsonObject *layout_object = json_object_get_object_member(obj, "layout");
+
+        data_passer->right_margin_screen = json_object_get_int_member(layout_object,"right_margin_screen");
+        data_passer->right_margin_print_front = json_object_get_int_member(layout_object,"right_margin_print_front");
+        data_passer->right_margin_print_back = json_object_get_int_member(layout_object,"right_margin_print_back");
+        data_passer->font_size_print_dynamic = json_object_get_int_member(layout_object,"font_size_print_dynamic");
+        data_passer->font_size_amount = json_object_get_int_member(layout_object,"font_size_amount");
+        data_passer->font_face = strdup(json_object_get_string_member(layout_object, "font_face"));
         g_object_unref(parser);
 
     } else {
         g_print("Input file does not exist.\n");
     }
     g_free(input_file);
-
-    /* Place items in the temporary account list into list_builder. */
-    g_slist_foreach(local_struct_list, build_list_store, data_passer->list_store_master);
-    g_slist_foreach(local_struct_list, build_list_store, data_passer->list_store_temporary);
-    g_slist_free_full(local_struct_list, (GDestroyNotify)free_gslist_account);
-
-
-	data_passer->right_margin_screen = 490;
-	data_passer->right_margin_print_front = 5;
-	data_passer->right_margin_print_back = 180;
-	data_passer->font_size_print_dynamic = 11;
-	data_passer->font_size_amount = 12;
-	data_passer->font_face = g_strdup("DejaVuSans");
 }
 
-/** 
+/**
  * Writes a CSV string to `~/.deposit_slip/deposit_slips.csv`.
- * @param generator A JsonGenerator used to write a JSON object to a file. See 
+ * @param generator A JsonGenerator used to write a JSON object to a file. See
  * \sa [json_generator_to_file](https://gnome.pages.gitlab.gnome.org/json-glib/method.Generator.to_file.html)
  * \sa [JsonGenerator](https://gnome.pages.gitlab.gnome.org/json-glib/class.Generator.html)
  */
