@@ -48,7 +48,7 @@ void build_list_store(gpointer account, gpointer list_builder_struct);
 GtkWidget * make_tree_view(GtkListStore *list_store );
 
 GtkWidget * get_child_from_parent (GtkWidget * parent, const gchar * child_name);
-GSList *read_account_numbers();
+void read_configuration_data(Data_passer *data_passer);
 GtkWidget *make_accounts_buttons_hbox(Data_passer *data_passer);
 void free_memory (GtkWidget *window, gpointer user_data);
 

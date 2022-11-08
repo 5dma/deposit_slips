@@ -57,13 +57,8 @@ void on_app_activate(GApplication *app, gpointer data) {
     data_passer->list_store_temporary = gtk_list_store_new(N_COLUMNS, G_TYPE_STRING, G_TYPE_STRING, G_TYPE_STRING, G_TYPE_STRING, G_TYPE_BOOLEAN);
     //   data_passer->list_store_temporary = list_store_temporary;
 
-    /* Read account numbers from disk. This memory is freed after adding the account numbers to list stores (a few lines down). */
-    GSList *list_accounts_from_disk = read_account_numbers();
-
-    /* Place items in the temporary account list into list_builder. */
-    g_slist_foreach(list_accounts_from_disk, build_list_store, data_passer->list_store_master);
-    g_slist_foreach(list_accounts_from_disk, build_list_store, data_passer->list_store_temporary);
-    g_slist_free_full(list_accounts_from_disk, (GDestroyNotify)free_gslist_account);
+    /* Read configuration data from disk. */
+    read_configuration_data(data_passer);
 
     /* Make the view for the Accounts tab. */
     GtkWidget *accounts_tab_tree = make_tree_view(data_passer->list_store_temporary);

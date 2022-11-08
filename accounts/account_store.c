@@ -13,7 +13,7 @@
  * Reads a CSV file in `~/.deposit_slip/deposit_slips.csv` into a `GSList`.
  * @return Returns a `GSList *` of account numbers read from disk.
 */
-GSList *read_account_numbers() {
+void read_configuration_data(Data_passer *data_passer) {
     GSList *local_struct_list = NULL;
     JsonParser *parser;
     JsonNode *root;
@@ -31,7 +31,7 @@ GSList *read_account_numbers() {
             g_print("Unable to parse `%s': %s\n", input_file, error->message);
             g_error_free(error);
             g_object_unref(parser);
-            return NULL;
+            return;
         }
 
         JsonNode *root = json_parser_get_root(parser);
@@ -63,7 +63,18 @@ GSList *read_account_numbers() {
     }
     g_free(input_file);
 
-    return local_struct_list;
+    /* Place items in the temporary account list into list_builder. */
+    g_slist_foreach(local_struct_list, build_list_store, data_passer->list_store_master);
+    g_slist_foreach(local_struct_list, build_list_store, data_passer->list_store_temporary);
+    g_slist_free_full(local_struct_list, (GDestroyNotify)free_gslist_account);
+
+
+	data_passer->right_margin_screen = 490;
+	data_passer->right_margin_print_front = 5;
+	data_passer->right_margin_print_back = 180;
+	data_passer->font_size_print_dynamic = 11;
+	data_passer->font_size_amount = 12;
+	data_passer->font_face = g_strdup("DejaVuSans");
 }
 
 /** 

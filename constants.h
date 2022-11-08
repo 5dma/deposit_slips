@@ -41,12 +41,7 @@ static const char LABEL_ACCOUNT_DESCRIPTION[] = "lblAccountDescription";
 /** Dummy amount string for the new check row. */
 static const char NEW_AMOUNT[] = "0.00"; 
 
-/** Right margin of on-screen deposit slip. */
-static const double RIGHT_MARGIN_SCREEN = 490;
-/** Right margin of printed deposit slip, front side. */
-static const double RIGHT_MARGIN_PRINT_FRONT = 5;
-/** Right margin of printed deposit slip, rear side. */
-static const double RIGHT_MARGIN_PRINT_BACK = 180;
+
 /**
  * Structure for passing data between functions.
 */ 
