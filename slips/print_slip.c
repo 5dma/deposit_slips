@@ -54,7 +54,7 @@ gboolean print_deposit_amounts_front(GtkTreeModel *model,
     is therefore a function of the `path` passed to the callback. */
 
     cairo_select_font_face(cr, "DejaVuSansMono", CAIRO_FONT_SLANT_NORMAL, CAIRO_FONT_WEIGHT_BOLD);
-    cairo_set_font_size(cr, FONT_SIZE_AMOUNT);
+    cairo_set_font_size(cr, data_passer->font_size_amount);
 
     /* Get the formatted string corresponding to this check's amount. */
     gfloat current_amount = atof(amount);
@@ -132,7 +132,7 @@ gboolean print_deposit_amounts_back(GtkTreeModel *model,
     is therefore a function of the `path` passed to the callback. */
 
     cairo_select_font_face(cr, "DejaVuSansMono", CAIRO_FONT_SLANT_NORMAL, CAIRO_FONT_WEIGHT_BOLD);
-    cairo_set_font_size(cr, FONT_SIZE_AMOUNT);
+    cairo_set_font_size(cr, data_passer->font_size_amount);
 
     /* Get the formatted string corresponding to this check's amount. */
     gfloat current_amount = atof(amount);
@@ -204,7 +204,7 @@ void draw_page(GtkPrintOperation *self, GtkPrintContext *context, gint page_nr, 
 
     cairo_move_to(cr, 18, 373);
     cairo_save(cr); /* Save context 1 */
-    cairo_set_font_size(cr, FONT_SIZE_PRINT_DYNAMIC);
+    cairo_set_font_size(cr, data_passer->font_size_print_dynamic);
     cairo_rotate(cr, -G_PI_2);
     cairo_show_text(cr, account_name);
     cairo_restore(cr); /* Restore context 0 */
@@ -219,7 +219,7 @@ void draw_page(GtkPrintOperation *self, GtkPrintContext *context, gint page_nr, 
 
     cairo_move_to(cr, 41, 351);
     cairo_save(cr); /* Save context 1 */
-    cairo_set_font_size(cr, FONT_SIZE_PRINT_DYNAMIC);
+    cairo_set_font_size(cr, data_passer->font_size_print_dynamic);
     cairo_rotate(cr, -G_PI_2);
     cairo_show_text(cr, account_number);
     cairo_restore(cr); /* Restore context 0 */
@@ -230,7 +230,7 @@ void draw_page(GtkPrintOperation *self, GtkPrintContext *context, gint page_nr, 
     gchar *date_time_string = g_date_time_format(date_time, "%B %e, %Y");
     cairo_move_to(cr, 75, 371);
     cairo_save(cr); /* Save context 1 */
-    cairo_set_font_size(cr, FONT_SIZE_PRINT_DYNAMIC);
+    cairo_set_font_size(cr, data_passer->font_size_print_dynamic);
     cairo_rotate(cr, -G_PI_2);
     cairo_show_text(cr, date_time_string);
     cairo_restore(cr); /* Restore context 0 */
@@ -241,7 +241,7 @@ void draw_page(GtkPrintOperation *self, GtkPrintContext *context, gint page_nr, 
 
     cairo_move_to(cr, 178, 288);
     cairo_save(cr); /* Save context 1 */
-    cairo_set_font_size(cr, FONT_SIZE_PRINT_DYNAMIC);
+    cairo_set_font_size(cr, data_passer->font_size_print_dynamic);
     cairo_select_font_face(cr, "MICR", CAIRO_FONT_SLANT_NORMAL, CAIRO_FONT_WEIGHT_NORMAL);
     cairo_rotate(cr, -G_PI_2);
     cairo_show_text(cr, account_with_transit);
@@ -262,7 +262,7 @@ void draw_page(GtkPrintOperation *self, GtkPrintContext *context, gint page_nr, 
     cairo_text_extents(cr, formatted_total, &extents);
     cairo_move_to(cr, 153, extents.width + RIGHT_MARGIN_PRINT_FRONT);
     cairo_save(cr); /* Save context 1 */
-    cairo_set_font_size(cr, FONT_SIZE_AMOUNT);
+    cairo_set_font_size(cr, data_passer->font_size_amount);
     cairo_select_font_face(cr, "DejaVuSansMono", CAIRO_FONT_SLANT_NORMAL, CAIRO_FONT_WEIGHT_BOLD);
     cairo_rotate(cr, -G_PI_2);
     cairo_show_text(cr, formatted_total);

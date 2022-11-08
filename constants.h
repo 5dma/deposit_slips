@@ -81,12 +81,18 @@ typedef struct {
 	GtkWidget *btn_go_to_first;
 /** Pointer to the go_to_last button in the checks view.  */
 	GtkWidget *btn_go_to_last;
+/** Right margin for screen preview of check.  */
+	gint right_margin_screen;
+/** Right margin for paper print, front side.  */
+	gint right_margin_print_front;
+/** Right margin for paper print, back side.  */
+	gint right_margin_print_back;
+/** Font size for printing the text items, such as name and account number.  */
+	gint font_size_print_dynamic;
+/** Font size for printing the amounts.  */
+	gint font_size_amount;
+/** Font face.  */
+	gchar *font_face;
 } Data_passer;
-
-
-/** Font size for dynamic info (name, account number, date) on printed slip. */
-static gint FONT_SIZE_PRINT_DYNAMIC = 11;
-/** Font size for amounts on printed slip. */
-static gint FONT_SIZE_AMOUNT = 12;
 
 #endif
