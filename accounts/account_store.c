@@ -80,31 +80,7 @@ void read_configuration_data(Data_passer *data_passer) {
     g_free(input_file);
 }
 
-/**
- * Writes a CSV string to `~/.deposit_slip/deposit_slips.csv`.
- * @param generator A JsonGenerator used to write a JSON object to a file. See
- * \sa [json_generator_to_file](https://gnome.pages.gitlab.gnome.org/json-glib/method.Generator.to_file.html)
- * \sa [JsonGenerator](https://gnome.pages.gitlab.gnome.org/json-glib/class.Generator.html)
- */
-void save_account_numbers(JsonGenerator *generator) {
-    GError *error = NULL;
-    GtkTreeIter iter;
 
-    /* Establish directory where accounts are saved, and create it if necessary. */
-    gchar *save_directory = g_build_filename(g_get_home_dir(), ".deposit_slip/", NULL);
-    if (!g_file_test(save_directory, G_FILE_TEST_EXISTS)) {
-        g_mkdir_with_parents(save_directory, 755);
-    }
-    g_free(save_directory);
-
-    gchar *output_file = g_build_filename(g_get_home_dir(), ".deposit_slip/deposit_slips.json", NULL);
-    gboolean write_successful = json_generator_to_file(generator, output_file, &error);
-
-    if (!write_successful) {
-        g_print("Could not write the new list, so the previous master list is still will show when restarting this program.\n");
-    }
-    g_free(output_file);
-}
 
 /**
  * Callback fired while iterating over each member of a `GSList` of list of

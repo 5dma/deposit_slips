@@ -25,8 +25,6 @@ static const char BUTTON_NAME_REVERT[] = "btnAccountsRevert";
 static const char BUTTON_NAME_ADD[] = "btnAccountsAdd"; 
 /** Name for the Delete button. */
 static const char BUTTON_NAME_DELETE[] = "btnAccountsDelete";
- /** Name for the Save button. */
- static const char BUTTON_NAME_SAVE[] = "btnAccountsSave"; 
  /** Name for the hbox containing the above buttons. */
 static const char HBOX_ACCOUNT_BUTTONS[] = "hboxAccountButtons";  
 

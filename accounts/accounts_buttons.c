@@ -30,8 +30,6 @@ static void add_row(GtkWidget *widget, gpointer data) {
     GtkWidget *accounts_buttons_hbox = gtk_widget_get_parent(widget);
     GtkWidget *account_button_revert = get_child_from_parent(accounts_buttons_hbox, BUTTON_NAME_REVERT);
     gtk_widget_set_sensitive(account_button_revert, TRUE);
-    GtkWidget *account_button_save = get_child_from_parent(accounts_buttons_hbox, BUTTON_NAME_SAVE);
-    gtk_widget_set_sensitive(account_button_save, TRUE);
 }
 
 /**
@@ -63,8 +61,6 @@ static void delete_row(GtkWidget *widget, gpointer data) {
     GtkWidget *accounts_buttons_hbox = gtk_widget_get_parent(widget);
     GtkWidget *account_button_revert = get_child_from_parent(accounts_buttons_hbox, BUTTON_NAME_REVERT);
     gtk_widget_set_sensitive(account_button_revert, TRUE);
-    GtkWidget *account_button_save = get_child_from_parent(accounts_buttons_hbox, BUTTON_NAME_SAVE);
-    gtk_widget_set_sensitive(account_button_save, TRUE);
 }
 
 /**
@@ -120,8 +116,6 @@ static void revert_listing(GtkWidget *widget, gpointer data) {
         GtkWidget *accounts_buttons_hbox = gtk_widget_get_parent(widget);
         GtkWidget *account_button_revert = get_child_from_parent(accounts_buttons_hbox, BUTTON_NAME_REVERT);
         gtk_widget_set_sensitive(account_button_revert, FALSE);
-        GtkWidget *account_button_save = get_child_from_parent(accounts_buttons_hbox, BUTTON_NAME_SAVE);
-        gtk_widget_set_sensitive(account_button_save, FALSE);
         GtkWidget *account_button_delete = get_child_from_parent(accounts_buttons_hbox, BUTTON_NAME_DELETE);
         gtk_widget_set_sensitive(account_button_delete, FALSE);
     } else {
@@ -129,104 +123,6 @@ static void revert_listing(GtkWidget *widget, gpointer data) {
     }
 }
 
-/**
-    Saves the current listing of accounts (which is the listing in the temporary store) 
-    after user clicks the Save button. Also sets the master store to the listing in the
-    temporary store.
-    @param widget Pointer to the clicked Delete button.
-    @param data Pointer to the data passer.
-    \sa save_account_numbers()
-*/
-static void save_listing(GtkWidget *widget, gpointer data) {
-    Data_passer *data_passer = (Data_passer *)data;
-
-    GtkTreeIter iter_master;
-    GtkTreeIter iter_temporary;
-
-    gboolean found_first_iter_temporary = gtk_tree_model_get_iter_first(GTK_TREE_MODEL(data_passer->list_store_temporary), &iter_temporary);
-
-    if (found_first_iter_temporary) {
-        /* gchar pointers for reading the entries from the master store. These variables are freed below. */
-        gchar *account_number = NULL;
-        gchar *account_name = NULL;
-        gchar *account_description = NULL;
-        gchar *routing_number = NULL;
-
-        /* A JSON array of accounts. Memory freed below. */
-        JsonArray *account_array = json_array_new();
-
-        gtk_list_store_clear(data_passer->list_store_master);
-
-        while (gtk_list_store_iter_is_valid(data_passer->list_store_temporary, &iter_temporary)) {
-            gtk_tree_model_get(GTK_TREE_MODEL(data_passer->list_store_temporary), &iter_temporary,
-                               ACCOUNT_NUMBER, &account_number,
-                               ACCOUNT_NAME, &account_name,
-                               DESCRIPTION, &account_description,
-                               ROUTING_NUMBER, &routing_number,
-                               -1);
-
-            /* Add the entry from the master store to the temporary store */
-            gtk_list_store_append(data_passer->list_store_master, &iter_master);
-
-            gtk_list_store_set(data_passer->list_store_master, &iter_master,
-                               ACCOUNT_NUMBER, account_number,
-                               ACCOUNT_NAME, account_name,
-                               DESCRIPTION, account_description,
-                               ROUTING_NUMBER, routing_number,
-                               -1);
-
-            /* Create a JSON object for the current account. */
-            JsonObject *account = json_object_new(); /* Memory freed below. */
-            json_object_set_string_member(account, "account", account_number);
-            json_object_set_string_member(account, "name", account_name);
-            json_object_set_string_member(account, "description", account_description);
-            json_object_set_string_member(account, "routing", routing_number);
-
-            /* Add the JSON object to the JSON array of accounts. */
-            json_array_add_object_element(account_array, account);
-            //json_object_unref(account); /* This statement causes a seg fault. Why? Doesn't the json_array_add_object_element increase the reference count?*/
-
-            gtk_tree_model_iter_next(GTK_TREE_MODEL(data_passer->list_store_temporary), &iter_temporary);
-        }
-
-        /* Create the top-level JSON object. */
-        JsonObject *object = json_object_new();
-        json_object_set_array_member(object, "accounts", account_array);
-
-        /* Create a node for the top-level JSON object, from which we create a JsonGenerator. */
-        JsonNode *node = json_node_new (JSON_NODE_OBJECT);
-        json_node_set_object(node, object);
-
-        JsonGenerator *generator;
-        generator = json_generator_new();
-        json_generator_set_root(generator, node);
-
-        /* Go write the JsonGenerator to a file. */
-        save_account_numbers(generator);
-
-       g_object_unref(generator);
-       json_object_unref(object);
-       json_array_unref(account_array);
-
-        g_free(account_number);
-        g_free(account_name);
-        g_free(account_description);
-        g_free(routing_number);
-
-        GtkWidget *accounts_buttons_hbox = gtk_widget_get_parent(widget);
-        GtkWidget *account_button_revert = get_child_from_parent(accounts_buttons_hbox, BUTTON_NAME_REVERT);
-        gtk_widget_set_sensitive(account_button_revert, FALSE);
-        GtkWidget *account_button_save = get_child_from_parent(accounts_buttons_hbox, BUTTON_NAME_SAVE);
-        gtk_widget_set_sensitive(account_button_save, TRUE);
-        GtkWidget *account_button_delete = get_child_from_parent(accounts_buttons_hbox, BUTTON_NAME_DELETE);
-        gtk_widget_set_sensitive(account_button_delete, FALSE);
-
-        /* The following statement gives an invalid pointer error. Don't we need to free string_to_save? */
-        //g_free(string_to_save);
-    } else {
-        g_print("Could not find first iter for saving the temporary list\n");
-    }
-}
 
 /**
     Constructs the view for the four buttons in the Accounts tab.
@@ -240,34 +136,28 @@ GtkWidget *make_accounts_buttons_hbox(Data_passer *data_passer) {
     GtkWidget *account_button_add = gtk_button_new_from_icon_name("gtk-add", GTK_ICON_SIZE_BUTTON);
     GtkWidget *account_button_delete = gtk_button_new_from_icon_name("gtk-delete", GTK_ICON_SIZE_BUTTON);
     GtkWidget *account_button_revert = gtk_button_new_from_icon_name("gtk-refresh", GTK_ICON_SIZE_BUTTON);
-    GtkWidget *account_button_save = gtk_button_new_from_icon_name("gtk-save", GTK_ICON_SIZE_BUTTON);
 
     gtk_widget_set_name(account_button_add, BUTTON_NAME_ADD);
     gtk_widget_set_name(account_button_delete, BUTTON_NAME_DELETE);
     gtk_widget_set_name(account_button_revert, BUTTON_NAME_REVERT);
-    gtk_widget_set_name(account_button_save, BUTTON_NAME_SAVE);
 
     local_hbox = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 5);
     gtk_widget_set_name(local_hbox, HBOX_ACCOUNT_BUTTONS);
     gtk_box_pack_start(GTK_BOX(local_hbox), account_button_add, TRUE, TRUE, 0);
     gtk_box_pack_start(GTK_BOX(local_hbox), account_button_delete, TRUE, TRUE, 0);
     gtk_box_pack_start(GTK_BOX(local_hbox), account_button_revert, TRUE, TRUE, 0);
-    gtk_box_pack_start(GTK_BOX(local_hbox), account_button_save, TRUE, TRUE, 0);
 
     gtk_widget_set_tooltip_text(account_button_add, "Add account");
     gtk_widget_set_tooltip_text(account_button_delete, "Delete selected accounts");
     gtk_widget_set_tooltip_text(account_button_revert, "Revert");
-    gtk_widget_set_tooltip_text(account_button_save, "Save changes");
 
     gtk_widget_set_sensitive(account_button_add, TRUE);
     gtk_widget_set_sensitive(account_button_delete, FALSE);
     gtk_widget_set_sensitive(account_button_revert, FALSE);
-    gtk_widget_set_sensitive(account_button_save, TRUE);
 
     g_signal_connect(account_button_add, "clicked", G_CALLBACK(add_row), data_passer->list_store_temporary);
     g_signal_connect(account_button_delete, "clicked", G_CALLBACK(delete_row), data_passer->list_store_temporary);
     g_signal_connect(account_button_revert, "clicked", G_CALLBACK(revert_listing), data_passer);
-    g_signal_connect(account_button_save, "clicked", G_CALLBACK(save_listing), data_passer);
 
     return local_hbox;
 }

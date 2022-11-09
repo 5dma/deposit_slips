@@ -50,10 +50,10 @@ void on_app_activate(GApplication *app, gpointer data) {
     gtk_notebook_append_page(GTK_NOTEBOOK(notebook), vbox_slip, label_slip);
     gtk_notebook_append_page(GTK_NOTEBOOK(notebook), vbox_accounts, label_account);
 
-    /* This memory is free after application is destroyed in `free_memory()`. */
+    /* This memory is free after application is destroyed in `write_config_free_memory()`. */
     data_passer->list_store_master = gtk_list_store_new(N_COLUMNS, G_TYPE_STRING, G_TYPE_STRING, G_TYPE_STRING, G_TYPE_STRING, G_TYPE_BOOLEAN);
     //   data_passer->list_store_master = list_store_master;
-    /* This memory is free after application is destroyed in `free_memory()`. */
+    /* This memory is free after application is destroyed in `write_config_free_memory()`. */
     data_passer->list_store_temporary = gtk_list_store_new(N_COLUMNS, G_TYPE_STRING, G_TYPE_STRING, G_TYPE_STRING, G_TYPE_STRING, G_TYPE_BOOLEAN);
     //   data_passer->list_store_temporary = list_store_temporary;
 
@@ -66,7 +66,7 @@ void on_app_activate(GApplication *app, gpointer data) {
     GtkWidget *slips_tab_tree = make_slip_view(data_passer);
 
     /* Upon destroying the application, free memory in data structures in pointer_passer. */
-    g_signal_connect(window, "destroy", G_CALLBACK(free_memory), data_passer);
+    g_signal_connect(window, "destroy", G_CALLBACK(write_config_free_memory), data_passer);
 
     /* Make buttons under the accounts in the Accounts tab. This should be part of make_tree_view. */
     GtkWidget *accounts_buttons_hbox = make_accounts_buttons_hbox(data_passer);
