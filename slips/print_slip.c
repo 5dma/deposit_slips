@@ -183,20 +183,21 @@ void draw_page(GtkPrintOperation *self, GtkPrintContext *context, gint page_nr, 
 
     gdouble width, height;
     gint layout_height;
-
+    Coordinates *coordinates;
+    
     cairo_t *cr;
     cr = gtk_print_context_get_cairo_context(context);
     width = gtk_print_context_get_width(context);
     height = gtk_print_context_get_height(context);
 
-    cairo_select_font_face(cr, "DejaVuSans", CAIRO_FONT_SLANT_NORMAL, CAIRO_FONT_WEIGHT_BOLD);
+    cairo_select_font_face(cr, data_passer->font_face, CAIRO_FONT_SLANT_NORMAL, CAIRO_FONT_WEIGHT_BOLD);
     cairo_set_font_size(cr, 7);
     cairo_translate(cr, 208, 0);
     cairo_save(cr); /* Save context 0 */
 
     /* Write Name */
-
-    cairo_move_to(cr, 18, 405);
+    coordinates = (Coordinates *)g_hash_table_lookup (data_passer->layout,"name_label");
+    cairo_move_to(cr, coordinates->x, coordinates->y);
     cairo_save(cr); /* Save context 1 */
     cairo_rotate(cr, -G_PI_2);
     cairo_show_text(cr, "Name");

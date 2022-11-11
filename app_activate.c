@@ -34,6 +34,13 @@ void on_app_activate(GApplication *app, gpointer data) {
     data_passer->radio_renderer = NULL;
     data_passer->btn_go_to_first = NULL;
     data_passer->btn_go_to_last = NULL;
+    data_passer->layout = g_hash_table_new (g_str_hash, g_str_equal);
+
+    Coordinates *coordinates_name_label = g_new(Coordinates,1);
+    g_hash_table_insert (data_passer->layout,"name_label", coordinates_name_label);
+    Coordinates *coordinates_name_value = g_new(Coordinates,1);
+    g_hash_table_insert (data_passer->layout,"name_value", coordinates_name_value);
+
 
     GtkWidget *window = gtk_application_window_new(GTK_APPLICATION(app));
     gtk_window_set_resizable(GTK_WINDOW(window), FALSE);

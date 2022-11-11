@@ -72,7 +72,19 @@ void read_configuration_data(Data_passer *data_passer) {
         data_passer->font_size_print_dynamic = json_object_get_int_member(layout_object,"font_size_print_dynamic");
         data_passer->font_size_amount = json_object_get_int_member(layout_object,"font_size_amount");
         data_passer->font_face = strdup(json_object_get_string_member(layout_object, "font_face"));
-        g_object_unref(parser);
+
+        JsonObject *x_y_object;
+        Coordinates *coordinates;
+        x_y_object = json_object_get_object_member(layout_object, "name_label");
+        coordinates = (Coordinates *)g_hash_table_lookup (data_passer->layout,"name_label");
+        coordinates->x = json_object_get_int_member (x_y_object,"x");
+        coordinates->y = json_object_get_int_member (x_y_object,"y");
+
+        x_y_object = json_object_get_object_member(layout_object, "name_value");
+        coordinates = (Coordinates *)g_hash_table_lookup (data_passer->layout,"name_value");
+        coordinates->x = json_object_get_int_member (x_y_object,"x");
+        coordinates->y = json_object_get_int_member (x_y_object,"y");
+
 
     } else {
         g_print("Input file does not exist.\n");

@@ -150,13 +150,27 @@ void write_config_free_memory(GtkWidget *window, gpointer data) {
         /* Add the layout object to the root object. */
         json_object_set_object_member(object, "layout", layout_object);
 
+        JsonObject *coordinate_object;
+        Coordinates *coordinates;
+        coordinate_object = json_object_new();
+        coordinates = (Coordinates *)g_hash_table_lookup (data_passer->layout,"name_label");
+
+        json_object_set_int_member(coordinate_object, "x", coordinates->x);
+        json_object_set_int_member(coordinate_object, "y", coordinates->y);
+        json_object_set_object_member(layout_object, "name_label", coordinate_object);
+
+        coordinates = (Coordinates *)g_hash_table_lookup (data_passer->layout,"name_value");
+        json_object_set_int_member(coordinate_object, "x", coordinates->x);
+        json_object_set_int_member(coordinate_object, "y", coordinates->y);
+        json_object_set_object_member(layout_object, "name_value", coordinate_object);
+
         /* Go write the JsonGenerator to a file. */
         save_account_numbers(generator);
 
         /* Free memory allocated to the JSON object. */
+     //   json_object_unref(layout_object);
         g_object_unref(generator);
         json_object_unref(object);
-        json_object_unref(layout_object);
         json_array_unref(account_array);
 
         /* Free memory allocated to the master and temporary list stores. */

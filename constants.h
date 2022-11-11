@@ -40,6 +40,11 @@ static const char LABEL_ACCOUNT_DESCRIPTION[] = "lblAccountDescription";
 static const char NEW_AMOUNT[] = "0.00"; 
 
 
+typedef struct {
+	gint64 x;
+	gint64 y;
+} Coordinates;
+
 /**
  * Structure for passing data between functions.
 */ 
@@ -86,6 +91,8 @@ typedef struct {
 	gint font_size_amount;
 /** Font face.  */
 	gchar *font_face;
+/** List of x,y coordinates for various layout elements. */
+	GHashTable *layout;
 } Data_passer;
 
 #endif
