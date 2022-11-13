@@ -41,8 +41,8 @@ static const char NEW_AMOUNT[] = "0.00";
 
 
 typedef struct {
-	gint64 x;
-	gint64 y;
+	gdouble x;
+	gdouble y;
 } Coordinates;
 
 /**

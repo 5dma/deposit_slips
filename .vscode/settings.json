@@ -6,7 +6,8 @@
         "constants.h": "c",
         "slip_headers.h": "c",
         "string.h": "c",
-        "configuration_view": "c"
+        "configuration_view": "c",
+        "type_traits": "c"
     },
     "cSpell.words": [
         "gchararray",
