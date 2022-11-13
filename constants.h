@@ -34,7 +34,7 @@ static const char BUTTON_CHECK_ADD[] = "btnChecksAdd";
 static const char BUTTON_CHECK_DELETE[] = "btnChecksDelete";  
 /** Name for the Print Slip button. */
 static const char BUTTON_SLIP_PRINT[] = "btnSlipPrint"; 
- /** Name for the account description label. */ 
+/** Name for the account description label. */ 
 static const char LABEL_ACCOUNT_DESCRIPTION[] = "lblAccountDescription"; 
 /** Dummy amount string for the new check row. */
 static const char NEW_AMOUNT[] = "0.00"; 
@@ -80,7 +80,7 @@ typedef struct {
 /** Pointer to the go_to_last button in the checks view.  */
 	GtkWidget *btn_go_to_last;
 /** Right margin for screen preview of check.  */
-	gint right_margin_screen;
+	gdouble right_margin_screen;
 /** Right margin for paper print, front side.  */
 	gint right_margin_print_front;
 /** Right margin for paper print, back side.  */

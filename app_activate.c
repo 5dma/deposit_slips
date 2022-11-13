@@ -5,6 +5,7 @@
 #include "accounts/accounts_tree.c"
 #include "headers.h"
 #include "slips/slip_view.c"
+#include "slips/configuration_view.c"
 
 /**
  * @file app_activate.c
@@ -69,12 +70,15 @@ void on_app_activate(GApplication *app, gpointer data) {
 
     GtkWidget *vbox_slip = gtk_box_new(GTK_ORIENTATION_VERTICAL, 10);
     GtkWidget *vbox_accounts = gtk_box_new(GTK_ORIENTATION_VERTICAL, 10);
+    GtkWidget *vbox_configuration = gtk_box_new(GTK_ORIENTATION_VERTICAL, 10);
 
     GtkWidget *label_slip = gtk_label_new("Slip");
     GtkWidget *label_account = gtk_label_new("Accounts");
+    GtkWidget *label_configuration = gtk_label_new("Configuration");
 
     gtk_notebook_append_page(GTK_NOTEBOOK(notebook), vbox_slip, label_slip);
     gtk_notebook_append_page(GTK_NOTEBOOK(notebook), vbox_accounts, label_account);
+    gtk_notebook_append_page(GTK_NOTEBOOK(notebook), vbox_configuration, label_configuration);
 
     /* This memory is free after application is destroyed in `write_config_free_memory()`. */
     data_passer->list_store_master = gtk_list_store_new(N_COLUMNS, G_TYPE_STRING, G_TYPE_STRING, G_TYPE_STRING, G_TYPE_STRING, G_TYPE_BOOLEAN);
@@ -91,6 +95,9 @@ void on_app_activate(GApplication *app, gpointer data) {
     /* Make the view for the Slip  tab. */
     GtkWidget *slips_tab_tree = make_slip_view(data_passer);
 
+    /* Make the view for the Layout tab. */
+    GtkWidget *configuration_view = make_configuration_view(data_passer);
+
     /* Upon destroying the application, free memory in data structures in pointer_passer. */
     g_signal_connect(window, "destroy", G_CALLBACK(write_config_free_memory), data_passer);
 
@@ -100,7 +107,12 @@ void on_app_activate(GApplication *app, gpointer data) {
     /* Place the buttons in the Accounts tab. Again, should be part of make_tree_view. The TRUE parameter ensures the treeview maintains its initial height, even after deleting rows. */
     gtk_box_pack_start(GTK_BOX(vbox_accounts), accounts_tab_tree, TRUE, FALSE, 0);
     gtk_box_pack_start(GTK_BOX(vbox_accounts), accounts_buttons_hbox, FALSE, FALSE, 0);
+    
+    /* Place the slip view in the Slip tab. */
     gtk_box_pack_start(GTK_BOX(vbox_slip), slips_tab_tree, FALSE, FALSE, 0);
+
+    /* Place the layout view in the Layout tab. */
+    gtk_box_pack_start(GTK_BOX(vbox_configuration), configuration_view, FALSE, FALSE, 0);
 
     gtk_container_add(GTK_CONTAINER(window), notebook);
 
