@@ -145,30 +145,24 @@ void write_config_free_memory(GtkWidget *window, gpointer data) {
         json_object_set_int_member(layout_object, "right_margin_print_back", data_passer->right_margin_print_back);
         json_object_set_int_member(layout_object, "font_size_print_dynamic", data_passer->font_size_print_dynamic);
         json_object_set_int_member(layout_object, "font_size_amount", data_passer->font_size_amount);
-        json_object_set_string_member(layout_object, "font_face", data_passer->font_face);
+        json_object_set_string_member(layout_object, "font_face_sans", data_passer->font_face_sans);
+        json_object_set_string_member(layout_object, "font_face_micr", data_passer->font_face_micr);
 
         /* Add the layout object to the root object. */
         json_object_set_object_member(object, "layout", layout_object);
 
-        JsonObject *coordinate_object;
-        Coordinates *coordinates;
-        coordinate_object = json_object_new();
-        coordinates = (Coordinates *)g_hash_table_lookup (data_passer->layout,"name_label");
-
-        json_object_set_int_member(coordinate_object, "x", coordinates->x);
-        json_object_set_int_member(coordinate_object, "y", coordinates->y);
-        json_object_set_object_member(layout_object, "name_label", coordinate_object);
-
-        coordinates = (Coordinates *)g_hash_table_lookup (data_passer->layout,"name_value");
-        json_object_set_int_member(coordinate_object, "x", coordinates->x);
-        json_object_set_int_member(coordinate_object, "y", coordinates->y);
-        json_object_set_object_member(layout_object, "name_value", coordinate_object);
+        write_coordinates(layout_object, data_passer->layout, "name_label");
+        write_coordinates(layout_object, data_passer->layout, "name_value");
+        write_coordinates(layout_object, data_passer->layout, "account_label");
+        write_coordinates(layout_object, data_passer->layout, "account_value");
+        write_coordinates(layout_object, data_passer->layout, "date_value");
+        write_coordinates(layout_object, data_passer->layout, "micr_account_value");
 
         /* Go write the JsonGenerator to a file. */
         save_account_numbers(generator);
 
         /* Free memory allocated to the JSON object. */
-     //   json_object_unref(layout_object);
+        //   json_object_unref(layout_object);
         g_object_unref(generator);
         json_object_unref(object);
         json_array_unref(account_array);
@@ -176,13 +170,45 @@ void write_config_free_memory(GtkWidget *window, gpointer data) {
         /* Free memory allocated to the master and temporary list stores. */
         gtk_list_store_clear(data_passer->list_store_master);
         gtk_list_store_clear(data_passer->list_store_temporary);
-        g_free(data_passer->font_face);
+        g_free(data_passer->font_face_sans);
+        g_free(data_passer->font_face_micr);
         g_free(data_passer);
 
     } else {
         g_print("Could not find first iter for saving the temporary list\n");
     }
 }
+
+/**
+ * Reads coordinates from a `JsonObject` into a hash of coordinates.
+ * @param layout_object JSON object containing the coordinates from the configuration file.
+ * @param layout_hash GHashTable containing coordinates.
+ * @param hash_key Key into `layout_hash`.
+ */
+void read_coordinates(JsonObject *layout_object, GHashTable *layout_hash, const gchar *hash_key) {
+    JsonObject *x_y_object = json_object_get_object_member(layout_object, hash_key);
+    Coordinates *coordinates = (Coordinates *)g_hash_table_lookup(layout_hash, hash_key);
+    coordinates->x = json_object_get_int_member(x_y_object, "x");
+    coordinates->y = json_object_get_int_member(x_y_object, "y");
+}
+
+/**
+ * Writes coordinates into a `JsonObject` from a hash of coordinates.
+ * @param layout_object JSON object containing the coordinates from the configuration file.
+ * @param layout_hash GHashTable containing coordinates.
+ * @param hash_key Key into `layout_hash`.
+ */
+void write_coordinates(JsonObject *layout_object, GHashTable *layout_hash, const gchar *hash_key) {
+
+        JsonObject *coordinate_object = json_object_new();
+        Coordinates *coordinates = (Coordinates *)g_hash_table_lookup(layout_hash, hash_key);
+
+        json_object_set_int_member(coordinate_object, "x", coordinates->x);
+        json_object_set_int_member(coordinate_object, "y", coordinates->y);
+        json_object_set_object_member(layout_object, hash_key, coordinate_object);
+
+}
+
 
 /**
  * Returns the number of checks in the checks list store (the number of checks being deposited).

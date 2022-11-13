@@ -71,19 +71,16 @@ void read_configuration_data(Data_passer *data_passer) {
         data_passer->right_margin_print_back = json_object_get_int_member(layout_object,"right_margin_print_back");
         data_passer->font_size_print_dynamic = json_object_get_int_member(layout_object,"font_size_print_dynamic");
         data_passer->font_size_amount = json_object_get_int_member(layout_object,"font_size_amount");
-        data_passer->font_face = strdup(json_object_get_string_member(layout_object, "font_face"));
+        data_passer->font_face_sans = strdup(json_object_get_string_member(layout_object, "font_face_sans"));
+        data_passer->font_face_micr = strdup(json_object_get_string_member(layout_object, "font_face_micr"));
 
-        JsonObject *x_y_object;
-        Coordinates *coordinates;
-        x_y_object = json_object_get_object_member(layout_object, "name_label");
-        coordinates = (Coordinates *)g_hash_table_lookup (data_passer->layout,"name_label");
-        coordinates->x = json_object_get_int_member (x_y_object,"x");
-        coordinates->y = json_object_get_int_member (x_y_object,"y");
 
-        x_y_object = json_object_get_object_member(layout_object, "name_value");
-        coordinates = (Coordinates *)g_hash_table_lookup (data_passer->layout,"name_value");
-        coordinates->x = json_object_get_int_member (x_y_object,"x");
-        coordinates->y = json_object_get_int_member (x_y_object,"y");
+        read_coordinates(layout_object, data_passer->layout, "name_label");
+        read_coordinates(layout_object, data_passer->layout, "name_value");
+        read_coordinates(layout_object, data_passer->layout, "account_label");
+        read_coordinates(layout_object, data_passer->layout, "account_value");
+        read_coordinates(layout_object, data_passer->layout, "date_value");
+        read_coordinates(layout_object, data_passer->layout, "micr_account_value");
 
 
     } else {

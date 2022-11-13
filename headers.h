@@ -3,7 +3,7 @@
 #define __HEADER
 
 #include "constants.h"
-
+#include <json-glib/json-glib.h>
 
 /**
  * @file headers.h
@@ -66,6 +66,9 @@ void print_deposit_slip(GtkButton *self, gpointer data);
 gchar *comma_formatted_amount(gfloat amount);
 
 GDestroyNotify free_gslist_account(gpointer data);
+
+void read_coordinates(JsonObject *layout_object, GHashTable *layout_hash, const gchar *hash_key);
+void write_coordinates(JsonObject *layout_object, GHashTable *layout_hash, const gchar *hash_key);
 
 
 /**

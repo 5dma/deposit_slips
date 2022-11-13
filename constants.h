@@ -89,8 +89,10 @@ typedef struct {
 	gint font_size_print_dynamic;
 /** Font size for printing the amounts.  */
 	gint font_size_amount;
-/** Font face.  */
-	gchar *font_face;
+/** Font face, sans serif.  */
+	gchar *font_face_sans;
+/** Font face, MICR.  */
+	gchar *font_face_micr;
 /** List of x,y coordinates for various layout elements. */
 	GHashTable *layout;
 } Data_passer;
