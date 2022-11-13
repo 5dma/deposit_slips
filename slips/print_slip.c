@@ -53,7 +53,7 @@ gboolean print_deposit_amounts_front(GtkTreeModel *model,
     the current check is, the farther down it is in the preview. The vertical coordinate
     is therefore a function of the `path` passed to the callback. */
 
-    cairo_select_font_face(cr, "DejaVuSansMono", CAIRO_FONT_SLANT_NORMAL, CAIRO_FONT_WEIGHT_BOLD);
+    cairo_select_font_face(cr, data_passer->font_face_mono, CAIRO_FONT_SLANT_NORMAL, CAIRO_FONT_WEIGHT_BOLD);
     cairo_set_font_size(cr, data_passer->font_size_amount);
 
     /* Get the formatted string corresponding to this check's amount. */
@@ -63,7 +63,8 @@ gboolean print_deposit_amounts_front(GtkTreeModel *model,
     /* Move to the correct position to print the amount such that it is right-aligned. */
     cairo_text_extents_t extents;
     cairo_text_extents(cr, formatted_amount, &extents);
-    cairo_move_to(cr, (row_number * 22.5) + 40.5, extents.width +  data_passer->right_margin_print_front);
+    Coordinates *coordinates = (Coordinates *)g_hash_table_lookup (data_passer->layout,"front_values");
+    cairo_move_to(cr, (row_number * coordinates->x) + coordinates->y, extents.width +  data_passer->right_margin_print_front);
 
     cairo_save(cr); /* Save context 1 */
     cairo_rotate(cr, -G_PI_2);
@@ -131,7 +132,7 @@ gboolean print_deposit_amounts_back(GtkTreeModel *model,
     the current check is, the farther down it is in the preview. The vertical coordinate
     is therefore a function of the `path` passed to the callback. */
 
-    cairo_select_font_face(cr, "DejaVuSansMono", CAIRO_FONT_SLANT_NORMAL, CAIRO_FONT_WEIGHT_BOLD);
+    cairo_select_font_face(cr, data_passer->font_face_mono, CAIRO_FONT_SLANT_NORMAL, CAIRO_FONT_WEIGHT_BOLD);
     cairo_set_font_size(cr, data_passer->font_size_amount);
 
     /* Get the formatted string corresponding to this check's amount. */
@@ -141,7 +142,8 @@ gboolean print_deposit_amounts_back(GtkTreeModel *model,
     /* Move to the correct position to print the amount such that it is right-aligned. */
     cairo_text_extents_t extents;
     cairo_text_extents(cr, formatted_amount, &extents);
-    cairo_move_to(cr, data_passer->right_margin_print_back - extents.width, (row_number * 22) + 90);
+    Coordinates *coordinates = (Coordinates *)g_hash_table_lookup (data_passer->layout,"back_values");
+    cairo_move_to(cr, data_passer->right_margin_print_back - extents.width, (row_number * coordinates->x) + coordinates->y);
     cairo_show_text(cr, formatted_amount);
     g_free(formatted_amount);
     g_free(amount);
@@ -267,11 +269,12 @@ void draw_page(GtkPrintOperation *self, GtkPrintContext *context, gint page_nr, 
     /* Get the width of the total amount, and move to that point to print the total. */
     cairo_text_extents_t extents;
     gchar *formatted_total = comma_formatted_amount(data_passer->total_deposit);
+    coordinates = (Coordinates *)g_hash_table_lookup (data_passer->layout,"total_value");
     cairo_text_extents(cr, formatted_total, &extents);
-    cairo_move_to(cr, 153, extents.width + data_passer->right_margin_print_front);
+    cairo_move_to(cr, coordinates->x, extents.width + data_passer->right_margin_print_front);
     cairo_save(cr); /* Save context 1 */
     cairo_set_font_size(cr, data_passer->font_size_amount);
-    cairo_select_font_face(cr, "DejaVuSansMono", CAIRO_FONT_SLANT_NORMAL, CAIRO_FONT_WEIGHT_BOLD);
+    cairo_select_font_face(cr, data_passer->font_face_mono, CAIRO_FONT_SLANT_NORMAL, CAIRO_FONT_WEIGHT_BOLD);
     cairo_rotate(cr, -G_PI_2);
     cairo_show_text(cr, formatted_total);
     cairo_restore(cr); /* Restore context 0 */
@@ -284,11 +287,11 @@ void draw_page(GtkPrintOperation *self, GtkPrintContext *context, gint page_nr, 
     if (number_of_checks(data_passer) > 2) {
 
         gchar *formatted_total = comma_formatted_amount(data_passer->total_back_side);
-
+        coordinates = (Coordinates *)g_hash_table_lookup (data_passer->layout,"total_value");
         /* Move to the correct position to print the amount such that it is right-aligned. */
         cairo_text_extents_t extents;
         cairo_text_extents(data_passer->cairo_context, formatted_total, &extents);
-        cairo_move_to(cr, 85, extents.width + data_passer->right_margin_print_front);
+        cairo_move_to(cr, coordinates->x, extents.width + data_passer->right_margin_print_front);
         cairo_save(cr);
         cairo_rotate(cr, -G_PI_2);
         cairo_show_text(data_passer->cairo_context, formatted_total);
@@ -299,7 +302,8 @@ void draw_page(GtkPrintOperation *self, GtkPrintContext *context, gint page_nr, 
         gtk_tree_model_foreach(GTK_TREE_MODEL(data_passer->checks_store), print_deposit_amounts_back, data_passer);
 
         /* Print subtotal on back side. */
-        cairo_move_to(cr, data_passer->right_margin_print_back - extents.width, 420);
+        coordinates = (Coordinates *)g_hash_table_lookup (data_passer->layout,"back_side_subtotal");
+        cairo_move_to(cr, data_passer->right_margin_print_back - extents.width, coordinates->y);
         cairo_show_text(data_passer->cairo_context, formatted_total);
         g_free(formatted_total);
     }

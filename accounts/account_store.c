@@ -66,14 +66,14 @@ void read_configuration_data(Data_passer *data_passer) {
         /* Read the layout parameters. */
         JsonObject *layout_object = json_object_get_object_member(obj, "layout");
 
-        data_passer->right_margin_screen = json_object_get_int_member(layout_object,"right_margin_screen");
-        data_passer->right_margin_print_front = json_object_get_int_member(layout_object,"right_margin_print_front");
-        data_passer->right_margin_print_back = json_object_get_int_member(layout_object,"right_margin_print_back");
-        data_passer->font_size_print_dynamic = json_object_get_int_member(layout_object,"font_size_print_dynamic");
-        data_passer->font_size_amount = json_object_get_int_member(layout_object,"font_size_amount");
+        data_passer->right_margin_screen = json_object_get_int_member(layout_object, "right_margin_screen");
+        data_passer->right_margin_print_front = json_object_get_int_member(layout_object, "right_margin_print_front");
+        data_passer->right_margin_print_back = json_object_get_int_member(layout_object, "right_margin_print_back");
+        data_passer->font_size_print_dynamic = json_object_get_int_member(layout_object, "font_size_print_dynamic");
+        data_passer->font_size_amount = json_object_get_int_member(layout_object, "font_size_amount");
         data_passer->font_face_sans = strdup(json_object_get_string_member(layout_object, "font_face_sans"));
         data_passer->font_face_micr = strdup(json_object_get_string_member(layout_object, "font_face_micr"));
-
+        data_passer->font_face_mono = strdup(json_object_get_string_member(layout_object, "font_face_mono"));
 
         read_coordinates(layout_object, data_passer->layout, "name_label");
         read_coordinates(layout_object, data_passer->layout, "name_value");
@@ -81,15 +81,17 @@ void read_configuration_data(Data_passer *data_passer) {
         read_coordinates(layout_object, data_passer->layout, "account_value");
         read_coordinates(layout_object, data_passer->layout, "date_value");
         read_coordinates(layout_object, data_passer->layout, "micr_account_value");
-
+        read_coordinates(layout_object, data_passer->layout, "total_value");
+        read_coordinates(layout_object, data_passer->layout, "back_side_value");
+        read_coordinates(layout_object, data_passer->layout, "back_side_subtotal");
+        read_coordinates(layout_object, data_passer->layout, "front_values");
+        read_coordinates(layout_object, data_passer->layout, "back_values");
 
     } else {
         g_print("Input file does not exist.\n");
     }
     g_free(input_file);
 }
-
-
 
 /**
  * Callback fired while iterating over each member of a `GSList` of list of

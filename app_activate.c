@@ -48,6 +48,17 @@ void on_app_activate(GApplication *app, gpointer data) {
     Coordinates *coordinates_date_value = g_new(Coordinates, 1);
     g_hash_table_insert(data_passer->layout, "date_value", coordinates_date_value);
     Coordinates *coordinates_micr_account_value = g_new(Coordinates, 1);
+    g_hash_table_insert(data_passer->layout, "micr_account_value", coordinates_micr_account_value);
+    Coordinates *coordinates_total_value = g_new(Coordinates, 1);
+    g_hash_table_insert(data_passer->layout, "total_value", coordinates_total_value);
+    Coordinates *coordinates_back_side_value = g_new(Coordinates, 1);
+    g_hash_table_insert(data_passer->layout, "back_side_value", coordinates_back_side_value);
+    Coordinates *coordinates_back_side_subtotal = g_new(Coordinates, 1);
+    g_hash_table_insert(data_passer->layout, "back_side_subtotal", coordinates_back_side_subtotal);
+    Coordinates *coordinates_front_values = g_new(Coordinates, 1);
+    g_hash_table_insert(data_passer->layout, "front_values", coordinates_front_values);
+    Coordinates *coordinates_back_values = g_new(Coordinates, 1);
+    g_hash_table_insert(data_passer->layout, "back_values", coordinates_back_values);
 
 
     GtkWidget *window = gtk_application_window_new(GTK_APPLICATION(app));

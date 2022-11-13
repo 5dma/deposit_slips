@@ -147,6 +147,7 @@ void write_config_free_memory(GtkWidget *window, gpointer data) {
         json_object_set_int_member(layout_object, "font_size_amount", data_passer->font_size_amount);
         json_object_set_string_member(layout_object, "font_face_sans", data_passer->font_face_sans);
         json_object_set_string_member(layout_object, "font_face_micr", data_passer->font_face_micr);
+        json_object_set_string_member(layout_object, "font_face_mono", data_passer->font_face_mono);
 
         /* Add the layout object to the root object. */
         json_object_set_object_member(object, "layout", layout_object);
@@ -157,6 +158,11 @@ void write_config_free_memory(GtkWidget *window, gpointer data) {
         write_coordinates(layout_object, data_passer->layout, "account_value");
         write_coordinates(layout_object, data_passer->layout, "date_value");
         write_coordinates(layout_object, data_passer->layout, "micr_account_value");
+        write_coordinates(layout_object, data_passer->layout, "total_value");
+        write_coordinates(layout_object, data_passer->layout, "back_side_value");
+        write_coordinates(layout_object, data_passer->layout, "back_side_subtotal");
+        write_coordinates(layout_object, data_passer->layout, "front_values");
+        write_coordinates(layout_object, data_passer->layout, "back_values");
 
         /* Go write the JsonGenerator to a file. */
         save_account_numbers(generator);
@@ -199,16 +205,13 @@ void read_coordinates(JsonObject *layout_object, GHashTable *layout_hash, const 
  * @param hash_key Key into `layout_hash`.
  */
 void write_coordinates(JsonObject *layout_object, GHashTable *layout_hash, const gchar *hash_key) {
+    JsonObject *coordinate_object = json_object_new();
+    Coordinates *coordinates = (Coordinates *)g_hash_table_lookup(layout_hash, hash_key);
 
-        JsonObject *coordinate_object = json_object_new();
-        Coordinates *coordinates = (Coordinates *)g_hash_table_lookup(layout_hash, hash_key);
-
-        json_object_set_int_member(coordinate_object, "x", coordinates->x);
-        json_object_set_int_member(coordinate_object, "y", coordinates->y);
-        json_object_set_object_member(layout_object, hash_key, coordinate_object);
-
+    json_object_set_int_member(coordinate_object, "x", coordinates->x);
+    json_object_set_int_member(coordinate_object, "y", coordinates->y);
+    json_object_set_object_member(layout_object, hash_key, coordinate_object);
 }
-
 
 /**
  * Returns the number of checks in the checks list store (the number of checks being deposited).

@@ -124,7 +124,7 @@ void draw_front_preview(GtkWidget *widget, cairo_t *cr, gpointer data) {
 
     /* Write Routing number */
     gchar *routing_with_transit = g_strconcat("T", routing_number, "T", NULL);
-    cairo_select_font_face(cr, data_passer->font_face_micr, CAIRO_FONT_SLANT_NORMAL, CAIRO_FONT_WEIGHT_BOLD);
+    cairo_select_font_face(cr, "MICR", CAIRO_FONT_SLANT_NORMAL, CAIRO_FONT_WEIGHT_BOLD);
     cairo_set_font_size(cr, 10);
     cairo_move_to(cr, 15, 135);
     cairo_show_text(cr, routing_with_transit);

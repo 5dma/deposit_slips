@@ -93,6 +93,8 @@ typedef struct {
 	gchar *font_face_sans;
 /** Font face, MICR.  */
 	gchar *font_face_micr;
+/** Font face, mono.  */
+	gchar *font_face_mono;
 /** List of x,y coordinates for various layout elements. */
 	GHashTable *layout;
 } Data_passer;
