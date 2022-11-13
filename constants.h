@@ -82,13 +82,13 @@ typedef struct {
 /** Right margin for screen preview of check.  */
 	gdouble right_margin_screen;
 /** Right margin for paper print, front side.  */
-	gint right_margin_print_front;
+	gdouble right_margin_print_front;
 /** Right margin for paper print, back side.  */
-	gint right_margin_print_back;
+	gdouble right_margin_print_back;
 /** Font size for printing the text items, such as name and account number.  */
-	gint font_size_print_dynamic;
+	gdouble font_size_print_dynamic;
 /** Font size for printing the amounts.  */
-	gint font_size_amount;
+	gdouble font_size_amount;
 /** Font face, sans serif.  */
 	gchar *font_face_sans;
 /** Font face, MICR.  */
