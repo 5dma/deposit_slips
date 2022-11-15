@@ -143,11 +143,11 @@ void write_config_free_memory(GtkWidget *window, gpointer data) {
         json_object_set_int_member(layout_object, "right_margin_screen", data_passer->right_margin_screen);
         json_object_set_int_member(layout_object, "right_margin_print_front", data_passer->right_margin_print_front);
         json_object_set_int_member(layout_object, "right_margin_print_back", data_passer->right_margin_print_back);
-        json_object_set_int_member(layout_object, "font_size_print_dynamic", data_passer->font_size_print_dynamic);
-        json_object_set_int_member(layout_object, "font_size_amount", data_passer->font_size_amount);
+        json_object_set_int_member(layout_object, "font_size_sans_serif", data_passer->font_size_sans_serif);
+        json_object_set_int_member(layout_object, "font_size_monospace", data_passer->font_size_monospace);
         json_object_set_string_member(layout_object, "font_family_sans", data_passer->font_family_sans);
         json_object_set_string_member(layout_object, "font_face_micr", data_passer->font_face_micr);
-        json_object_set_string_member(layout_object, "font_face_mono", data_passer->font_face_mono);
+        json_object_set_string_member(layout_object, "font_family_mono", data_passer->font_family_mono);
 
         /* Add the layout object to the root object. */
         json_object_set_object_member(object, "layout", layout_object);

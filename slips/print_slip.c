@@ -53,8 +53,8 @@ gboolean print_deposit_amounts_front(GtkTreeModel *model,
     the current check is, the farther down it is in the preview. The vertical coordinate
     is therefore a function of the `path` passed to the callback. */
 
-    cairo_select_font_face(cr, data_passer->font_face_mono, CAIRO_FONT_SLANT_NORMAL, CAIRO_FONT_WEIGHT_BOLD);
-    cairo_set_font_size(cr, data_passer->font_size_amount);
+    cairo_select_font_face(cr, data_passer->font_family_mono, CAIRO_FONT_SLANT_NORMAL, CAIRO_FONT_WEIGHT_BOLD);
+    cairo_set_font_size(cr, data_passer->font_size_monospace);
 
     /* Get the formatted string corresponding to this check's amount. */
     gfloat current_amount = atof(amount);
@@ -132,8 +132,8 @@ gboolean print_deposit_amounts_back(GtkTreeModel *model,
     the current check is, the farther down it is in the preview. The vertical coordinate
     is therefore a function of the `path` passed to the callback. */
 
-    cairo_select_font_face(cr, data_passer->font_face_mono, CAIRO_FONT_SLANT_NORMAL, CAIRO_FONT_WEIGHT_BOLD);
-    cairo_set_font_size(cr, data_passer->font_size_amount);
+    cairo_select_font_face(cr, data_passer->font_family_mono, CAIRO_FONT_SLANT_NORMAL, CAIRO_FONT_WEIGHT_BOLD);
+    cairo_set_font_size(cr, data_passer->font_size_monospace);
 
     /* Get the formatted string corresponding to this check's amount. */
     gfloat current_amount = atof(amount);
@@ -193,7 +193,7 @@ void draw_page(GtkPrintOperation *self, GtkPrintContext *context, gint page_nr, 
     height = gtk_print_context_get_height(context);
 
     cairo_select_font_face(cr, data_passer->font_family_sans, CAIRO_FONT_SLANT_NORMAL, CAIRO_FONT_WEIGHT_BOLD);
-    cairo_set_font_size(cr, data_passer->font_size_print_dynamic);
+    cairo_set_font_size(cr, data_passer->font_size_sans_serif);
     cairo_translate(cr, 208, 0);
     cairo_save(cr); /* Save context 0 */
 
@@ -209,7 +209,7 @@ void draw_page(GtkPrintOperation *self, GtkPrintContext *context, gint page_nr, 
     coordinates = (Coordinates *)g_hash_table_lookup (data_passer->layout,"name_value");
     cairo_move_to(cr, coordinates->x, coordinates->y);
     cairo_save(cr); /* Save context 1 */
-    cairo_set_font_size(cr, data_passer->font_size_print_dynamic);
+    cairo_set_font_size(cr, data_passer->font_size_sans_serif);
     cairo_rotate(cr, -G_PI_2);
     cairo_show_text(cr, account_name);
     cairo_restore(cr); /* Restore context 0 */
@@ -228,7 +228,7 @@ void draw_page(GtkPrintOperation *self, GtkPrintContext *context, gint page_nr, 
     coordinates = (Coordinates *)g_hash_table_lookup (data_passer->layout,"account_value");
     cairo_move_to(cr, coordinates->x, coordinates->y);
     cairo_save(cr); /* Save context 1 */
-    cairo_set_font_size(cr, data_passer->font_size_print_dynamic);
+    cairo_set_font_size(cr, data_passer->font_size_sans_serif);
     cairo_rotate(cr, -G_PI_2);
     cairo_show_text(cr, account_number);
     cairo_restore(cr); /* Restore context 0 */
@@ -240,7 +240,7 @@ void draw_page(GtkPrintOperation *self, GtkPrintContext *context, gint page_nr, 
     gchar *date_time_string = g_date_time_format(date_time, "%B %e, %Y");
     cairo_move_to(cr, coordinates->x, coordinates->y);
     cairo_save(cr); /* Save context 1 */
-    cairo_set_font_size(cr, data_passer->font_size_print_dynamic);
+    cairo_set_font_size(cr, data_passer->font_size_sans_serif);
     cairo_rotate(cr, -G_PI_2);
     cairo_show_text(cr, date_time_string);
     cairo_restore(cr); /* Restore context 0 */
@@ -251,7 +251,7 @@ void draw_page(GtkPrintOperation *self, GtkPrintContext *context, gint page_nr, 
     coordinates = (Coordinates *)g_hash_table_lookup (data_passer->layout,"micr_account_value");
     cairo_move_to(cr, coordinates->x, coordinates->y);
     cairo_save(cr); /* Save context 1 */
-    cairo_set_font_size(cr, data_passer->font_size_print_dynamic);
+    cairo_set_font_size(cr, data_passer->font_size_sans_serif);
     cairo_select_font_face(cr, data_passer->font_face_micr, CAIRO_FONT_SLANT_NORMAL, CAIRO_FONT_WEIGHT_NORMAL);
     cairo_rotate(cr, -G_PI_2);
     cairo_show_text(cr, account_with_transit);
@@ -273,8 +273,8 @@ void draw_page(GtkPrintOperation *self, GtkPrintContext *context, gint page_nr, 
     cairo_text_extents(cr, formatted_total, &extents);
     cairo_move_to(cr, coordinates->x, extents.width + data_passer->right_margin_print_front);
     cairo_save(cr); /* Save context 1 */
-    cairo_set_font_size(cr, data_passer->font_size_amount);
-    cairo_select_font_face(cr, data_passer->font_face_mono, CAIRO_FONT_SLANT_NORMAL, CAIRO_FONT_WEIGHT_BOLD);
+    cairo_set_font_size(cr, data_passer->font_size_monospace);
+    cairo_select_font_face(cr, data_passer->font_family_mono, CAIRO_FONT_SLANT_NORMAL, CAIRO_FONT_WEIGHT_BOLD);
     cairo_rotate(cr, -G_PI_2);
     cairo_show_text(cr, formatted_total);
     cairo_restore(cr); /* Restore context 0 */

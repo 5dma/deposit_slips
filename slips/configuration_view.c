@@ -93,29 +93,43 @@ void add_font_configuration(const gchar *label,
     g_signal_connect(GTK_WIDGET(spin_button), "value-changed", G_CALLBACK(update_config), value);
 }
 
-static void font_button_clicked(GtkWidget *widget, gpointer user_data) {
-    Data_passer *data_passer = (Data_passer *)user_data;
+/**
+ * Callback fired after user closes the font selection dialog. The function captures the selected font family and size. (It does not capture the style or variant.)
+ * @param widget Pointer to the closed font selection dialog.
+ * @param data Pointer to user data.
+*/
+static void font_button_clicked(GtkWidget *widget, gpointer data) {
+    Data_passer *data_passer = (Data_passer *)data;
     gchar font_description[100];
-    
+
+    /* Retrieve the selected font. */
     strcpy(font_description, gtk_font_chooser_get_font(GTK_FONT_CHOOSER(widget)));
 
+    /* Extract the description from the selected font as well as values for the individual settings. */
     PangoFontDescription *pango_font_description = pango_font_description_from_string(font_description);
     PangoFontMask font_mask = pango_font_description_get_set_fields(pango_font_description);
 
+    /* If the font family was selected, update the appropriate font field in data_passer. */
     if (font_mask & (PANGO_FONT_MASK_FAMILY)) {
-        strcpy(data_passer->font_family_sans, pango_font_description_get_family(pango_font_description));
+        if (widget == data_passer->btn_font_sans_serif) {
+            strcpy(data_passer->font_family_sans, pango_font_description_get_family(pango_font_description));
+        } else {
+            strcpy(data_passer->font_family_mono, pango_font_description_get_family(pango_font_description));
+        }
     }
-    if (font_mask & (PANGO_FONT_MASK_STYLE)) {
-        g_print("Font mask style was set\n");
-       PangoStyle pango_style = pango_font_description_get_style(pango_font_description);
-    }
+
+    /* If the font size was selected, update the appropriate font field in data_passer. */
 
     if (font_mask & (PANGO_FONT_MASK_SIZE)) {
         gint font_size = pango_font_description_get_size(pango_font_description);
         if (!pango_font_description_get_size_is_absolute(pango_font_description)) {
             font_size = font_size / 1024; /* Would be nice to know where 1024 comes from */
         }
-        data_passer->font_size_print_dynamic = font_size;
+        if (widget == data_passer->btn_font_sans_serif) {
+            data_passer->font_size_sans_serif = font_size;
+        } else {
+            data_passer->font_size_monospace = font_size;
+        }
     }
 }
 
@@ -149,12 +163,12 @@ GtkWidget *make_configuration_view(Data_passer *data_passer) {
                                 grid_layout_fields);
 
     add_one_value_configuration("Font size text",
-                                &(data_passer->font_size_print_dynamic),
+                                &(data_passer->font_size_sans_serif),
                                 3,
                                 grid_layout_fields);
 
     add_one_value_configuration("Font size amounts",
-                                &(data_passer->font_size_amount),
+                                &(data_passer->font_size_monospace),
                                 4,
                                 grid_layout_fields);
 
@@ -197,19 +211,40 @@ GtkWidget *make_configuration_view(Data_passer *data_passer) {
 
     GtkWidget *grid_layout_fonts = gtk_grid_new();
 
-    GtkWidget *label_field_name = gtk_label_new("Sans serif");
-    gtk_label_set_xalign(GTK_LABEL(label_field_name), 0.0);
+    /* Controls for sans-serif font selection. */
 
-    gchar font_button_label[100];
-    g_snprintf(font_button_label, sizeof(font_button_label), "%s %f", data_passer->font_family_sans, data_passer->font_size_print_dynamic);
-    GtkWidget *btn_font_sans_serif = gtk_font_button_new_with_font(font_button_label);
+    GtkWidget *label_sans_serif = gtk_label_new("Sans serif");
+    gtk_label_set_xalign(GTK_LABEL(label_sans_serif), 0.0);
+
+    gchar sans_serif_button_label[100];
+    g_snprintf(sans_serif_button_label, sizeof(sans_serif_button_label), "%s %f", data_passer->font_family_sans, data_passer->font_size_sans_serif);
+    GtkWidget *btn_font_sans_serif = gtk_font_button_new_with_font(sans_serif_button_label);
+    /* Save the button's memory address. */
+    data_passer->btn_font_sans_serif = btn_font_sans_serif;
     gtk_font_button_set_title(GTK_FONT_BUTTON(btn_font_sans_serif), "Font");
     gtk_font_button_set_show_size(GTK_FONT_BUTTON(btn_font_sans_serif), TRUE);
-    // g_signal_connect(btn_font_sans_serif, "font-set", G_CALLBACK(set_font_callback), data_passer);
     g_signal_connect(btn_font_sans_serif, "font-set", G_CALLBACK(font_button_clicked), data_passer);
 
-    gtk_grid_attach(GTK_GRID(grid_layout_fonts), label_field_name, 0, 0, 1, 1);
+    /* Controls for monospace font selection. */
+
+    GtkWidget *label_monospace = gtk_label_new("Monospace");
+    gtk_label_set_xalign(GTK_LABEL(label_monospace), 0.0);
+
+    gchar monospace_button_label[100];
+    g_snprintf(monospace_button_label, sizeof(monospace_button_label), "%s %f", data_passer->font_family_mono, data_passer->font_size_monospace);
+    GtkWidget *btn_font_monospace = gtk_font_button_new_with_font(monospace_button_label);
+    /* Save the button's memory address. */
+    data_passer->btn_font_monospace = btn_font_monospace;
+
+    gtk_font_button_set_title(GTK_FONT_BUTTON(btn_font_monospace), "Font");
+    gtk_font_button_set_show_size(GTK_FONT_BUTTON(btn_font_monospace), TRUE);
+    g_signal_connect(btn_font_monospace, "font-set", G_CALLBACK(font_button_clicked), data_passer);
+
+    gtk_grid_attach(GTK_GRID(grid_layout_fonts), label_sans_serif, 0, 0, 1, 1);
     gtk_grid_attach(GTK_GRID(grid_layout_fonts), btn_font_sans_serif, 1, 0, 1, 1);
+
+    gtk_grid_attach(GTK_GRID(grid_layout_fonts), label_monospace, 0, 1, 1, 1);
+    gtk_grid_attach(GTK_GRID(grid_layout_fonts), btn_font_monospace, 1, 1, 1, 1);
 
     GtkWidget *scrolled_window_fonts = gtk_scrolled_window_new(NULL, NULL);
     gtk_scrolled_window_set_policy(GTK_SCROLLED_WINDOW(scrolled_window_fonts), GTK_POLICY_NEVER, GTK_POLICY_AUTOMATIC);

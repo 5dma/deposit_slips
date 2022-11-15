@@ -86,15 +86,20 @@ typedef struct {
 /** Right margin for paper print, back side.  */
 	gdouble right_margin_print_back;
 /** Font size for printing the text items, such as name and account number.  */
-	gdouble font_size_print_dynamic;
+	gdouble font_size_sans_serif;
 /** Font size for printing the amounts.  */
-	gdouble font_size_amount;
+	gdouble font_size_monospace;
 /** Font face, sans serif.  */
 	gchar font_family_sans[100];
 /** Font face, MICR.  */
 	gchar *font_face_micr;
 /** Font face, mono.  */
-	gchar *font_face_mono;
+	gchar *font_family_mono;
+/** Identifier of the sans-serif font selection button. The identifier is the pointer's memory location. */
+	gpointer btn_font_sans_serif;
+/** Identifier of the monospace font selection button. The identifier is the pointer's memory location. */
+	gpointer btn_font_monospace;
+
 /** List of x,y coordinates for various layout elements. */
 	GHashTable *layout;
 } Data_passer;
