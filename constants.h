@@ -90,7 +90,7 @@ typedef struct {
 /** Font size for printing the amounts.  */
 	gdouble font_size_amount;
 /** Font face, sans serif.  */
-	gchar *font_face_sans;
+	gchar font_family_sans[100];
 /** Font face, MICR.  */
 	gchar *font_face_micr;
 /** Font face, mono.  */

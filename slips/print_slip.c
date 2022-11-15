@@ -192,8 +192,8 @@ void draw_page(GtkPrintOperation *self, GtkPrintContext *context, gint page_nr, 
     width = gtk_print_context_get_width(context);
     height = gtk_print_context_get_height(context);
 
-    cairo_select_font_face(cr, data_passer->font_face_sans, CAIRO_FONT_SLANT_NORMAL, CAIRO_FONT_WEIGHT_BOLD);
-    cairo_set_font_size(cr, 7);
+    cairo_select_font_face(cr, data_passer->font_family_sans, CAIRO_FONT_SLANT_NORMAL, CAIRO_FONT_WEIGHT_BOLD);
+    cairo_set_font_size(cr, data_passer->font_size_print_dynamic);
     cairo_translate(cr, 208, 0);
     cairo_save(cr); /* Save context 0 */
 

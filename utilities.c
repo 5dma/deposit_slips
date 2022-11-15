@@ -145,7 +145,7 @@ void write_config_free_memory(GtkWidget *window, gpointer data) {
         json_object_set_int_member(layout_object, "right_margin_print_back", data_passer->right_margin_print_back);
         json_object_set_int_member(layout_object, "font_size_print_dynamic", data_passer->font_size_print_dynamic);
         json_object_set_int_member(layout_object, "font_size_amount", data_passer->font_size_amount);
-        json_object_set_string_member(layout_object, "font_face_sans", data_passer->font_face_sans);
+        json_object_set_string_member(layout_object, "font_family_sans", data_passer->font_family_sans);
         json_object_set_string_member(layout_object, "font_face_micr", data_passer->font_face_micr);
         json_object_set_string_member(layout_object, "font_face_mono", data_passer->font_face_mono);
 
@@ -176,7 +176,6 @@ void write_config_free_memory(GtkWidget *window, gpointer data) {
         /* Free memory allocated to the master and temporary list stores. */
         gtk_list_store_clear(data_passer->list_store_master);
         gtk_list_store_clear(data_passer->list_store_temporary);
-        g_free(data_passer->font_face_sans);
         g_free(data_passer->font_face_micr);
         g_free(data_passer);
 
