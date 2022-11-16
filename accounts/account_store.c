@@ -64,28 +64,28 @@ void read_configuration_data(Data_passer *data_passer) {
         g_slist_free_full(local_struct_list, (GDestroyNotify)free_gslist_account);
 
         /* Read the layout parameters. */
-        JsonObject *layout_object = json_object_get_object_member(obj, "layout");
+        JsonObject *configuration_object = json_object_get_object_member(obj, "configuration");
 
-        data_passer->right_margin_screen = json_object_get_int_member(layout_object, "right_margin_screen");
-        data_passer->right_margin_print_front = json_object_get_int_member(layout_object, "right_margin_print_front");
-        data_passer->right_margin_print_back = json_object_get_int_member(layout_object, "right_margin_print_back");
-        data_passer->font_size_sans_serif = json_object_get_int_member(layout_object, "font_size_sans_serif");
-        data_passer->font_size_monospace = json_object_get_int_member(layout_object, "font_size_monospace");
-        strcpy(data_passer->font_family_sans,json_object_get_string_member(layout_object, "font_family_sans"));
-        data_passer->font_face_micr = strdup(json_object_get_string_member(layout_object, "font_face_micr"));
-        strcpy(data_passer->font_family_mono, json_object_get_string_member(layout_object, "font_family_mono"));
+        data_passer->right_margin_screen = json_object_get_int_member(configuration_object, "right_margin_screen");
+        data_passer->right_margin_print_front = json_object_get_int_member(configuration_object, "right_margin_print_front");
+        data_passer->right_margin_print_back = json_object_get_int_member(configuration_object, "right_margin_print_back");
+        data_passer->font_size_sans_serif = json_object_get_int_member(configuration_object, "font_size_sans_serif");
+        data_passer->font_size_monospace = json_object_get_int_member(configuration_object, "font_size_monospace");
+        strcpy(data_passer->font_family_sans,json_object_get_string_member(configuration_object, "font_family_sans"));
+        data_passer->font_face_micr = strdup(json_object_get_string_member(configuration_object, "font_face_micr"));
+        strcpy(data_passer->font_family_mono, json_object_get_string_member(configuration_object, "font_family_mono"));
 
-        read_coordinates(layout_object, data_passer->layout, "name_label");
-        read_coordinates(layout_object, data_passer->layout, "name_value");
-        read_coordinates(layout_object, data_passer->layout, "account_label");
-        read_coordinates(layout_object, data_passer->layout, "account_value");
-        read_coordinates(layout_object, data_passer->layout, "date_value");
-        read_coordinates(layout_object, data_passer->layout, "micr_account_value");
-        read_coordinates(layout_object, data_passer->layout, "total_value");
-        read_coordinates(layout_object, data_passer->layout, "back_side_value");
-        read_coordinates(layout_object, data_passer->layout, "back_side_subtotal");
-        read_coordinates(layout_object, data_passer->layout, "front_values");
-        read_coordinates(layout_object, data_passer->layout, "back_values");
+        read_coordinates(configuration_object, data_passer->layout, "name_label");
+        read_coordinates(configuration_object, data_passer->layout, "name_value");
+        read_coordinates(configuration_object, data_passer->layout, "account_label");
+        read_coordinates(configuration_object, data_passer->layout, "account_value");
+        read_coordinates(configuration_object, data_passer->layout, "date_value");
+        read_coordinates(configuration_object, data_passer->layout, "micr_account_value");
+        read_coordinates(configuration_object, data_passer->layout, "total_value");
+        read_coordinates(configuration_object, data_passer->layout, "back_side_value");
+        read_coordinates(configuration_object, data_passer->layout, "back_side_subtotal");
+        read_coordinates(configuration_object, data_passer->layout, "front_values");
+        read_coordinates(configuration_object, data_passer->layout, "back_values");
 
     } else {
         g_print("Input file does not exist.\n");

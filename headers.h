@@ -68,8 +68,8 @@ gchar *comma_formatted_amount(gfloat amount);
 
 GDestroyNotify free_gslist_account(gpointer data);
 
-void read_coordinates(JsonObject *layout_object, GHashTable *layout_hash, const gchar *hash_key);
-void write_coordinates(JsonObject *layout_object, GHashTable *layout_hash, const gchar *hash_key);
+void read_coordinates(JsonObject *configuration_object, GHashTable *layout_hash, const gchar *hash_key);
+void write_coordinates(JsonObject *configuration_object, GHashTable *layout_hash, const gchar *hash_key);
 
 
 /**

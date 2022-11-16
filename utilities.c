@@ -138,37 +138,37 @@ void write_config_free_memory(GtkWidget *window, gpointer data) {
         generator = json_generator_new();
         json_generator_set_root(generator, node);
 
-        /* Create the layout object. */
-        JsonObject *layout_object = json_object_new();
-        json_object_set_int_member(layout_object, "right_margin_screen", data_passer->right_margin_screen);
-        json_object_set_int_member(layout_object, "right_margin_print_front", data_passer->right_margin_print_front);
-        json_object_set_int_member(layout_object, "right_margin_print_back", data_passer->right_margin_print_back);
-        json_object_set_int_member(layout_object, "font_size_sans_serif", data_passer->font_size_sans_serif);
-        json_object_set_int_member(layout_object, "font_size_monospace", data_passer->font_size_monospace);
-        json_object_set_string_member(layout_object, "font_family_sans", data_passer->font_family_sans);
-        json_object_set_string_member(layout_object, "font_face_micr", data_passer->font_face_micr);
-        json_object_set_string_member(layout_object, "font_family_mono", data_passer->font_family_mono);
+        /* Create the configuration object. */
+        JsonObject *configuration_object = json_object_new();
+        json_object_set_int_member(configuration_object, "right_margin_screen", data_passer->right_margin_screen);
+        json_object_set_int_member(configuration_object, "right_margin_print_front", data_passer->right_margin_print_front);
+        json_object_set_int_member(configuration_object, "right_margin_print_back", data_passer->right_margin_print_back);
+        json_object_set_int_member(configuration_object, "font_size_sans_serif", data_passer->font_size_sans_serif);
+        json_object_set_int_member(configuration_object, "font_size_monospace", data_passer->font_size_monospace);
+        json_object_set_string_member(configuration_object, "font_family_sans", data_passer->font_family_sans);
+        json_object_set_string_member(configuration_object, "font_face_micr", data_passer->font_face_micr);
+        json_object_set_string_member(configuration_object, "font_family_mono", data_passer->font_family_mono);
 
         /* Add the layout object to the root object. */
-        json_object_set_object_member(object, "layout", layout_object);
+        json_object_set_object_member(object, "configuration", configuration_object);
 
-        write_coordinates(layout_object, data_passer->layout, "name_label");
-        write_coordinates(layout_object, data_passer->layout, "name_value");
-        write_coordinates(layout_object, data_passer->layout, "account_label");
-        write_coordinates(layout_object, data_passer->layout, "account_value");
-        write_coordinates(layout_object, data_passer->layout, "date_value");
-        write_coordinates(layout_object, data_passer->layout, "micr_account_value");
-        write_coordinates(layout_object, data_passer->layout, "total_value");
-        write_coordinates(layout_object, data_passer->layout, "back_side_value");
-        write_coordinates(layout_object, data_passer->layout, "back_side_subtotal");
-        write_coordinates(layout_object, data_passer->layout, "front_values");
-        write_coordinates(layout_object, data_passer->layout, "back_values");
+        write_coordinates(configuration_object, data_passer->layout, "name_label");
+        write_coordinates(configuration_object, data_passer->layout, "name_value");
+        write_coordinates(configuration_object, data_passer->layout, "account_label");
+        write_coordinates(configuration_object, data_passer->layout, "account_value");
+        write_coordinates(configuration_object, data_passer->layout, "date_value");
+        write_coordinates(configuration_object, data_passer->layout, "micr_account_value");
+        write_coordinates(configuration_object, data_passer->layout, "total_value");
+        write_coordinates(configuration_object, data_passer->layout, "back_side_value");
+        write_coordinates(configuration_object, data_passer->layout, "back_side_subtotal");
+        write_coordinates(configuration_object, data_passer->layout, "front_values");
+        write_coordinates(configuration_object, data_passer->layout, "back_values");
 
         /* Go write the JsonGenerator to a file. */
         save_account_numbers(generator);
 
         /* Free memory allocated to the JSON object. */
-        //   json_object_unref(layout_object);
+        //   json_object_unref(configuration_object);
         g_object_unref(generator);
         json_object_unref(object);
         json_array_unref(account_array);
@@ -186,12 +186,12 @@ void write_config_free_memory(GtkWidget *window, gpointer data) {
 
 /**
  * Reads coordinates from a `JsonObject` into a hash of coordinates.
- * @param layout_object JSON object containing the coordinates from the configuration file.
+ * @param configuration_object JSON object containing the coordinates from the configuration file.
  * @param layout_hash GHashTable containing coordinates.
  * @param hash_key Key into `layout_hash`.
  */
-void read_coordinates(JsonObject *layout_object, GHashTable *layout_hash, const gchar *hash_key) {
-    JsonObject *x_y_object = json_object_get_object_member(layout_object, hash_key);
+void read_coordinates(JsonObject *configuration_object, GHashTable *layout_hash, const gchar *hash_key) {
+    JsonObject *x_y_object = json_object_get_object_member(configuration_object, hash_key);
     Coordinates *coordinates = (Coordinates *)g_hash_table_lookup(layout_hash, hash_key);
     coordinates->x = json_object_get_int_member(x_y_object, "x");
     coordinates->y = json_object_get_int_member(x_y_object, "y");
@@ -199,17 +199,17 @@ void read_coordinates(JsonObject *layout_object, GHashTable *layout_hash, const 
 
 /**
  * Writes coordinates into a `JsonObject` from a hash of coordinates.
- * @param layout_object JSON object containing the coordinates from the configuration file.
+ * @param configuration_object JSON object containing the coordinates from the configuration file.
  * @param layout_hash GHashTable containing coordinates.
  * @param hash_key Key into `layout_hash`.
  */
-void write_coordinates(JsonObject *layout_object, GHashTable *layout_hash, const gchar *hash_key) {
+void write_coordinates(JsonObject *configuration_object, GHashTable *layout_hash, const gchar *hash_key) {
     JsonObject *coordinate_object = json_object_new();
     Coordinates *coordinates = (Coordinates *)g_hash_table_lookup(layout_hash, hash_key);
 
     json_object_set_int_member(coordinate_object, "x", coordinates->x);
     json_object_set_int_member(coordinate_object, "y", coordinates->y);
-    json_object_set_object_member(layout_object, hash_key, coordinate_object);
+    json_object_set_object_member(configuration_object, hash_key, coordinate_object);
 }
 
 /**
