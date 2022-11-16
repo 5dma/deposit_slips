@@ -32,7 +32,7 @@ void add_one_value_configuration(const gchar *label,
     gtk_entry_set_alignment(GTK_ENTRY(spin_button), 1);
     gtk_spin_button_set_value(GTK_SPIN_BUTTON(spin_button), *value);
     gtk_grid_attach(GTK_GRID(grid_layout_fields), label_field_name, 0, top, 1, 1);
-    gtk_grid_attach(GTK_GRID(grid_layout_fields), spin_button, 1, top, 1, 1);
+    gtk_grid_attach(GTK_GRID(grid_layout_fields), spin_button, 4, top, 1, 1);
     g_signal_connect(GTK_WIDGET(spin_button), "value-changed", G_CALLBACK(update_config), value);
 }
 
@@ -146,6 +146,8 @@ GtkWidget *make_configuration_view(Data_passer *data_passer) {
     gtk_box_pack_start(GTK_BOX(layout_vbox), label_layout, TRUE, TRUE, 0);
 
     GtkWidget *grid_layout_fields = gtk_grid_new();
+     gtk_grid_set_column_spacing(GTK_GRID(grid_layout_fields), 10);
+    gtk_grid_set_row_spacing(GTK_GRID(grid_layout_fields), 10);
 
     add_one_value_configuration("Right margin screen",
                                 &(data_passer->right_margin_screen),
@@ -210,6 +212,8 @@ GtkWidget *make_configuration_view(Data_passer *data_passer) {
     gtk_box_pack_start(GTK_BOX(font_vbox), label_font, TRUE, TRUE, 0);
 
     GtkWidget *grid_layout_fonts = gtk_grid_new();
+         gtk_grid_set_column_spacing(GTK_GRID(grid_layout_fonts), 10);
+    gtk_grid_set_row_spacing(GTK_GRID(grid_layout_fonts), 10);
 
     /* Controls for sans-serif font selection. */
 
