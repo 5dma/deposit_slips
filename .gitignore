@@ -2,6 +2,7 @@
 deposit_slip
 .~lock.*.odg#
 *.swp
+*.svg
 html/**
 latex/**
 cairo_test/**

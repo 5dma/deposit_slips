@@ -186,7 +186,20 @@ void write_config_free_memory(GtkWidget *window, gpointer data) {
 }
 
 /**
- * Reads coordinates from a `JsonObject` into a hash of coordinates.
+ * Reads coordinates from a `JsonObject` into a hash of coordinates. The following table describes the various coordinates and their default values.
+ * <p><img src="file:///home/abba/programming/c_programs/deposit_slips/configuration_drawing.svg"/></p>
+ * <table>
+ *      <tr><th>Callout</th><th>Name</th><th>x</th><th>y</th></tr>
+ *      <tr><td>A</td><td>name_label</td><td>18</td><td>405</td></tr>
+ *      <tr><td>B</td><td>name_value</td><td>18</td><td>373</td></tr>
+ *      <tr><td>C</td><td>account_label</td><td>41</td><td>405</td></tr>
+ *      <tr><td>D</td><td>account_value</td><td>41</td><td>351</td></tr>
+ *      <tr><td>E</td><td>date_value</td><td>75</td><td>371</td></tr>
+ *      <tr><td>F</td><td>micr_account_value</td><td>178</td><td>288</td></tr>
+ *      <tr><td>G</td><td>front_values</td><td>22.5 (pitch between lines)</td><td>40.5 (initial offset)</td></tr>
+ *      <tr><td>H</td><td>total_value</td><td>153</td><td>0 (N/A)</td></tr>
+ *      <tr><td>I</td><td>right_margin_print_front</td><td>10</td><td>N/A</td></tr>
+ * </table>
  * @param configuration_object JSON object containing the coordinates from the configuration file.
  * @param layout_hash GHashTable containing coordinates.
  * @param hash_key Key into `layout_hash`.

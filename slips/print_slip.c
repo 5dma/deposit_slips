@@ -332,7 +332,7 @@ void print_deposit_slip(GtkButton *self, gpointer data) {
     g_signal_connect(G_OBJECT(operation), "draw_page", G_CALLBACK(draw_page), data_passer);
 
     res = gtk_print_operation_run(operation, GTK_PRINT_OPERATION_ACTION_PRINT_DIALOG, GTK_WINDOW(data_passer->application_window), &error);
-    switch (res) {
+ /*   switch (res) {
         case GTK_PRINT_OPERATION_RESULT_ERROR:
             g_print("Error\n");
             break;
@@ -347,6 +347,6 @@ void print_deposit_slip(GtkButton *self, gpointer data) {
             break;
         default:
             g_print("Default\n");
-    }
+    } */
     g_object_unref(operation);
 }

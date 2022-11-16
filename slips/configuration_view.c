@@ -216,6 +216,17 @@ GtkWidget *make_configuration_view(Data_passer *data_passer) {
                                 data_passer->layout,
                                 row_number++,
                                 grid_layout_fields);
+    add_two_value_configuration("Total value",
+                                "total_value",
+                                data_passer->layout,
+                                row_number++,
+                                grid_layout_fields);                                
+    add_two_value_configuration("MICR Account value",
+                                "micr_account_value",
+                                data_passer->layout,
+                                row_number++,
+                                grid_layout_fields); 
+
 
     GtkWidget *scrolled_window_layout = gtk_scrolled_window_new(NULL, NULL);
     gtk_scrolled_window_set_policy(GTK_SCROLLED_WINDOW(scrolled_window_layout), GTK_POLICY_NEVER, GTK_POLICY_AUTOMATIC);
