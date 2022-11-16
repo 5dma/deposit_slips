@@ -49,7 +49,8 @@ void add_one_value_configuration(const gchar *label,
 /**
  * Adds a field and two spin buttosn to the passed grid.
  * @param label Field's label.
- * @param value Spin button's initial value.
+ * @param hash_key Key for looking up the configuration in `layout_hash`.
+ * @param layout_hash Pointer to the hash table of coordinates.
  * @param top Row in which the field is placed within the grid.
  * @param grid_layout_fields Grid into which the field is added.
  */
