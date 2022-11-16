@@ -71,6 +71,7 @@ void read_configuration_data(Data_passer *data_passer) {
         data_passer->right_margin_print_back = json_object_get_int_member(configuration_object, "right_margin_print_back");
         data_passer->font_size_sans_serif = json_object_get_int_member(configuration_object, "font_size_sans_serif");
         data_passer->font_size_monospace = json_object_get_int_member(configuration_object, "font_size_monospace");
+        data_passer->font_size_static_label_scaling = json_object_get_double_member(configuration_object, "font_size_static_label_scaling");
         strcpy(data_passer->font_family_sans,json_object_get_string_member(configuration_object, "font_family_sans"));
         data_passer->font_face_micr = strdup(json_object_get_string_member(configuration_object, "font_face_micr"));
         strcpy(data_passer->font_family_mono, json_object_get_string_member(configuration_object, "font_family_mono"));

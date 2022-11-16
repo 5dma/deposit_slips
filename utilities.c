@@ -148,7 +148,8 @@ void write_config_free_memory(GtkWidget *window, gpointer data) {
         json_object_set_string_member(configuration_object, "font_family_sans", data_passer->font_family_sans);
         json_object_set_string_member(configuration_object, "font_face_micr", data_passer->font_face_micr);
         json_object_set_string_member(configuration_object, "font_family_mono", data_passer->font_family_mono);
-
+        json_object_set_double_member(configuration_object, "font_size_static_label_scaling", data_passer->font_size_static_label_scaling);
+  
         /* Add the layout object to the root object. */
         json_object_set_object_member(object, "configuration", configuration_object);
 

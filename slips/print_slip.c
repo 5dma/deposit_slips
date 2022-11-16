@@ -202,6 +202,7 @@ void draw_page(GtkPrintOperation *self, GtkPrintContext *context, gint page_nr, 
     cairo_move_to(cr, coordinates->x, coordinates->y);
     cairo_save(cr); /* Save context 1 */
     cairo_rotate(cr, -G_PI_2);
+    cairo_set_font_size(cr, data_passer->font_size_sans_serif * data_passer->font_size_static_label_scaling);
     cairo_show_text(cr, "Name");
     cairo_restore(cr); /* Restore context 0 */
 
@@ -220,6 +221,7 @@ void draw_page(GtkPrintOperation *self, GtkPrintContext *context, gint page_nr, 
     cairo_move_to(cr, coordinates->x, coordinates->y);
     cairo_save(cr); /* Save context 1 */
     cairo_rotate(cr, -G_PI_2);
+    cairo_set_font_size(cr, data_passer->font_size_sans_serif * data_passer->font_size_static_label_scaling);
     cairo_show_text(cr, "Account No");
     cairo_restore(cr); /* Restore context 0 */
 

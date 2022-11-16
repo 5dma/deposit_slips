@@ -99,6 +99,8 @@ typedef struct {
 	gpointer btn_font_sans_serif;
 /** Identifier of the monospace font selection button. The identifier is the pointer's memory location. */
 	gpointer btn_font_monospace;
+/** Scaling for font size, applied to the static Name and Account labels. */	
+	gdouble font_size_static_label_scaling;
 /** List of x,y coordinates for various layout elements. */
 	GHashTable *layout;
 } Data_passer;

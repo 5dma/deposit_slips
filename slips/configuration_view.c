@@ -28,9 +28,19 @@ void add_one_value_configuration(const gchar *label,
                                  GtkWidget *grid_layout_fields) {
     GtkWidget *label_field_name = gtk_label_new(label);
     gtk_label_set_xalign(GTK_LABEL(label_field_name), 0.0);
-    GtkWidget *spin_button = gtk_spin_button_new_with_range(0, 1000, 1);
+
+    GtkWidget *spin_button;
+    /* If displaying the font scaling spin button, allow for decimal places. Otherwise, all spin buttons are integers. */
+    if (g_strcmp0 (label, "Static label scale") == 0) {
+        GtkAdjustment *adjustment = gtk_adjustment_new (*value, 0.1, 1.0, 0.1, 0.1, 0.0);
+        spin_button = gtk_spin_button_new (adjustment, 0.1, 1);
+    } else {
+        spin_button = gtk_spin_button_new_with_range(0, 1000, 1);
+        gtk_spin_button_set_value(GTK_SPIN_BUTTON(spin_button), *value);
+    }
+
     gtk_entry_set_alignment(GTK_ENTRY(spin_button), 1);
-    gtk_spin_button_set_value(GTK_SPIN_BUTTON(spin_button), *value);
+    
     gtk_grid_attach(GTK_GRID(grid_layout_fields), label_field_name, 0, top, 1, 1);
     gtk_grid_attach(GTK_GRID(grid_layout_fields), spin_button, 4, top, 1, 1);
     g_signal_connect(GTK_WIDGET(spin_button), "value-changed", G_CALLBACK(update_config), value);
@@ -150,53 +160,60 @@ GtkWidget *make_configuration_view(Data_passer *data_passer) {
      gtk_grid_set_column_spacing(GTK_GRID(grid_layout_fields), 10);
     gtk_grid_set_row_spacing(GTK_GRID(grid_layout_fields), 10);
 
+    gint row_number = 0;
+
     add_one_value_configuration("Right margin screen",
                                 &(data_passer->right_margin_screen),
-                                0,
+                                row_number++,
                                 grid_layout_fields);
 
     add_one_value_configuration("Right margin print front",
                                 &(data_passer->right_margin_print_front),
-                                1,
+                                row_number++,
                                 grid_layout_fields);
 
     add_one_value_configuration("Right margin print back",
                                 &(data_passer->right_margin_print_back),
-                                2,
+                                row_number++,
                                 grid_layout_fields);
 
     add_one_value_configuration("Font size text",
                                 &(data_passer->font_size_sans_serif),
-                                3,
+                                row_number++,
                                 grid_layout_fields);
 
     add_one_value_configuration("Font size amounts",
                                 &(data_passer->font_size_monospace),
-                                4,
+                                row_number++,
+                                grid_layout_fields);
+
+    add_one_value_configuration("Static label scale",
+                                &(data_passer->font_size_static_label_scaling),
+                                row_number++,
                                 grid_layout_fields);
 
     add_two_value_configuration("Name label",
                                 "name_label",
                                 data_passer->layout,
-                                5,
+                                row_number++,
                                 grid_layout_fields);
 
     add_two_value_configuration("Name value",
                                 "name_value",
                                 data_passer->layout,
-                                6,
+                                row_number++,
                                 grid_layout_fields);
 
     add_two_value_configuration("Account label",
                                 "account_label",
                                 data_passer->layout,
-                                7,
+                                row_number++,
                                 grid_layout_fields);
 
     add_two_value_configuration("Account value",
                                 "account_value",
                                 data_passer->layout,
-                                8,
+                                row_number++,
                                 grid_layout_fields);
 
     GtkWidget *scrolled_window_layout = gtk_scrolled_window_new(NULL, NULL);
