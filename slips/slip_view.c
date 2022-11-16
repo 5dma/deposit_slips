@@ -150,8 +150,10 @@ void make_checks_view(Data_passer *data_passer) {
  * @return A widget containing the three widgets described above.
  */
 GtkWidget *make_slip_view(Data_passer *data_passer) {
-    GtkWidget *lblAccount = gtk_label_new("Accounts");
-    GtkWidget *lblChecks = gtk_label_new("Checks");
+    GtkWidget *lblAccount = gtk_label_new(NULL);
+    gtk_label_set_markup (GTK_LABEL (lblAccount), "<b>Accounts</b>");
+    GtkWidget *lblChecks = gtk_label_new(NULL);
+    gtk_label_set_markup (GTK_LABEL (lblChecks), "<b>Checks</b>");
     GtkWidget *lblAccountDescription = gtk_label_new("Description");
 
     GtkWidget *btnChecksAdd = gtk_button_new_from_icon_name("gtk-add", GTK_ICON_SIZE_BUTTON);

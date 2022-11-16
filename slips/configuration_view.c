@@ -141,7 +141,8 @@ static void font_button_clicked(GtkWidget *widget, gpointer data) {
 GtkWidget *make_configuration_view(Data_passer *data_passer) {
     /* Set up the view for layout selection */
     GtkWidget *layout_vbox = gtk_box_new(GTK_ORIENTATION_VERTICAL, 5);
-    GtkWidget *label_layout = gtk_label_new("Layout");
+    GtkWidget *label_layout = gtk_label_new(NULL);
+    gtk_label_set_markup (GTK_LABEL (label_layout), "<b>Layout</b>");
     gtk_label_set_xalign(GTK_LABEL(label_layout), 0.0);
     gtk_box_pack_start(GTK_BOX(layout_vbox), label_layout, TRUE, TRUE, 0);
 
@@ -207,7 +208,8 @@ GtkWidget *make_configuration_view(Data_passer *data_passer) {
 
     /* Set up the view for font selection */
     GtkWidget *font_vbox = gtk_box_new(GTK_ORIENTATION_VERTICAL, 5);
-    GtkWidget *label_font = gtk_label_new("Fonts");
+    GtkWidget *label_font = gtk_label_new(NULL);
+    gtk_label_set_markup (GTK_LABEL (label_font), "<b>Fonts</b>");
     gtk_label_set_xalign(GTK_LABEL(label_font), 0.0);
     gtk_box_pack_start(GTK_BOX(font_vbox), label_font, TRUE, TRUE, 0);
 
