@@ -94,12 +94,11 @@ typedef struct {
 /** Font face, MICR.  */
 	gchar *font_face_micr;
 /** Font face, mono.  */
-	gchar *font_family_mono;
+	gchar font_family_mono[100];
 /** Identifier of the sans-serif font selection button. The identifier is the pointer's memory location. */
 	gpointer btn_font_sans_serif;
 /** Identifier of the monospace font selection button. The identifier is the pointer's memory location. */
 	gpointer btn_font_monospace;
-
 /** List of x,y coordinates for various layout elements. */
 	GHashTable *layout;
 } Data_passer;

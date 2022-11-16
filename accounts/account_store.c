@@ -73,7 +73,7 @@ void read_configuration_data(Data_passer *data_passer) {
         data_passer->font_size_monospace = json_object_get_int_member(layout_object, "font_size_monospace");
         strcpy(data_passer->font_family_sans,json_object_get_string_member(layout_object, "font_family_sans"));
         data_passer->font_face_micr = strdup(json_object_get_string_member(layout_object, "font_face_micr"));
-        data_passer->font_family_mono = strdup(json_object_get_string_member(layout_object, "font_family_mono"));
+        strcpy(data_passer->font_family_mono, json_object_get_string_member(layout_object, "font_family_mono"));
 
         read_coordinates(layout_object, data_passer->layout, "name_label");
         read_coordinates(layout_object, data_passer->layout, "name_value");
