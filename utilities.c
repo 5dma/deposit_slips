@@ -97,7 +97,7 @@ void write_config_free_memory(GtkWidget *window, gpointer data) {
                                ROUTING_NUMBER, &routing_number,
                                -1);
 
-            /* Add the entry from the master store to the temporary store */
+            /* Add the entry from the temporary store to the master store */
             gtk_list_store_append(data_passer->list_store_master, &iter_master);
 
             gtk_list_store_set(data_passer->list_store_master, &iter_master,
@@ -119,12 +119,12 @@ void write_config_free_memory(GtkWidget *window, gpointer data) {
             // json_object_unref(account); /* This statement causes a seg fault. Why? Doesn't the json_array_add_object_element increase the reference count?*/
 
             gtk_tree_model_iter_next(GTK_TREE_MODEL(data_passer->list_store_temporary), &iter_temporary);
-        }
 
-        g_free(account_number);
-        g_free(account_name);
-        g_free(account_description);
-        g_free(routing_number);
+            g_free(account_number);
+            g_free(account_name);
+            g_free(account_description);
+            g_free(routing_number);
+        }
 
         /* Create the top-level JSON object. */
         JsonObject *object = json_object_new();
@@ -149,7 +149,7 @@ void write_config_free_memory(GtkWidget *window, gpointer data) {
         json_object_set_string_member(configuration_object, "font_face_micr", data_passer->font_face_micr);
         json_object_set_string_member(configuration_object, "font_family_mono", data_passer->font_family_mono);
         json_object_set_double_member(configuration_object, "font_size_static_label_scaling", data_passer->font_size_static_label_scaling);
-  
+
         /* Add the layout object to the root object. */
         json_object_set_object_member(object, "configuration", configuration_object);
 
