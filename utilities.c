@@ -64,6 +64,19 @@ void save_account_numbers(JsonGenerator *generator) {
 }
 
 /**
+ * Frees memory associated with `Coordinates` entries in the layout hash. This is a callback function looping over all entries in the layout hash.
+ * @param key Passed key
+ * @param value Passed value
+ * @param user_data Pointer to user data, effectively `NULL`.
+*/
+gboolean remove_layout_hash(
+    gpointer key,
+    gpointer value,
+    gpointer user_data) {
+    g_free((Coordinates *)value);
+}
+
+/**
 * Writes the configuration file, and frees memory in the master and temporary account lists and other string data in a `Data_passer`. This callback fires after the user destroys the main application window.
   \sa save_account_numbers()
 * @param window The parent node.
@@ -170,6 +183,8 @@ void write_config_free_memory(GtkWidget *window, gpointer data) {
 
         /* Free memory allocated to the JSON object. */
         //   json_object_unref(configuration_object);
+        g_hash_table_foreach_remove(data_passer->layout, remove_layout_hash, NULL);
+
         g_object_unref(generator);
         json_object_unref(object);
         json_array_unref(account_array);
