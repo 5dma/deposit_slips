@@ -158,7 +158,7 @@ GtkWidget *make_configuration_view(Data_passer *data_passer) {
     gtk_box_pack_start(GTK_BOX(layout_vbox), label_layout, TRUE, TRUE, 0);
 
     GtkWidget *grid_layout_fields = gtk_grid_new();
-     gtk_grid_set_column_spacing(GTK_GRID(grid_layout_fields), 10);
+    gtk_grid_set_column_spacing(GTK_GRID(grid_layout_fields), 10);
     gtk_grid_set_row_spacing(GTK_GRID(grid_layout_fields), 10);
 
     gint row_number = 0;
@@ -216,11 +216,16 @@ GtkWidget *make_configuration_view(Data_passer *data_passer) {
                                 data_passer->layout,
                                 row_number++,
                                 grid_layout_fields);
+    add_two_value_configuration("Subtotal from back",
+                                "back_side_subtotal_on_front",
+                                data_passer->layout,
+                                row_number++,
+                                grid_layout_fields);
     add_two_value_configuration("Total value",
                                 "total_value",
                                 data_passer->layout,
                                 row_number++,
-                                grid_layout_fields);                                
+                                grid_layout_fields);
     add_two_value_configuration("MICR Account value",
                                 "micr_account_value",
                                 data_passer->layout,

@@ -175,6 +175,7 @@ void write_config_free_memory(GtkWidget *window, gpointer data) {
         write_coordinates(configuration_object, data_passer->layout, "total_value");
         write_coordinates(configuration_object, data_passer->layout, "back_side_value");
         write_coordinates(configuration_object, data_passer->layout, "back_side_subtotal");
+        write_coordinates(configuration_object, data_passer->layout, "back_side_subtotal_on_front");
         write_coordinates(configuration_object, data_passer->layout, "front_values");
         write_coordinates(configuration_object, data_passer->layout, "back_values");
 

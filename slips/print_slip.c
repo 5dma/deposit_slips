@@ -277,7 +277,7 @@ void draw_page(GtkPrintOperation *self, GtkPrintContext *context, gint page_nr, 
     cairo_set_font_size(cr, data_passer->font_size_monospace);
     cairo_select_font_face(cr, data_passer->font_family_mono, CAIRO_FONT_SLANT_NORMAL, CAIRO_FONT_WEIGHT_BOLD);
     cairo_rotate(cr, -G_PI_2);
-    cairo_show_text(cr, formatted_total);
+ //   cairo_show_text(cr, formatted_total);
     cairo_restore(cr); /* Restore context 0 */
     g_free(formatted_total);
 
@@ -291,7 +291,11 @@ void draw_page(GtkPrintOperation *self, GtkPrintContext *context, gint page_nr, 
         /* Move to the correct position to print the amount such that it is right-aligned. */
         cairo_text_extents_t extents;
         cairo_text_extents(data_passer->cairo_context, formatted_total, &extents);
+
+
         cairo_move_to(cr, coordinates->x, extents.width + data_passer->right_margin_print_front);
+        
+        
         cairo_save(cr);
         cairo_rotate(cr, -G_PI_2);
         cairo_show_text(data_passer->cairo_context, formatted_total);

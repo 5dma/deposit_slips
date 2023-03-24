@@ -56,6 +56,8 @@ void on_app_activate(GApplication *app, gpointer data) {
     g_hash_table_insert(data_passer->layout, "back_side_value", coordinates_back_side_value);
     Coordinates *coordinates_back_side_subtotal = g_new(Coordinates, 1);
     g_hash_table_insert(data_passer->layout, "back_side_subtotal", coordinates_back_side_subtotal);
+    Coordinates *back_side_subtotal_on_front = g_new(Coordinates, 1);
+    g_hash_table_insert(data_passer->layout, "back_side_subtotal_on_front", back_side_subtotal_on_front);
     Coordinates *coordinates_front_values = g_new(Coordinates, 1);
     g_hash_table_insert(data_passer->layout, "front_values", coordinates_front_values);
     Coordinates *coordinates_back_values = g_new(Coordinates, 1);

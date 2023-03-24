@@ -87,6 +87,7 @@ void read_configuration_data(Data_passer *data_passer) {
         read_coordinates(configuration_object, data_passer->layout, "back_side_subtotal");
         read_coordinates(configuration_object, data_passer->layout, "front_values");
         read_coordinates(configuration_object, data_passer->layout, "back_values");
+        read_coordinates(configuration_object, data_passer->layout, "back_side_subtotal_on_front");
 
     } else {
         g_print("Input file does not exist.\n");
