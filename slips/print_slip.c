@@ -9,7 +9,7 @@
  */
 
 /**
- * Callback fired while iterating over all checks. This function prints the first two checks in the store, subtotal from back side (if any), and total deposited. This function also prints the account number, account name, and current date.
+ * Callback fired while iterating over all checks. This function prints the first two checks in the store on the front side of the deposit slip.
  * @param model Pointer to the model containing the checks.
  * @param path Path to the current check.
  * @param iter Iterator for the current check.
@@ -277,17 +277,16 @@ void draw_page(GtkPrintOperation *self, GtkPrintContext *context, gint page_nr, 
     cairo_set_font_size(cr, data_passer->font_size_monospace);
     cairo_select_font_face(cr, data_passer->font_family_mono, CAIRO_FONT_SLANT_NORMAL, CAIRO_FONT_WEIGHT_BOLD);
     cairo_rotate(cr, -G_PI_2);
- //   cairo_show_text(cr, formatted_total);
+    cairo_show_text(cr, formatted_total);
     cairo_restore(cr); /* Restore context 0 */
     g_free(formatted_total);
 
     cairo_restore(cr); /* Trash context 0 */
 
-    /* If there are more than two checks, print them on the back side of the deposit slip
-    as well as the subtotal on the front side. */
+    /* If there are more than two checks, print their subtotal on the front side. */
     if (number_of_checks(data_passer) > 2) {
         gchar *formatted_total = comma_formatted_amount(data_passer->total_back_side);
-        coordinates = (Coordinates *)g_hash_table_lookup(data_passer->layout, "total_value");
+        coordinates = (Coordinates *)g_hash_table_lookup(data_passer->layout, "back_side_subtotal_on_front");
         /* Move to the correct position to print the amount such that it is right-aligned. */
         cairo_text_extents_t extents;
         cairo_text_extents(data_passer->cairo_context, formatted_total, &extents);
