@@ -54,6 +54,11 @@ void add_one_value_configuration(const gchar *label,
     gtk_grid_attach(GTK_GRID(grid_layout_fields), label_field_name, 0, top, 1, 1);
     gtk_grid_attach(GTK_GRID(grid_layout_fields), spin_button, 4, top, 1, 1);
     g_signal_connect(GTK_WIDGET(spin_button), "value-changed", G_CALLBACK(update_config_spinner), value);
+
+    /* Get events the spinner can receive, and block out the scrolling event. */
+    gint all_spin_events = gtk_widget_get_events(GTK_WIDGET(spin_button));
+    gtk_widget_set_events (GTK_WIDGET(spin_button), all_spin_events ^ GDK_SCROLL_MASK);
+
 }
 
 /**
@@ -103,11 +108,18 @@ void add_two_value_configuration(const gchar *label,
     Coordinates *coordinates = (Coordinates *)g_hash_table_lookup(layout_hash, hash_key);
 
     GtkWidget *spin_button_x = gtk_spin_button_new_with_range(0, 1000, 1);
+    
+    /* Get the possible events a spinner can receive. (Should be a way to do this by getting all possible events by G_TYPE_SPINNER or something similar/)*/
+    gint all_spin_events = gtk_widget_get_events(GTK_WIDGET(spin_button_x));
+    gint all_spin_events_less_scroll = all_spin_events ^ GDK_SCROLL_MASK;
+
     gtk_entry_set_alignment(GTK_ENTRY(spin_button_x), 1);
     gtk_spin_button_set_value(GTK_SPIN_BUTTON(spin_button_x), coordinates->x);
     gtk_grid_attach(GTK_GRID(grid_layout_fields), x_label, 1, top, 1, 1);
     gtk_grid_attach(GTK_GRID(grid_layout_fields), spin_button_x, 2, top, 1, 1);
     g_signal_connect(GTK_WIDGET(spin_button_x), "value-changed", G_CALLBACK(update_config_spinner), &(coordinates->x));
+    /* Block mouse scroll events in the spinner. */
+    gtk_widget_set_events (GTK_WIDGET(spin_button_x), all_spin_events_less_scroll);
 
     GtkWidget *spin_button_y = gtk_spin_button_new_with_range(0, 1000, 1);
     gtk_entry_set_alignment(GTK_ENTRY(spin_button_y), 1);
@@ -115,6 +127,9 @@ void add_two_value_configuration(const gchar *label,
     gtk_grid_attach(GTK_GRID(grid_layout_fields), y_label, 3, top, 1, 1);
     gtk_grid_attach(GTK_GRID(grid_layout_fields), spin_button_y, 4, top, 1, 1);
     g_signal_connect(GTK_WIDGET(spin_button_y), "value-changed", G_CALLBACK(update_config_spinner), &(coordinates->y));
+    /* Block mouse scroll events in the spinner. */
+    gtk_widget_set_events (GTK_WIDGET(spin_button_y), all_spin_events_less_scroll);
+
 }
 
 /**
