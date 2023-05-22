@@ -9,7 +9,7 @@
  * @param widget Pointer to the spin box whose value changed.
  * @param user_data Pointer to the value inside `Data_passer`.
  */
-void update_config(GtkWidget *widget, gpointer user_data) {
+void update_config_spinner(GtkWidget *widget, gpointer user_data) {
     gdouble *value = (gdouble *)user_data;
     gdouble spin_value = gtk_spin_button_get_value(GTK_SPIN_BUTTON(widget));
     *value = spin_value;
@@ -53,7 +53,7 @@ void add_one_value_configuration(const gchar *label,
     
     gtk_grid_attach(GTK_GRID(grid_layout_fields), label_field_name, 0, top, 1, 1);
     gtk_grid_attach(GTK_GRID(grid_layout_fields), spin_button, 4, top, 1, 1);
-    g_signal_connect(GTK_WIDGET(spin_button), "value-changed", G_CALLBACK(update_config), value);
+    g_signal_connect(GTK_WIDGET(spin_button), "value-changed", G_CALLBACK(update_config_spinner), value);
 }
 
 /**
@@ -107,14 +107,14 @@ void add_two_value_configuration(const gchar *label,
     gtk_spin_button_set_value(GTK_SPIN_BUTTON(spin_button_x), coordinates->x);
     gtk_grid_attach(GTK_GRID(grid_layout_fields), x_label, 1, top, 1, 1);
     gtk_grid_attach(GTK_GRID(grid_layout_fields), spin_button_x, 2, top, 1, 1);
-    g_signal_connect(GTK_WIDGET(spin_button_x), "value-changed", G_CALLBACK(update_config), &(coordinates->x));
+    g_signal_connect(GTK_WIDGET(spin_button_x), "value-changed", G_CALLBACK(update_config_spinner), &(coordinates->x));
 
     GtkWidget *spin_button_y = gtk_spin_button_new_with_range(0, 1000, 1);
     gtk_entry_set_alignment(GTK_ENTRY(spin_button_y), 1);
     gtk_spin_button_set_value(GTK_SPIN_BUTTON(spin_button_y), coordinates->y);
     gtk_grid_attach(GTK_GRID(grid_layout_fields), y_label, 3, top, 1, 1);
     gtk_grid_attach(GTK_GRID(grid_layout_fields), spin_button_y, 4, top, 1, 1);
-    g_signal_connect(GTK_WIDGET(spin_button_y), "value-changed", G_CALLBACK(update_config), &(coordinates->y));
+    g_signal_connect(GTK_WIDGET(spin_button_y), "value-changed", G_CALLBACK(update_config_spinner), &(coordinates->y));
 }
 
 /**
@@ -135,7 +135,7 @@ void add_font_configuration(const gchar *label,
     gtk_spin_button_set_value(GTK_SPIN_BUTTON(spin_button), *value);
     gtk_grid_attach(GTK_GRID(grid_layout_fields), label_field_name, 0, top, 1, 1);
     gtk_grid_attach(GTK_GRID(grid_layout_fields), spin_button, 1, top, 1, 1);
-    g_signal_connect(GTK_WIDGET(spin_button), "value-changed", G_CALLBACK(update_config), value);
+    g_signal_connect(GTK_WIDGET(spin_button), "value-changed", G_CALLBACK(update_config_spinner), value);
 }
 
 /**
