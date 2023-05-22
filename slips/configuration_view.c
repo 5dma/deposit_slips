@@ -16,6 +16,16 @@ void update_config(GtkWidget *widget, gpointer user_data) {
 }
 
 /**
+ * Callback fired when the user toggles a checkbox. The callback stores the new value inside `Data_passer`.
+ * @param widget Pointer to the checkbox whose value was toggled.
+ * @param user_data Pointer to the value inside `Data_passer`.
+ */
+void update_config_boolean(GtkWidget *widget, gpointer user_data) {
+    gboolean *value = (gboolean *)user_data;
+    *value = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(widget));
+}
+
+/**
  * Adds a field and one spin button to the passed grid.
  * @param label Field's label.
  * @param value Spin button's initial value.
@@ -44,6 +54,30 @@ void add_one_value_configuration(const gchar *label,
     gtk_grid_attach(GTK_GRID(grid_layout_fields), label_field_name, 0, top, 1, 1);
     gtk_grid_attach(GTK_GRID(grid_layout_fields), spin_button, 4, top, 1, 1);
     g_signal_connect(GTK_WIDGET(spin_button), "value-changed", G_CALLBACK(update_config), value);
+}
+
+/**
+ * Adds a field and a checkbox to the passed grid.
+ * @param label Field's label.
+ * @param value Checkbox's initial value.
+ * @param top Row in which the field is placed within the grid.
+ * @param grid_layout_fields Grid into which the field is added.
+ */
+void add_boolean_configuration(const gchar *label,
+                                 gboolean *value,
+                                 gint top,
+                                 GtkWidget *grid_layout_fields) {
+    GtkWidget *label_field_name = gtk_label_new(label);
+    gtk_label_set_xalign(GTK_LABEL(label_field_name), 0.0);
+
+    GtkWidget *checkbox;
+    
+    checkbox = gtk_check_button_new();
+    gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON(checkbox), *value);
+ 
+    gtk_grid_attach(GTK_GRID(grid_layout_fields), label_field_name, 0, top, 1, 1);
+    gtk_grid_attach(GTK_GRID(grid_layout_fields), checkbox, 4, top, 1, 1);
+    g_signal_connect(GTK_WIDGET(checkbox), "toggled", G_CALLBACK(update_config_boolean), value);
 }
 
 /**
@@ -190,6 +224,11 @@ GtkWidget *make_configuration_view(Data_passer *data_passer) {
 
     add_one_value_configuration("Static label scale",
                                 &(data_passer->font_size_static_label_scaling),
+                                row_number++,
+                                grid_layout_fields);
+
+    add_boolean_configuration("Print Name/Account labels",
+                                &(data_passer->print_name_account_labels),
                                 row_number++,
                                 grid_layout_fields);
 

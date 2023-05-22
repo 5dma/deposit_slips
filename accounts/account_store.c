@@ -74,6 +74,7 @@ void read_configuration_data(Data_passer *data_passer) {
         data_passer->font_size_static_label_scaling = json_object_get_double_member(configuration_object, "font_size_static_label_scaling");
         strcpy(data_passer->font_family_sans,json_object_get_string_member(configuration_object, "font_family_sans"));
         data_passer->font_face_micr = strdup(json_object_get_string_member(configuration_object, "font_face_micr"));
+        data_passer->print_name_account_labels = json_object_get_boolean_member (configuration_object, "print_name_account_labels");
         strcpy(data_passer->font_family_mono, json_object_get_string_member(configuration_object, "font_family_mono"));
 
         read_coordinates(configuration_object, data_passer->layout, "name_label");

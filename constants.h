@@ -101,6 +101,8 @@ typedef struct {
 	gpointer btn_font_monospace;
 /** Scaling for font size, applied to the static Name and Account labels. */	
 	gdouble font_size_static_label_scaling;
+/** Flag indicating the Name and Account labels are printed on the deposit slip.*/
+	gboolean print_name_account_labels;
 /** List of x,y coordinates for various layout elements. */
 	GHashTable *layout;
 } Data_passer;

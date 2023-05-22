@@ -197,13 +197,15 @@ void draw_page(GtkPrintOperation *self, GtkPrintContext *context, gint page_nr, 
     cairo_save(cr); /* Save context 0 */
 
     /* Write Name Label */
-    coordinates = (Coordinates *)g_hash_table_lookup(data_passer->layout, "name_label");
-    cairo_move_to(cr, coordinates->x, coordinates->y);
-    cairo_save(cr); /* Save context 1 */
-    cairo_rotate(cr, -G_PI_2);
-    cairo_set_font_size(cr, data_passer->font_size_sans_serif * data_passer->font_size_static_label_scaling);
-    cairo_show_text(cr, "Name");
-    cairo_restore(cr); /* Restore context 0 */
+    if (data_passer->print_name_account_labels) {
+        coordinates = (Coordinates *)g_hash_table_lookup(data_passer->layout, "name_label");
+        cairo_move_to(cr, coordinates->x, coordinates->y);
+        cairo_save(cr); /* Save context 1 */
+        cairo_rotate(cr, -G_PI_2);
+        cairo_set_font_size(cr, data_passer->font_size_sans_serif * data_passer->font_size_static_label_scaling);
+        cairo_show_text(cr, "Name");
+        cairo_restore(cr); /* Restore context 0 */
+    }
 
     /* Write Name value */
     coordinates = (Coordinates *)g_hash_table_lookup(data_passer->layout, "name_value");
@@ -215,15 +217,15 @@ void draw_page(GtkPrintOperation *self, GtkPrintContext *context, gint page_nr, 
     cairo_restore(cr); /* Restore context 0 */
 
     /* Write Account Label */
-
-    coordinates = (Coordinates *)g_hash_table_lookup(data_passer->layout, "account_label");
-    cairo_move_to(cr, coordinates->x, coordinates->y);
-    cairo_save(cr); /* Save context 1 */
-    cairo_rotate(cr, -G_PI_2);
-    cairo_set_font_size(cr, data_passer->font_size_sans_serif * data_passer->font_size_static_label_scaling);
-    cairo_show_text(cr, "Account No");
-    cairo_restore(cr); /* Restore context 0 */
-
+    if (data_passer->print_name_account_labels) {
+        coordinates = (Coordinates *)g_hash_table_lookup(data_passer->layout, "account_label");
+        cairo_move_to(cr, coordinates->x, coordinates->y);
+        cairo_save(cr); /* Save context 1 */
+        cairo_rotate(cr, -G_PI_2);
+        cairo_set_font_size(cr, data_passer->font_size_sans_serif * data_passer->font_size_static_label_scaling);
+        cairo_show_text(cr, "Account No");
+        cairo_restore(cr); /* Restore context 0 */
+    }
     /* Write Account Value */
 
     coordinates = (Coordinates *)g_hash_table_lookup(data_passer->layout, "account_value");
@@ -291,10 +293,8 @@ void draw_page(GtkPrintOperation *self, GtkPrintContext *context, gint page_nr, 
         cairo_text_extents_t extents;
         cairo_text_extents(data_passer->cairo_context, formatted_total, &extents);
 
-
         cairo_move_to(cr, coordinates->x, extents.width + data_passer->right_margin_print_front);
-        
-        
+
         cairo_save(cr);
         cairo_rotate(cr, -G_PI_2);
         cairo_show_text(data_passer->cairo_context, formatted_total);
@@ -327,7 +327,7 @@ void print_deposit_slip(GtkButton *self, gpointer data) {
 
     gtk_print_operation_set_unit(operation, GTK_UNIT_POINTS);
     gtk_print_operation_set_use_full_page(operation, TRUE);
-  //  gtk_print_operation_set_allow_async(operation, TRUE);
+    //  gtk_print_operation_set_allow_async(operation, TRUE);
     gtk_print_operation_set_n_pages(operation, 1);
 
     GtkPrintSettings *settings = gtk_print_settings_new();
@@ -339,20 +339,20 @@ void print_deposit_slip(GtkButton *self, gpointer data) {
     res = gtk_print_operation_run(operation, GTK_PRINT_OPERATION_ACTION_PRINT_DIALOG, GTK_WINDOW(data_passer->application_window), &error);
     switch (res) {
         case GTK_PRINT_OPERATION_RESULT_ERROR:
-        g_print("Error\n");
+            g_print("Error\n");
             break;
         case GTK_PRINT_OPERATION_RESULT_APPLY:
-        g_print("Apply\n");
+            g_print("Apply\n");
             if (settings != NULL)
                 g_object_unref(settings);
             settings = g_object_ref(gtk_print_operation_get_print_settings(operation));
 
             break;
         case GTK_PRINT_OPERATION_RESULT_CANCEL:
-        g_print("Cancel\n");
+            g_print("Cancel\n");
             break;
         case GTK_PRINT_OPERATION_RESULT_IN_PROGRESS:
-        g_print("In progress\n");
+            g_print("In progress\n");
             break;
         default:
     }
