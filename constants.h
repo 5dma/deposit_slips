@@ -49,8 +49,8 @@ typedef struct {
  * Structure for passing data between functions.
 */ 
 typedef struct {
-  /** Pointer to master list store of checking accounts. */
-    GtkListStore *list_store_master; 
+/** Pointer to master list store of checking accounts. */
+	GtkListStore *list_store_master; 
 /** Pointer to temporary list store of checking accounts. */
 	GtkListStore *list_store_temporary; 
 /** Pointer to cairo context for previewing and printing checks. */
