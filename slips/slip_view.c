@@ -1,11 +1,8 @@
 #include <gdk/gdk.h>
 #include <gtk/gtk.h>
+#include <constants.h>
+#include <headers.h>
 
-#include "../constants.h"
-#include "../headers.h"
-#include "draw_functions.c"
-#include "print_slip.c"
-#include "slip_control.c"
 
 /**
  * @file slip_view.c
@@ -18,7 +15,6 @@
  * @return A tree view of account numbers.
  */
 GtkWidget *make_account_view(Data_passer *data_passer) {
-	GtkTreeIter iter;
 	GtkWidget *tree_view;
 
 	tree_view = gtk_tree_view_new_with_model(GTK_TREE_MODEL(data_passer->list_store_master));
@@ -54,8 +50,8 @@ GtkWidget *make_account_view(Data_passer *data_passer) {
  */
 static gboolean number_formatter(GtkWidget *widget, GdkEventKey *event, gpointer user_data) {
 	if (
-		(event->keyval >= GDK_KEY_0) && (event->keyval <= GDK_KEY_9) ||
-		(event->keyval >= GDK_KEY_KP_0) && (event->keyval <= GDK_KEY_KP_9) ||
+		((event->keyval >= GDK_KEY_0) && (event->keyval <= GDK_KEY_9)) ||
+		((event->keyval >= GDK_KEY_KP_0) && (event->keyval <= GDK_KEY_KP_9)) ||
 		(event->keyval == GDK_KEY_period) ||
 		(event->keyval == GDK_KEY_KP_Decimal) ||
 		(event->keyval == GDK_KEY_BackSpace) ||
@@ -88,7 +84,6 @@ void started_cell_editing(GtkCellRenderer *self, GtkCellEditable *editable, gcha
  * @return A tree view with two columns: one for amounts, another a checkbox to delete an amount.
  */
 void make_checks_view(Data_passer *data_passer) {
-	GtkTreeIter iter;
 	GtkWidget *tree;
 
 	tree = gtk_tree_view_new_with_model(GTK_TREE_MODEL(data_passer->checks_store));

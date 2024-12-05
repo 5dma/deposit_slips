@@ -1,8 +1,5 @@
 #include <gtk/gtk.h>
-#ifndef __HEADER
-#define __HEADER
-
-#include "constants.h"
+#include <constants.h>
 #include <json-glib/json-glib.h>
 
 /**
@@ -70,7 +67,14 @@ GDestroyNotify free_gslist_account(gpointer data);
 
 void read_coordinates(JsonObject *configuration_object, GHashTable *layout_hash, const gchar *hash_key);
 void write_coordinates(JsonObject *configuration_object, GHashTable *layout_hash, const gchar *hash_key);
-
+GtkWidget *make_slip_view(Data_passer *data_passer);
+void update_label(GtkTreeView *tree_view, gpointer user_data);
+void deposit_amount_edited(GtkCellRendererText *self, gchar *path, gchar *new_text, gpointer data);
+void check_toggle_clicked(GtkCellRendererToggle *renderer, gchar *path, gpointer data);
+void toggle_slip_view(GtkWidget *widget, gpointer data);
+void add_check_row(GtkWidget *widget, gpointer data);
+void delete_check_rows(GtkWidget *widget, gpointer data);
+void draw_preview(GtkWidget *widget, cairo_t *cr, gpointer data);
 
 /**
  * Current UI state of a selected check.
@@ -82,6 +86,4 @@ typedef struct CheckSelections {
 
 
 gint number_of_checks (Data_passer *data_passer);
-
-#endif
 

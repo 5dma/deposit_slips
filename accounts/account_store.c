@@ -2,7 +2,7 @@
 #include <json-glib/json-glib.h>
 #include <string.h>
 
-#include "../headers.h"
+#include <headers.h>
 
 /**
  * @file account_store.c
@@ -15,7 +15,6 @@
 void read_configuration_data(Data_passer *data_passer) {
 	GSList *local_struct_list = NULL;
 	JsonParser *parser;
-	JsonNode *root;
 	GError *error = NULL;
 
 	/* Memory is freed at end of this function */

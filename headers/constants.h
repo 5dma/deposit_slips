@@ -1,9 +1,8 @@
+#pragma once
 /**
  * @file constants.h
  * @brief Constants used in multiple files.
 */
-#ifndef __CONSTANTS
-#define __CONSTANTS
 
  /** Dummy account number string for the new account row. */
 static const char NEW_NUMBER[] = "(Number)";
@@ -106,5 +105,3 @@ typedef struct {
 /** List of x,y coordinates for various layout elements. */
 	GHashTable *layout;
 } Data_passer;
-
-#endif

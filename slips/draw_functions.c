@@ -1,8 +1,8 @@
 #include <gtk/gtk.h>
 #include <math.h>
 
-#include "../constants.h"
-#include "../headers.h"
+#include <constants.h>
+#include <headers.h>
 
 /**
  * @file draw_functions.c
@@ -17,13 +17,12 @@
 gchar *comma_formatted_amount(gfloat number) {
 	//    gfloat amount = *number;
 	gchar formatted_amount[100];
-	int num;
 	if (number < 1000) {
-		num = g_snprintf(formatted_amount, 11, "%.2f", number);
+		g_snprintf(formatted_amount, 11, "%.2f", number);
 	} else {
 		gdouble first_group = floor(number / 1000);
 		gfloat second_group = number - (first_group * 1000);
-		num = g_snprintf(formatted_amount, sizeof(formatted_amount), "%.0f,%06.2f", first_group, second_group);
+		g_snprintf(formatted_amount, sizeof(formatted_amount), "%.0f,%06.2f", first_group, second_group);
 	}
 	return g_strdup(formatted_amount);
 }
@@ -198,9 +197,6 @@ void draw_front_preview(GtkWidget *widget, cairo_t *cr, gpointer data) {
  */
 void draw_back_preview(GtkWidget *widget, cairo_t *cr, gpointer data) {
 	Data_passer *data_passer = (Data_passer *)data;
-
-	GtkTreeIter iter;
-	GtkTreeModel *model;
 
 	guint width = gtk_widget_get_allocated_width(widget);
 	guint height = 0.45 * width;

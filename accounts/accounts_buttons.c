@@ -2,8 +2,8 @@
 #include <json-glib/json-glib.h>
 #include <string.h>
 
-#include "../constants.h"
-#include "../headers.h"
+#include <constants.h>
+#include <headers.h>
 
 /**
  * @file accounts_buttons.c

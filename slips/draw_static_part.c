@@ -1,7 +1,6 @@
 #include <gtk/gtk.h>
-
-#include "../constants.h"
-#include "../headers.h"
+#include <constants.h>
+#include <headers.h>
 
 /**
  * @file draw_static_part.c
@@ -75,7 +74,7 @@ gboolean preview_deposit_amounts_front(GtkTreeModel *model,
 	is therefore a function of the `path` passed to the callback. */
 
 	/* First, determine the row number in the list of checks for the current check. */
-	gboolean string_to_int = g_ascii_string_to_unsigned(
+	g_ascii_string_to_unsigned(
 		pathstring,  /* path of the current row */
 		10,          /* Base 10 */
 		0,           /* minimum value */
@@ -144,7 +143,7 @@ gboolean preview_deposit_amounts_back(GtkTreeModel *model,
 	is therefore a function of the `path` passed to the callback. */
 
 	/* First, determine the row number in the list of checks for the current check. */
-	gboolean string_to_int = g_ascii_string_to_unsigned(
+	g_ascii_string_to_unsigned(
 		pathstring,  /* path of the current row */
 		10,          /* Base 10 */
 		0,           /* minimum value */

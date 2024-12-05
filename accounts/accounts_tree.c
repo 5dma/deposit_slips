@@ -1,8 +1,8 @@
 #include <gdk/gdk.h>
 #include <gtk/gtk.h>
 
-#include "../constants.h"
-#include "../headers.h"
+#include <constants.h>
+#include <headers.h>
 
 /**
  * @file accounts_tree.c
@@ -276,7 +276,6 @@ static void toggle_clicked(GtkCellRendererToggle *renderer,
  * @return A pointer to the created tree view.
 */
 GtkWidget *make_tree_view(GtkListStore *list_store) {
-	GtkTreeIter iter;
 	GtkWidget *tree;
 
 	tree = gtk_tree_view_new_with_model(GTK_TREE_MODEL(list_store));

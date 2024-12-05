@@ -1,8 +1,7 @@
 #include <gtk/gtk.h>
 
-#include "../constants.h"
-#include "../headers.h"
-#include "draw_static_part.c"
+#include <constants.h>
+#include <headers.h>
 
 /**
  * @file slip_control.c
@@ -72,7 +71,7 @@ void update_label(GtkTreeView *tree_view, gpointer user_data) {
  * @param path Pointer to the path associated with the current iteration.
  * @param data Pointer to associated treeview.
  */
-static void check_toggle_clicked(GtkCellRendererToggle *renderer,
+void check_toggle_clicked(GtkCellRendererToggle *renderer,
 								 gchar *path,
 								 gpointer data) {
 	Data_passer *data_passer = (Data_passer *)data;
@@ -111,7 +110,7 @@ static void check_toggle_clicked(GtkCellRendererToggle *renderer,
 	@param widget Pointer to the clicked Add button.
 	@param data Pointer to the temporary list store.
 */
-static void toggle_slip_view(GtkWidget *widget, gpointer data) {
+void toggle_slip_view(GtkWidget *widget, gpointer data) {
 	Data_passer *data_passer = (Data_passer *)data;
 
 	if (widget == data_passer->btn_go_to_first) {
@@ -132,7 +131,7 @@ static void toggle_slip_view(GtkWidget *widget, gpointer data) {
 	@param widget Pointer to the clicked Add button.
 	@param data Pointer to the temporary list store.
 */
-static void add_check_row(GtkWidget *widget, gpointer data) {
+void add_check_row(GtkWidget *widget, gpointer data) {
 	Data_passer *data_passer = (Data_passer *)data;
 
 	GtkTreeIter iter;
@@ -171,7 +170,7 @@ static void add_check_row(GtkWidget *widget, gpointer data) {
 	@param widget Pointer to the clicked Delete button.
 	@param data Pointer to the temporary list store.
 */
-static void delete_check_rows(GtkWidget *widget, gpointer data) {
+void delete_check_rows(GtkWidget *widget, gpointer data) {
 
 	Data_passer *data_passer = (Data_passer *)data;
 
@@ -181,7 +180,7 @@ static void delete_check_rows(GtkWidget *widget, gpointer data) {
 	gboolean still_in_list = TRUE;
 	gboolean removed_last_row = FALSE;
 
-	gboolean found_first = gtk_tree_model_get_iter_first(GTK_TREE_MODEL(data_passer->checks_store), &iter);
+	gtk_tree_model_get_iter_first(GTK_TREE_MODEL(data_passer->checks_store), &iter);
 
 	do {
 		g_value_unset(&gvalue);

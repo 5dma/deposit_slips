@@ -1,7 +1,7 @@
 #include <gtk/gtk.h>
 
-#include "../constants.h"
-#include "../headers.h"
+#include <constants.h>
+#include <headers.h>
 
 /**
  * @file print_slip.c
@@ -29,16 +29,6 @@ gboolean print_deposit_amounts_front(GtkTreeModel *model,
 	gchar *pathstring = gtk_tree_path_to_string(path); /* Memory freed below. */
 
 	guint64 row_number;
-	GError *gerror = NULL;
-
-	/* First, determine the row number in the list of checks for the current check. */
-	gboolean string_to_int = g_ascii_string_to_unsigned(
-		pathstring,  /* path of the current row */
-		10,          /* Base 10 */
-		0,           /* minimum value */
-		100,         /* maximum value */
-		&row_number, /* returned row number */
-		&gerror);    /* pointer for GError *. */
 
 	/* Stop rendering of checks after the second one in the store. */
 	if (row_number > 1) {
@@ -84,6 +74,8 @@ gboolean print_deposit_amounts_front(GtkTreeModel *model,
 	g_free(pathstring);
 
 	cairo_save(cr); /* Restore passed context */
+
+	return FALSE; /* Continue rendering the next row. */
 }
 
 /**
@@ -107,16 +99,6 @@ gboolean print_deposit_amounts_back(GtkTreeModel *model,
 	gchar *pathstring = gtk_tree_path_to_string(path); /* Memory freed below. */
 
 	guint64 row_number;
-	GError *gerror = NULL;
-
-	/* First, determine the row number in the list of checks for the current check. */
-	gboolean string_to_int = g_ascii_string_to_unsigned(
-		pathstring,  /* path of the current row */
-		10,          /* Base 10 */
-		0,           /* minimum value */
-		100,         /* maximum value */
-		&row_number, /* returned row number */
-		&gerror);    /* pointer for GError *. */
 
 	/* Ignore rendering of checks before the second one in the store. */
 	if (row_number < 2) {
@@ -182,14 +164,10 @@ void draw_page(GtkPrintOperation *self, GtkPrintContext *context, gint page_nr, 
 						   -1);
 	}
 
-	gdouble width, height;
-	gint layout_height;
 	Coordinates *coordinates;
 
 	cairo_t *cr;
 	cr = gtk_print_context_get_cairo_context(context);
-	width = gtk_print_context_get_width(context);
-	height = gtk_print_context_get_height(context);
 
 	cairo_select_font_face(cr, data_passer->font_family_sans, CAIRO_FONT_SLANT_NORMAL, CAIRO_FONT_WEIGHT_BOLD);
 	cairo_set_font_size(cr, data_passer->font_size_sans_serif);

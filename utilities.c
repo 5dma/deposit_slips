@@ -1,8 +1,8 @@
 #include <gtk/gtk.h>
 #include <json-glib/json-glib.h>
 
-#include "constants.h"
-#include "headers.h"
+#include <constants.h>
+#include <headers.h>
 
 /**
  * @file utilities.c
@@ -45,7 +45,6 @@ GDestroyNotify free_gslist_account(gpointer data) {
  */
 void save_account_numbers(JsonGenerator *generator) {
 	GError *error = NULL;
-	GtkTreeIter iter;
 
 	/* Establish directory where accounts are saved, and create it if necessary. */
 	gchar *save_directory = g_build_filename(g_get_home_dir(), ".deposit_slip/", NULL);

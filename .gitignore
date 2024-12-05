@@ -6,3 +6,4 @@ deposit_slip
 html/**
 latex/**
 cairo_test/**
+.vscode/**

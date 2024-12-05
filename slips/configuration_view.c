@@ -1,8 +1,8 @@
 #include <gdk/gdk.h>
 #include <gtk/gtk.h>
 
-#include "../constants.h"
-#include "../headers.h"
+#include <constants.h>
+#include <headers.h>
 
 /**
  * Callback fired when the user changes a value in a spin box. The callback stores the changed value inside `Data_passer`.
