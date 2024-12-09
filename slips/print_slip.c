@@ -320,7 +320,6 @@ void print_deposit_slip(GtkButton *self, gpointer data) {
 			g_print("Error\n");
 			break;
 		case GTK_PRINT_OPERATION_RESULT_APPLY:
-			g_print("Apply\n");
 			if (settings != NULL)
 				g_object_unref(settings);
 			settings = g_object_ref(gtk_print_operation_get_print_settings(operation));

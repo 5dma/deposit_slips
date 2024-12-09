@@ -32,6 +32,8 @@ gchar *comma_formatted_amount(gfloat number) {
  * \li Adds the created `cairo_t` pointer to the has table of pointer passers so that the function can redraw the preview.
  * \li Draws the preview for the first time.
  *
+ * Some of the values in this function are hard-coded to reflect use of the MICR Encoding font by Digital Graphical Labs, https://www.1001fonts.com/micr-encoding-font.html.
+ * 
  * (There is a lot of commonality between this code and the one in print_deposit_amounts_front(). However, the commonality is not enough to combine them into a single function.)
  * @param widget Pointer to the preview area.
  * @param cr Pointer to the Cairo context.
@@ -122,15 +124,15 @@ void draw_front_preview(GtkWidget *widget, cairo_t *cr, gpointer data) {
 	cairo_stroke(cr);
 
 	/* Write Routing number */
-	gchar *routing_with_transit = g_strconcat("T", routing_number, "T", NULL);
-	cairo_select_font_face(cr, "MICR", CAIRO_FONT_SLANT_NORMAL, CAIRO_FONT_WEIGHT_BOLD);
+	gchar *routing_with_transit = g_strconcat("A", routing_number, "A", NULL);
+	cairo_select_font_face(cr, "MICR Encoding", CAIRO_FONT_SLANT_NORMAL, CAIRO_FONT_WEIGHT_BOLD);
 	cairo_set_font_size(cr, 10);
 	cairo_move_to(cr, 15, 135);
 	cairo_show_text(cr, routing_with_transit);
 	g_free(routing_with_transit);
 
 	/* Write account number MICR*/
-	gchar *account_with_transit = g_strconcat(account_number, "O009", NULL);
+	gchar *account_with_transit = g_strconcat(account_number, "C009", NULL);
 	cairo_set_font_size(cr, 10);
 	cairo_move_to(cr, 120, 135);
 	cairo_show_text(cr, account_with_transit);
