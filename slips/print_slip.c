@@ -3,6 +3,9 @@
 #include <constants.h>
 #include <headers.h>
 
+#define TOP_MARGIN_AMOUNTS 36
+#define DEPOSIT_PITCH 47
+
 /**
  * @file print_slip.c
  * @brief Prints the actual deposit slip.
@@ -28,7 +31,17 @@ gboolean print_deposit_amounts_front(GtkTreeModel *model,
 	gtk_tree_model_get(model, iter, CHECK_AMOUNT, &amount, -1);
 	gchar *pathstring = gtk_tree_path_to_string(path); /* Memory freed below. */
 
-	guint64 row_number;
+	guint64 row_number = 0;
+	GError *gerror = NULL;
+
+	 g_ascii_string_to_unsigned(
+		pathstring,  /* path of the current row */
+		10,          /* Base 10 */
+		0,           /* minimum value */
+		100,         /* maximum value */
+		&row_number, /* returned row number */
+		&gerror);    /* pointer for GError *. */
+
 
 	/* Stop rendering of checks after the second one in the store. */
 	if (row_number > 1) {
@@ -52,7 +65,7 @@ gboolean print_deposit_amounts_front(GtkTreeModel *model,
 	cairo_text_extents_t extents;
 	cairo_text_extents(cr, formatted_amount, &extents);
 	Coordinates *coordinates = (Coordinates *)g_hash_table_lookup(data_passer->layout, "front_values");
-	cairo_move_to(cr, (row_number * coordinates->x) + coordinates->y, extents.width + data_passer->right_margin_print_front);
+	cairo_move_to(cr, coordinates->x - extents.width, (row_number * DEPOSIT_PITCH) + coordinates->y);
 
 	cairo_show_text(cr, formatted_amount);
 
@@ -92,7 +105,16 @@ gboolean print_deposit_amounts_back(GtkTreeModel *model,
 	gtk_tree_model_get(model, iter, CHECK_AMOUNT, &amount, -1);
 	gchar *pathstring = gtk_tree_path_to_string(path); /* Memory freed below. */
 
-	guint64 row_number;
+	guint64 row_number = 0;
+	GError *gerror;
+
+	g_ascii_string_to_unsigned(
+		pathstring,  /* path of the current row */
+		10,          /* Base 10 */
+		0,           /* minimum value */
+		100,         /* maximum value */
+		&row_number, /* returned row number */
+		&gerror);    
 
 	/* Ignore rendering of checks before the second one in the store. */
 	if (row_number < 2) {
@@ -188,15 +210,14 @@ void draw_page(GtkPrintOperation *self, GtkPrintContext *context, gint page_nr, 
 		cairo_set_font_size(cr, data_passer->font_size_sans_serif * data_passer->font_size_static_label_scaling);
 		cairo_show_text(cr, "Account No");
 	}
-	/* Write Account Value */
 
+	/* Write Account Value */
 	coordinates = (Coordinates *)g_hash_table_lookup(data_passer->layout, "account_value");
 	cairo_move_to(cr, coordinates->x, coordinates->y);
 	cairo_set_font_size(cr, data_passer->font_size_sans_serif);
 	cairo_show_text(cr, account_number);
 
 	/* Write date */
-
 	coordinates = (Coordinates *)g_hash_table_lookup(data_passer->layout, "date_value");
 	GDateTime *date_time = g_date_time_new_now_local();
 	gchar *date_time_string = g_date_time_format(date_time, "%B %e, %Y");
@@ -217,6 +238,7 @@ void draw_page(GtkPrintOperation *self, GtkPrintContext *context, gint page_nr, 
 	data_passer->cairo_context = cr;
 	data_passer->total_deposit = 0;
 
+	/* Write amount of first two checks on front side. */
 	gtk_tree_model_foreach(GTK_TREE_MODEL(data_passer->checks_store), print_deposit_amounts_front, data_passer);
 
 	/* Write total of checks deposited */
@@ -227,7 +249,7 @@ void draw_page(GtkPrintOperation *self, GtkPrintContext *context, gint page_nr, 
 	gchar *formatted_total = comma_formatted_amount(data_passer->total_deposit);
 	coordinates = (Coordinates *)g_hash_table_lookup(data_passer->layout, "total_value");
 	cairo_text_extents(cr, formatted_total, &extents);
-	cairo_move_to(cr, coordinates->x, extents.width + data_passer->right_margin_print_front);
+	cairo_move_to(cr, coordinates->x - extents.width, coordinates->y);
 	cairo_set_font_size(cr, data_passer->font_size_monospace);
 	cairo_select_font_face(cr, data_passer->font_family_mono, CAIRO_FONT_SLANT_NORMAL, CAIRO_FONT_WEIGHT_BOLD);
 	cairo_show_text(cr, formatted_total);
