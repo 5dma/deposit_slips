@@ -106,7 +106,7 @@ gboolean print_deposit_amounts_back(GtkTreeModel *model,
 	gchar *pathstring = gtk_tree_path_to_string(path); /* Memory freed below. */
 
 	guint64 row_number = 0;
-	GError *gerror;
+	GError *gerror = NULL;
 
 	g_ascii_string_to_unsigned(
 		pathstring,  /* path of the current row */
@@ -121,7 +121,15 @@ gboolean print_deposit_amounts_back(GtkTreeModel *model,
 		return FALSE;
 	}
 
+	if (gerror != NULL) {
+		g_print("Failed converstion: %d: %s\n", gerror->code, gerror->message);
+	}
+
 	cairo_save(cr); /* Save passed context */
+
+	cairo_rotate(cr, G_PI_2); /* Rotate 90 degrees clockwise relative to previous context */
+	cairo_translate(cr, -90, -432); /* Cancel original translation */
+	cairo_translate(cr, 215, 0); /* Apply translation for the back side.*/
 
 	/* The current amount needs to be printed at a particular coordinate
 	in the preview. The horizontal coordinate is fixed, but the vertical coordinate
@@ -187,8 +195,11 @@ void draw_page(GtkPrintOperation *self, GtkPrintContext *context, gint page_nr, 
 
 	cairo_select_font_face(cr, data_passer->font_family_sans, CAIRO_FONT_SLANT_NORMAL, CAIRO_FONT_WEIGHT_BOLD);
 	cairo_set_font_size(cr, data_passer->font_size_sans_serif);
-	cairo_translate(cr, 90, 432);
+/* 	cairo_translate(cr, 90, 432);
 	cairo_rotate (cr, -G_PI_2);
+ */
+	cairo_rotate (cr, -G_PI_2);
+	cairo_translate(cr, -432, 216);
 
 	/* Write Name Label */
 	if (data_passer->print_name_account_labels) {
