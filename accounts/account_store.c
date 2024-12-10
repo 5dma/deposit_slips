@@ -63,20 +63,36 @@ void read_configuration_data(Data_passer *data_passer) {
 
 	/* Would be better to put this in a function json_array_foreach_element */
 	for (int i = 0; i < len; i++) {
-		json_reader_read_element (reader, i);
-		const gchar *account = json_reader_get_string_value(reader);
-		const gchar *name = json_reader_get_string_value(reader);
-		const gchar *description = json_reader_get_string_value(reader);
-		const gchar *routing = json_reader_get_string_value(reader);
+		json_reader_read_element (reader, i); /* Start reading account element in the array. */
 
-		Account *account_entry = g_new(Account, 1);
-		g_stpcpy(account_entry->number, account);
-		g_stpcpy(account_entry->name, name);
-		g_stpcpy(account_entry->description, description);
-		g_stpcpy(account_entry->routing, routing);
+		json_reader_read_member (reader,"account");
+		const gchar *account = json_reader_get_string_value(reader);
+		json_reader_end_member (reader);
+		
+		json_reader_read_member (reader,"name");
+		const gchar *name = json_reader_get_string_value(reader);
+		json_reader_end_member (reader);
+
+		json_reader_read_member (reader,"description");
+		const gchar *description = json_reader_get_string_value(reader);
+		json_reader_end_member (reader);
+		
+		json_reader_read_member (reader,"routing");
+		const gchar *routing = json_reader_get_string_value(reader);
+		json_reader_end_member (reader);
+
+		json_reader_end_element(reader); /* End reading account element. */
+
+		Account *account_entry = (Account *)g_malloc(sizeof(Account));
+		g_strlcpy(account_entry->number, account, -1);
+		g_strlcpy(account_entry->name, name, -1);
+		g_strlcpy(account_entry->description, description, -1);
+		g_strlcpy(account_entry->routing, routing, -1);
 
 		local_struct_list = g_slist_append(local_struct_list, account_entry);
 	}
+
+	json_reader_end_member(reader); /* End reading the accounts stanza*/
 
 	/* Place items in the temporary account list into list_builder. */
 	g_slist_foreach(local_struct_list, build_list_store, data_passer->list_store_master);
@@ -99,7 +115,7 @@ void read_configuration_data(Data_passer *data_passer) {
 
 	retrieve_json_string( reader, "font_family_mono", data_passer->font_family_mono);
 
-	json_reader_read_member(reader, "configuration");
+	json_reader_read_member(reader, "front");
 	data_passer->front->name_account_label_x = retrieve_json_int(reader,"name_account_label_x");
 	data_passer->front->name_account_date_value_x = retrieve_json_int(reader,"name_account_date_value_x");
 	data_passer->front->name_y = retrieve_json_int(reader,"name_y");
@@ -112,7 +128,7 @@ void read_configuration_data(Data_passer *data_passer) {
 	data_passer->front->subtotal_y = retrieve_json_int(reader,"subtotal_y");
 	data_passer->front->total_y = retrieve_json_int(reader,"total_y");
 	data_passer->front->total_x = retrieve_json_int(reader,"total_x");
-	json_reader_end_member(reader);
+	json_reader_end_member(reader); /* front */
 
 	json_reader_read_member(reader, "back");
 	data_passer->back->amount_x = retrieve_json_int(reader,"amount_x");
