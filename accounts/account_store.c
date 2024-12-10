@@ -99,7 +99,7 @@ void read_configuration_data(Data_passer *data_passer) {
 	g_slist_foreach(local_struct_list, build_list_store, data_passer->list_store_temporary);
 	g_slist_free_full(local_struct_list, (GDestroyNotify)free_gslist_account);
 
-	/* Read the layout parameters. */
+	/* Read the configuration parameters. */
 	json_reader_read_member(reader, "configuration");
 
 
@@ -137,6 +137,8 @@ void read_configuration_data(Data_passer *data_passer) {
 	data_passer->back->total_y = retrieve_json_int(reader,"total_y");
 	json_reader_end_member(reader); /* back */
 	json_reader_end_member(reader); /* configuration */
+	g_object_unref(reader);
+
 }
 /**
  * Callback fired while iterating over each member of a `GSList` of list of
