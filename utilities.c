@@ -210,7 +210,6 @@ void write_config_free_memory(GtkWidget *window, gpointer data) {
 		/* Free memory allocated to the master and temporary list stores. */
 		gtk_list_store_clear(data_passer->list_store_master);
 		gtk_list_store_clear(data_passer->list_store_temporary);
-		g_free(data_passer->font_face_micr);
 		g_free(data_passer);
 
 

@@ -110,7 +110,7 @@ typedef struct Data_passer {
 /** Font face, sans serif.  */
 	gchar font_family_sans[100];
 /** Font face, MICR.  */
-	gchar *font_face_micr;
+	gchar font_face_micr[100];
 /** Font face, mono.  */
 	gchar font_family_mono[100];
 /** Identifier of the sans-serif font selection button. The identifier is the pointer's memory location. */

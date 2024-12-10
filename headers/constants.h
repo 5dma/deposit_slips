@@ -39,7 +39,7 @@ static const char LABEL_ACCOUNT_DESCRIPTION[] = "lblAccountDescription";
 static const char NEW_AMOUNT[] = "0.00"; 
 
 /** Right-margin of the deposit slip on the screen */
-#define RIGHT_MARGIN_SCREEN 200
+#define RIGHT_MARGIN_SCREEN 485
 
 #define CONFIG_FILE "/home/abba/.deposit_slip/deposit_slips.json"
 #define CONFIG_FILE_BACKUP "/home/abba/.deposit_slip/deposit_slips_backup.json"
