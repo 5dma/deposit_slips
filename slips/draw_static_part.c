@@ -97,7 +97,7 @@ gboolean preview_deposit_amounts_front(GtkTreeModel *model,
 	/* Move to the correct position to print the amount such that it is right-aligned. */
 	cairo_text_extents_t extents;
 	cairo_text_extents(data_passer->cairo_context, formatted_total, &extents);
-	cairo_move_to(data_passer->cairo_context, data_passer->right_margin_screen - extents.width, (row_number * (extents.height + 7)) + 40);
+	cairo_move_to(data_passer->cairo_context, RIGHT_MARGIN_SCREEN - extents.width, (row_number * (extents.height + 7)) + 40);
 	cairo_show_text(data_passer->cairo_context, formatted_total);
 	g_free(formatted_total);
 

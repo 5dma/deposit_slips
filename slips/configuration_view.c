@@ -33,7 +33,7 @@ void update_config_boolean(GtkWidget *widget, gpointer user_data) {
  * @param grid_layout_fields Grid into which the field is added.
  */
 void add_one_value_configuration(const gchar *label,
-								 double *value,
+								 double value,
 								 gint top,
 								 GtkWidget *grid_layout_fields) {
 	GtkWidget *label_field_name = gtk_label_new(label);
@@ -42,18 +42,18 @@ void add_one_value_configuration(const gchar *label,
 	GtkWidget *spin_button;
 	/* If displaying the font scaling spin button, allow for decimal places. Otherwise, all spin buttons are integers. */
 	if (g_strcmp0 (label, "Static label scale") == 0) {
-		GtkAdjustment *adjustment = gtk_adjustment_new (*value, 0.1, 1.0, 0.1, 0.1, 0.0);
+		GtkAdjustment *adjustment = gtk_adjustment_new (value, 0.1, 1.0, 0.1, 0.1, 0.0);
 		spin_button = gtk_spin_button_new (adjustment, 0.1, 1);
 	} else {
 		spin_button = gtk_spin_button_new_with_range(0, 1000, 1);
-		gtk_spin_button_set_value(GTK_SPIN_BUTTON(spin_button), *value);
+		gtk_spin_button_set_value(GTK_SPIN_BUTTON(spin_button), value);
 	}
 
 	gtk_entry_set_alignment(GTK_ENTRY(spin_button), 1);
 	
 	gtk_grid_attach(GTK_GRID(grid_layout_fields), label_field_name, 0, top, 1, 1);
 	gtk_grid_attach(GTK_GRID(grid_layout_fields), spin_button, 4, top, 1, 1);
-	g_signal_connect(GTK_WIDGET(spin_button), "value-changed", G_CALLBACK(update_config_spinner), value);
+	g_signal_connect(GTK_WIDGET(spin_button), "value-changed", G_CALLBACK(update_config_spinner), &value);
 
 	/* Get events the spinner can receive, and block out the scrolling event. */
 	gint all_spin_events = gtk_widget_get_events(GTK_WIDGET(spin_button));
@@ -61,76 +61,6 @@ void add_one_value_configuration(const gchar *label,
 
 }
 
-/**
- * Adds a field and a checkbox to the passed grid.
- * @param label Field's label.
- * @param value Checkbox's initial value.
- * @param top Row in which the field is placed within the grid.
- * @param grid_layout_fields Grid into which the field is added.
- */
-void add_boolean_configuration(const gchar *label,
-								 gboolean *value,
-								 gint top,
-								 GtkWidget *grid_layout_fields) {
-	GtkWidget *label_field_name = gtk_label_new(label);
-	gtk_label_set_xalign(GTK_LABEL(label_field_name), 0.0);
-
-	GtkWidget *checkbox;
-	
-	checkbox = gtk_check_button_new();
-	gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON(checkbox), *value);
- 
-	gtk_grid_attach(GTK_GRID(grid_layout_fields), label_field_name, 0, top, 1, 1);
-	gtk_grid_attach(GTK_GRID(grid_layout_fields), checkbox, 4, top, 1, 1);
-	g_signal_connect(GTK_WIDGET(checkbox), "toggled", G_CALLBACK(update_config_boolean), value);
-}
-
-/**
- * Adds a field and two spin buttosn to the passed grid.
- * @param label Field's label.
- * @param hash_key Key for looking up the configuration in `layout_hash`.
- * @param layout_hash Pointer to the hash table of coordinates.
- * @param top Row in which the field is placed within the grid.
- * @param grid_layout_fields Grid into which the field is added.
- */
-void add_two_value_configuration(const gchar *label,
-								 const gchar *hash_key,
-								 GHashTable *layout_hash,
-								 gint top,
-								 GtkWidget *grid_layout_fields) {
-	GtkWidget *label_field_name = gtk_label_new(label);
-	gtk_label_set_xalign(GTK_LABEL(label_field_name), 0.0);
-	gtk_grid_attach(GTK_GRID(grid_layout_fields), label_field_name, 0, top, 1, 1);
-
-	GtkWidget *x_label = gtk_label_new("x:");
-	GtkWidget *y_label = gtk_label_new("y:");
-
-	Coordinates *coordinates = (Coordinates *)g_hash_table_lookup(layout_hash, hash_key);
-
-	GtkWidget *spin_button_x = gtk_spin_button_new_with_range(0, 1000, 1);
-	
-	/* Get the possible events a spinner can receive. (Should be a way to do this by getting all possible events by G_TYPE_SPINNER or something similar/)*/
-	gint all_spin_events = gtk_widget_get_events(GTK_WIDGET(spin_button_x));
-	gint all_spin_events_less_scroll = all_spin_events ^ GDK_SCROLL_MASK;
-
-	gtk_entry_set_alignment(GTK_ENTRY(spin_button_x), 1);
-	gtk_spin_button_set_value(GTK_SPIN_BUTTON(spin_button_x), coordinates->x);
-	gtk_grid_attach(GTK_GRID(grid_layout_fields), x_label, 1, top, 1, 1);
-	gtk_grid_attach(GTK_GRID(grid_layout_fields), spin_button_x, 2, top, 1, 1);
-	g_signal_connect(GTK_WIDGET(spin_button_x), "value-changed", G_CALLBACK(update_config_spinner), &(coordinates->x));
-	/* Block mouse scroll events in the spinner. */
-	gtk_widget_set_events (GTK_WIDGET(spin_button_x), all_spin_events_less_scroll);
-
-	GtkWidget *spin_button_y = gtk_spin_button_new_with_range(0, 1000, 1);
-	gtk_entry_set_alignment(GTK_ENTRY(spin_button_y), 1);
-	gtk_spin_button_set_value(GTK_SPIN_BUTTON(spin_button_y), coordinates->y);
-	gtk_grid_attach(GTK_GRID(grid_layout_fields), y_label, 3, top, 1, 1);
-	gtk_grid_attach(GTK_GRID(grid_layout_fields), spin_button_y, 4, top, 1, 1);
-	g_signal_connect(GTK_WIDGET(spin_button_y), "value-changed", G_CALLBACK(update_config_spinner), &(coordinates->y));
-	/* Block mouse scroll events in the spinner. */
-	gtk_widget_set_events (GTK_WIDGET(spin_button_y), all_spin_events_less_scroll);
-
-}
 
 /**
  * Adds a field for selecting fonts.
@@ -152,6 +82,31 @@ void add_font_configuration(const gchar *label,
 	gtk_grid_attach(GTK_GRID(grid_layout_fields), spin_button, 1, top, 1, 1);
 	g_signal_connect(GTK_WIDGET(spin_button), "value-changed", G_CALLBACK(update_config_spinner), value);
 }
+
+/**
+* Adds a field and two spin buttosn to the passed grid.
+* @param label Field's label.
+*
+* @param top Row in which the field is placed within the grid.
+* @param grid_layout_fields Grid into which the field is added.
+*/
+void add_boolean_configuration(const gchar *label,
+                                                               gboolean *value,
+                                                               gint top,
+                                                               GtkWidget *grid_layout_fields) {
+      GtkWidget *label_field_name = gtk_label_new(label);
+      gtk_label_set_xalign(GTK_LABEL(label_field_name), 0.0);
+
+      GtkWidget *checkbox;
+       
+       checkbox = gtk_check_button_new();
+       gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON(checkbox), *value);
+ 
+       gtk_grid_attach(GTK_GRID(grid_layout_fields), label_field_name, 0, top, 1, 1);
+       gtk_grid_attach(GTK_GRID(grid_layout_fields), checkbox, 4, top, 1, 1);
+       g_signal_connect(GTK_WIDGET(checkbox), "toggled", G_CALLBACK(update_config_boolean), value);
+}
+
 
 /**
  * Callback fired after user closes the font selection dialog. The function captures the selected font family and size. (It does not capture the style or variant.)
@@ -212,33 +167,104 @@ GtkWidget *make_configuration_view(Data_passer *data_passer) {
 
 	gint row_number = 0;
 
-	add_one_value_configuration("Right margin screen",
-								&(data_passer->right_margin_screen),
+	add_one_value_configuration("Name/Account label x",
+								data_passer->front->name_account_label_x,
 								row_number++,
 								grid_layout_fields);
 
-	add_one_value_configuration("Right margin print front",
-								&(data_passer->right_margin_print_front),
+	add_one_value_configuration("Name/Account/Date value x",
+								data_passer->front->name_account_date_value_x,
 								row_number++,
 								grid_layout_fields);
 
-	add_one_value_configuration("Right margin print back",
-								&(data_passer->right_margin_print_back),
+	add_one_value_configuration("Name y",
+								data_passer->front->name_y,
 								row_number++,
 								grid_layout_fields);
+
+	add_one_value_configuration("Account y",
+								data_passer->front->account_y,
+								row_number++,
+								grid_layout_fields);
+
+	add_one_value_configuration("Date y",
+								data_passer->front->date_y,
+								row_number++,
+								grid_layout_fields);
+
+	add_one_value_configuration("MICR x",
+								data_passer->front->micr_x,
+								row_number++,
+								grid_layout_fields);
+
+	add_one_value_configuration("MICR y",
+								data_passer->front->micr_y,
+								row_number++,
+								grid_layout_fields);
+
+	add_one_value_configuration("First amount y",
+								data_passer->front->first_amount_y,
+								row_number++,
+								grid_layout_fields);
+
+	add_one_value_configuration("Amount pitch",
+								data_passer->front->amount_pitch,
+								row_number++,
+								grid_layout_fields);
+
+	add_one_value_configuration("Subtotal y",
+								data_passer->front->subtotal_y,
+								row_number++,
+								grid_layout_fields);
+
+	add_one_value_configuration("Total x",
+								data_passer->front->total_x,
+								row_number++,
+								grid_layout_fields);
+
+	add_one_value_configuration("Total y",
+								data_passer->front->total_y,
+								row_number++,
+								grid_layout_fields);
+
+
+
+
+	add_one_value_configuration("Amount x",
+								data_passer->back->amount_x,
+								row_number++,
+								grid_layout_fields);
+
+	add_one_value_configuration("First amount y",
+								data_passer->back->first_amount_y,
+								row_number++,
+								grid_layout_fields);
+
+	add_one_value_configuration("Amount pitch",
+								data_passer->back->amount_pitch,
+								row_number++,
+								grid_layout_fields);
+
+
+	add_one_value_configuration("Total y",
+								data_passer->back->total_y,
+								row_number++,
+								grid_layout_fields);
+
+
 
 	add_one_value_configuration("Font size text",
-								&(data_passer->font_size_sans_serif),
+								data_passer->font_size_sans_serif,
 								row_number++,
 								grid_layout_fields);
 
 	add_one_value_configuration("Font size amounts",
-								&(data_passer->font_size_monospace),
+								data_passer->font_size_monospace,
 								row_number++,
 								grid_layout_fields);
 
 	add_one_value_configuration("Static label scale",
-								&(data_passer->font_size_static_label_scaling),
+								data_passer->font_size_static_label_scaling,
 								row_number++,
 								grid_layout_fields);
 
@@ -247,45 +273,7 @@ GtkWidget *make_configuration_view(Data_passer *data_passer) {
 								row_number++,
 								grid_layout_fields);
 
-	add_two_value_configuration("Name label",
-								"name_label",
-								data_passer->layout,
-								row_number++,
-								grid_layout_fields);
-
-	add_two_value_configuration("Name value",
-								"name_value",
-								data_passer->layout,
-								row_number++,
-								grid_layout_fields);
-
-	add_two_value_configuration("Account label",
-								"account_label",
-								data_passer->layout,
-								row_number++,
-								grid_layout_fields);
-
-	add_two_value_configuration("Account value",
-								"account_value",
-								data_passer->layout,
-								row_number++,
-								grid_layout_fields);
-	add_two_value_configuration("Subtotal from back",
-								"back_side_subtotal_on_front",
-								data_passer->layout,
-								row_number++,
-								grid_layout_fields);
-	add_two_value_configuration("Total value",
-								"total_value",
-								data_passer->layout,
-								row_number++,
-								grid_layout_fields);
-	add_two_value_configuration("MICR Account value",
-								"micr_account_value",
-								data_passer->layout,
-								row_number++,
-								grid_layout_fields); 
-
+	
 
 	GtkWidget *scrolled_window_layout = gtk_scrolled_window_new(NULL, NULL);
 	gtk_scrolled_window_set_policy(GTK_SCROLLED_WINDOW(scrolled_window_layout), GTK_POLICY_NEVER, GTK_POLICY_AUTOMATIC);

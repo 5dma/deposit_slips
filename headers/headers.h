@@ -45,6 +45,30 @@ typedef struct {
 } Coordinates;
 
 
+typedef struct Front {
+ 	gint name_account_label_x;
+	gint name_account_date_value_x;
+	gint name_y;
+	gint account_y;
+	gint date_y;
+	gint micr_y;
+	gint micr_x;
+	gint first_amount_y;
+	gint amount_pitch;
+	gint subtotal_y;
+	gint total_y;
+	gint total_x;
+} Front;
+
+
+typedef struct Back {
+ 	gint amount_x;
+	gint first_amount_y;
+	gint amount_pitch;
+	gint total_y;
+} Back;
+
+
 /**
  * Structure for passing data between functions.
 */ 
@@ -79,12 +103,6 @@ typedef struct Data_passer {
 	GtkWidget *btn_go_to_first;
 /** Pointer to the go_to_last button in the checks view.  */
 	GtkWidget *btn_go_to_last;
-/** Right margin for screen preview of check.  */
-	gdouble right_margin_screen;
-/** Right margin for paper print, front side.  */
-	gdouble right_margin_print_front;
-/** Right margin for paper print, back side.  */
-	gdouble right_margin_print_back;
 /** Font size for printing the text items, such as name and account number.  */
 	gdouble font_size_sans_serif;
 /** Font size for printing the amounts.  */
@@ -103,8 +121,8 @@ typedef struct Data_passer {
 	gdouble font_size_static_label_scaling;
 /** Flag indicating the Name and Account labels are printed on the deposit slip.*/
 	gboolean print_name_account_labels;
-/** List of x,y coordinates for various layout elements. */
-	GHashTable *layout;
+	Front *front;
+	Back *back;
 } Data_passer;
 
 

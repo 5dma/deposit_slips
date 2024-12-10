@@ -29,33 +29,8 @@ void on_app_activate(GApplication *app, gpointer data) {
 	data_passer->radio_renderer = NULL;
 	data_passer->btn_go_to_first = NULL;
 	data_passer->btn_go_to_last = NULL;
-	data_passer->layout = g_hash_table_new(g_str_hash, g_str_equal);
-
-	/* Add coordinates for Cairo drawing. */
-	Coordinates *coordinates_name_label = g_new(Coordinates, 1);
-	g_hash_table_insert(data_passer->layout, "name_label", coordinates_name_label);
-	Coordinates *coordinates_name_value = g_new(Coordinates, 1);
-	g_hash_table_insert(data_passer->layout, "name_value", coordinates_name_value);
-	Coordinates *coordinates_account_label = g_new(Coordinates, 1);
-	g_hash_table_insert(data_passer->layout, "account_label", coordinates_account_label);
-	Coordinates *coordinates_account_value = g_new(Coordinates, 1);
-	g_hash_table_insert(data_passer->layout, "account_value", coordinates_account_value);
-	Coordinates *coordinates_date_value = g_new(Coordinates, 1);
-	g_hash_table_insert(data_passer->layout, "date_value", coordinates_date_value);
-	Coordinates *coordinates_micr_account_value = g_new(Coordinates, 1);
-	g_hash_table_insert(data_passer->layout, "micr_account_value", coordinates_micr_account_value);
-	Coordinates *coordinates_total_value = g_new(Coordinates, 1);
-	g_hash_table_insert(data_passer->layout, "total_value", coordinates_total_value);
-	Coordinates *coordinates_back_side_value = g_new(Coordinates, 1);
-	g_hash_table_insert(data_passer->layout, "back_side_value", coordinates_back_side_value);
-	Coordinates *coordinates_back_side_subtotal = g_new(Coordinates, 1);
-	g_hash_table_insert(data_passer->layout, "back_side_subtotal", coordinates_back_side_subtotal);
-	Coordinates *back_side_subtotal_on_front = g_new(Coordinates, 1);
-	g_hash_table_insert(data_passer->layout, "back_side_subtotal_on_front", back_side_subtotal_on_front);
-	Coordinates *coordinates_front_values = g_new(Coordinates, 1);
-	g_hash_table_insert(data_passer->layout, "front_values", coordinates_front_values);
-	Coordinates *coordinates_back_values = g_new(Coordinates, 1);
-	g_hash_table_insert(data_passer->layout, "back_values", coordinates_back_values);
+	data_passer->front = (Front *)g_malloc(sizeof(Front));
+	data_passer->back = (Back *)g_malloc(sizeof(Back));
 
 
 	GtkWidget *window = gtk_application_window_new(GTK_APPLICATION(app));

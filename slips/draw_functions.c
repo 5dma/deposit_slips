@@ -9,6 +9,7 @@
  * @brief Contains callbacks to draw the deposit slip's preview, front side or back side.
  */
 
+
 /**
  * Formats a passed float number into a familiar currency value. For example, takes 51003 and formats it into 51,003.00.
  * @param number Any gfloat less than 999999.99
@@ -164,7 +165,7 @@ void draw_front_preview(GtkWidget *widget, cairo_t *cr, gpointer data) {
 		/* Move to the correct position to print the amount such that it is right-aligned. */
 		cairo_text_extents_t extents;
 		cairo_text_extents(data_passer->cairo_context, formatted_total, &extents);
-		cairo_move_to(data_passer->cairo_context, data_passer->right_margin_screen - extents.width, 81);
+		cairo_move_to(data_passer->cairo_context, RIGHT_MARGIN_SCREEN - extents.width, 81);
 		cairo_show_text(data_passer->cairo_context, formatted_total);
 		g_free(formatted_total);
 
@@ -180,7 +181,7 @@ void draw_front_preview(GtkWidget *widget, cairo_t *cr, gpointer data) {
 	cairo_text_extents_t extents;
 	gchar *formatted_total = comma_formatted_amount(data_passer->total_deposit);
 	cairo_text_extents(cr, formatted_total, &extents);
-	cairo_move_to(cr, data_passer->right_margin_screen - extents.width, 125);
+	cairo_move_to(cr, RIGHT_MARGIN_SCREEN - extents.width, 125);
 	cairo_show_text(cr, formatted_total);
 	g_free(formatted_total);
 

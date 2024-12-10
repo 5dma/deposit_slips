@@ -38,3 +38,8 @@ static const char LABEL_ACCOUNT_DESCRIPTION[] = "lblAccountDescription";
 /** Dummy amount string for the new check row. */
 static const char NEW_AMOUNT[] = "0.00"; 
 
+/** Right-margin of the deposit slip on the screen */
+#define RIGHT_MARGIN_SCREEN 200
+
+#define CONFIG_FILE "~/.deposit_slip/deposit_slips.json"
+#define CONFIG_FILE_BACKUP "~/.deposit_slip/deposit_slips_backup.json"

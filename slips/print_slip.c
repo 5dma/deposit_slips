@@ -3,9 +3,6 @@
 #include <constants.h>
 #include <headers.h>
 
-#define TOP_MARGIN_AMOUNTS 36
-#define DEPOSIT_PITCH 47
-
 /**
  * @file print_slip.c
  * @brief Prints the actual deposit slip.
@@ -64,11 +61,10 @@ gboolean print_deposit_amounts_front(GtkTreeModel *model,
 	/* Move to the correct position to print the amount such that it is right-aligned. */
 	cairo_text_extents_t extents;
 	cairo_text_extents(cr, formatted_amount, &extents);
-	Coordinates *coordinates = (Coordinates *)g_hash_table_lookup(data_passer->layout, "front_values");
-	cairo_move_to(cr, coordinates->x - extents.width, (row_number * DEPOSIT_PITCH) + coordinates->y);
 
+	Front *front = data_passer->front;
+	cairo_move_to(cr, front->total_x - extents.width, front->first_amount_y + (row_number * front->amount_pitch));
 	cairo_show_text(cr, formatted_amount);
-
 
 	g_free(formatted_amount);
 
@@ -147,8 +143,9 @@ gboolean print_deposit_amounts_back(GtkTreeModel *model,
 	/* Move to the correct position to print the amount such that it is right-aligned. */
 	cairo_text_extents_t extents;
 	cairo_text_extents(cr, formatted_amount, &extents);
-	Coordinates *coordinates = (Coordinates *)g_hash_table_lookup(data_passer->layout, "back_values");
-	cairo_move_to(cr, data_passer->right_margin_print_back - extents.width, (row_number * coordinates->x) + coordinates->y);
+
+	Back *back = data_passer->back;
+	cairo_move_to(cr, back->amount_x - extents.width, back->first_amount_y +  (row_number * back->amount_pitch));
 	cairo_show_text(cr, formatted_amount);
 	g_free(formatted_amount);
 	g_free(amount);
@@ -188,59 +185,49 @@ void draw_page(GtkPrintOperation *self, GtkPrintContext *context, gint page_nr, 
 						   -1);
 	}
 
-	Coordinates *coordinates;
-
 	cairo_t *cr;
 	cr = gtk_print_context_get_cairo_context(context);
 
 	cairo_select_font_face(cr, data_passer->font_family_sans, CAIRO_FONT_SLANT_NORMAL, CAIRO_FONT_WEIGHT_BOLD);
 	cairo_set_font_size(cr, data_passer->font_size_sans_serif);
-/* 	cairo_translate(cr, 90, 432);
-	cairo_rotate (cr, -G_PI_2);
- */
+
 	cairo_rotate (cr, -G_PI_2);
 	cairo_translate(cr, -432, 216);
-
+	Front *front = data_passer->front;
 	/* Write Name Label */
 	if (data_passer->print_name_account_labels) {
-		coordinates = (Coordinates *)g_hash_table_lookup(data_passer->layout, "name_label");
-		cairo_move_to(cr, coordinates->x, coordinates->y);
+		cairo_move_to(cr, front->name_account_label_x, front->name_y);
 		cairo_set_font_size(cr, data_passer->font_size_sans_serif * data_passer->font_size_static_label_scaling);
 		cairo_show_text(cr, "Name");
 	}
 	/* Write Name value */
-	coordinates = (Coordinates *)g_hash_table_lookup(data_passer->layout, "name_value");
-	cairo_move_to(cr, coordinates->x, coordinates->y);
+	cairo_move_to(cr, front->name_account_date_value_x, front->name_y);
 	cairo_set_font_size(cr, data_passer->font_size_sans_serif);
 	cairo_show_text(cr, account_name);
 
 	/* Write Account Label */
 	if (data_passer->print_name_account_labels) {
-		coordinates = (Coordinates *)g_hash_table_lookup(data_passer->layout, "account_label");
-		cairo_move_to(cr, coordinates->x, coordinates->y);
+		cairo_move_to(cr, front->name_account_label_x, front->account_y);
 		cairo_set_font_size(cr, data_passer->font_size_sans_serif * data_passer->font_size_static_label_scaling);
 		cairo_show_text(cr, "Account No");
 	}
 
 	/* Write Account Value */
-	coordinates = (Coordinates *)g_hash_table_lookup(data_passer->layout, "account_value");
-	cairo_move_to(cr, coordinates->x, coordinates->y);
+	cairo_move_to(cr, front->name_account_date_value_x, front->account_y);
 	cairo_set_font_size(cr, data_passer->font_size_sans_serif);
 	cairo_show_text(cr, account_number);
 
 	/* Write date */
-	coordinates = (Coordinates *)g_hash_table_lookup(data_passer->layout, "date_value");
 	GDateTime *date_time = g_date_time_new_now_local();
 	gchar *date_time_string = g_date_time_format(date_time, "%B %e, %Y");
-	cairo_move_to(cr, coordinates->x, coordinates->y);
+	cairo_move_to(cr, front->name_account_date_value_x, front->date_y);
 	cairo_set_font_size(cr, data_passer->font_size_sans_serif);
 	cairo_show_text(cr, date_time_string);
 	g_free(date_time_string);
 
 	/* Write Account in MICR */
 	gchar *account_with_transit = g_strconcat(account_number, "O", NULL);
-	coordinates = (Coordinates *)g_hash_table_lookup(data_passer->layout, "micr_account_value");
-	cairo_move_to(cr, coordinates->x, coordinates->y);
+	cairo_move_to(cr, front->micr_x, front->micr_y);
 	cairo_set_font_size(cr, data_passer->font_size_sans_serif);
 	cairo_select_font_face(cr, data_passer->font_face_micr, CAIRO_FONT_SLANT_NORMAL, CAIRO_FONT_WEIGHT_NORMAL);
 	cairo_show_text(cr, account_with_transit);
@@ -258,9 +245,8 @@ void draw_page(GtkPrintOperation *self, GtkPrintContext *context, gint page_nr, 
 	/* Get the width of the total amount, and move to that point to print the total. */
 	cairo_text_extents_t extents;
 	gchar *formatted_total = comma_formatted_amount(data_passer->total_deposit);
-	coordinates = (Coordinates *)g_hash_table_lookup(data_passer->layout, "total_value");
 	cairo_text_extents(cr, formatted_total, &extents);
-	cairo_move_to(cr, coordinates->x - extents.width, coordinates->y);
+	cairo_move_to(cr, front->total_x - extents.width, front->total_y);
 	cairo_set_font_size(cr, data_passer->font_size_monospace);
 	cairo_select_font_face(cr, data_passer->font_family_mono, CAIRO_FONT_SLANT_NORMAL, CAIRO_FONT_WEIGHT_BOLD);
 	cairo_show_text(cr, formatted_total);
@@ -270,12 +256,11 @@ void draw_page(GtkPrintOperation *self, GtkPrintContext *context, gint page_nr, 
 	/* If there are more than two checks, print their subtotal on the front side. */
 	if (number_of_checks(data_passer) > 2) {
 		gchar *formatted_total = comma_formatted_amount(data_passer->total_back_side);
-		coordinates = (Coordinates *)g_hash_table_lookup(data_passer->layout, "back_side_subtotal_on_front");
 		/* Move to the correct position to print the amount such that it is right-aligned. */
 		cairo_text_extents_t extents;
 		cairo_text_extents(data_passer->cairo_context, formatted_total, &extents);
 
-		cairo_move_to(cr, coordinates->x, extents.width + data_passer->right_margin_print_front);
+		cairo_move_to(cr, front->total_x - extents.width, front->subtotal_y);
 
 		cairo_show_text(data_passer->cairo_context, formatted_total);
 
@@ -283,9 +268,10 @@ void draw_page(GtkPrintOperation *self, GtkPrintContext *context, gint page_nr, 
 		gtk_print_operation_draw_page_finish(self);
 		gtk_tree_model_foreach(GTK_TREE_MODEL(data_passer->checks_store), print_deposit_amounts_back, data_passer);
 
+		Back *back = data_passer->back;
+
 		/* Print subtotal on back side. */
-		coordinates = (Coordinates *)g_hash_table_lookup(data_passer->layout, "back_side_subtotal");
-		cairo_move_to(cr, data_passer->right_margin_print_back - extents.width, coordinates->y);
+		cairo_move_to(cr, back->amount_x - extents.width, back->total_y);
 		cairo_show_text(data_passer->cairo_context, formatted_total);
 		g_free(formatted_total);
 	}

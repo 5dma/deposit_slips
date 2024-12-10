@@ -1,5 +1,6 @@
 #include <gtk/gtk.h>
 #include <json-glib/json-glib.h>
+#include <glib/gstdio.h>
 
 #include <constants.h>
 #include <headers.h>
@@ -27,6 +28,28 @@ GtkWidget *get_child_from_parent(GtkWidget *parent, const gchar *child_name) {
 	return NULL;
 }
 
+
+void set_int_value (JsonBuilder *builder, gchar *key, gint value) {
+	json_builder_set_member_name (builder, key);
+	json_builder_add_int_value (builder, value);
+}
+
+void set_string_value (JsonBuilder *builder, gchar *key, gchar *value) {
+	json_builder_set_member_name (builder, key);
+	json_builder_add_string_value (builder, value);
+}
+
+void set_double_value (JsonBuilder *builder, gchar *key, gdouble value) {
+	json_builder_set_member_name (builder, key);
+	json_builder_add_double_value (builder, value);
+}
+
+void set_boolean_value (JsonBuilder *builder, gchar *key, gboolean value) {
+	json_builder_set_member_name (builder, key);
+	json_builder_add_boolean_value (builder, value);
+}
+
+
 /**
 Frees memory allocated to a GSList of accounts. Called from write_config_free_memory().
 * @param data Pointer to user data, which is to an Account entry in a GSList.
@@ -35,31 +58,6 @@ Frees memory allocated to a GSList of accounts. Called from write_config_free_me
 GDestroyNotify free_gslist_account(gpointer data) {
 	Account *account = (Account *)data;
 	g_free(account);
-}
-
-/**
- * Writes a CSV string to `~/.deposit_slip/deposit_slips.csv`.
- * @param generator A JsonGenerator used to write a JSON object to a file. See
- * \sa [json_generator_to_file](https://gnome.pages.gitlab.gnome.org/json-glib/method.Generator.to_file.html)
- * \sa [JsonGenerator](https://gnome.pages.gitlab.gnome.org/json-glib/class.Generator.html)
- */
-void save_account_numbers(JsonGenerator *generator) {
-	GError *error = NULL;
-
-	/* Establish directory where accounts are saved, and create it if necessary. */
-	gchar *save_directory = g_build_filename(g_get_home_dir(), ".deposit_slip/", NULL);
-	if (!g_file_test(save_directory, G_FILE_TEST_EXISTS)) {
-		g_mkdir_with_parents(save_directory, 755);
-	}
-	g_free(save_directory);
-
-	gchar *output_file = g_build_filename(g_get_home_dir(), ".deposit_slip/deposit_slips.json", NULL);
-	gboolean write_successful = json_generator_to_file(generator, output_file, &error);
-
-	if (!write_successful) {
-		g_print("Could not write the new list, so the previous master list is still will show when restarting this program.\n");
-	}
-	g_free(output_file);
 }
 
 /**
@@ -77,7 +75,6 @@ gboolean remove_layout_hash(
 
 /**
 * Writes the configuration file, and frees memory in the master and temporary account lists and other string data in a `Data_passer`. This callback fires after the user destroys the main application window.
-  \sa save_account_numbers()
 * @param window The parent node.
 * @param data Pointer to user data
 */
@@ -87,6 +84,13 @@ void write_config_free_memory(GtkWidget *window, gpointer data) {
 	GtkTreeIter iter_master;
 	GtkTreeIter iter_temporary;
 
+	/* Copy the settings file to a backup file. */
+	g_rename (CONFIG_FILE, CONFIG_FILE_BACKUP);
+
+
+	JsonBuilder *builder = json_builder_new (); /* root */
+	json_builder_begin_object (builder);
+	
 	gboolean found_first_iter_temporary = gtk_tree_model_get_iter_first(GTK_TREE_MODEL(data_passer->list_store_temporary), &iter_temporary);
 
 	if (found_first_iter_temporary) {
@@ -97,7 +101,8 @@ void write_config_free_memory(GtkWidget *window, gpointer data) {
 		gchar *routing_number = NULL;
 
 		/* A JSON array of accounts. Memory freed below. */
-		JsonArray *account_array = json_array_new();
+		json_builder_set_member_name (builder, "accounts");
+		json_builder_begin_array (builder);
 
 		gtk_list_store_clear(data_passer->list_store_master);
 
@@ -119,82 +124,95 @@ void write_config_free_memory(GtkWidget *window, gpointer data) {
 							   ROUTING_NUMBER, routing_number,
 							   -1);
 
+
 			/* Create a JSON object for the current account. */
-			JsonObject *account = json_object_new(); /* Memory freed below. */
-			json_object_set_string_member(account, "account", account_number);
-			json_object_set_string_member(account, "name", account_name);
-			json_object_set_string_member(account, "description", account_description);
-			json_object_set_string_member(account, "routing", routing_number);
+			json_builder_begin_object(builder);
 
-			/* Add the JSON object to the JSON array of accounts. */
-			json_array_add_object_element(account_array, account);
-			// json_object_unref(account); /* This statement causes a seg fault. Why? Doesn't the json_array_add_object_element increase the reference count?*/
+			json_builder_set_member_name (builder, "account");
+			json_builder_add_string_value(builder, account_number);
 
+			json_builder_set_member_name (builder, "name");
+			json_builder_add_string_value(builder, account_name);
+
+			json_builder_set_member_name (builder, "description");
+			json_builder_add_string_value(builder, account_description);
+
+			json_builder_set_member_name (builder, "routing");
+			json_builder_add_string_value(builder, routing_number);
+
+ 			json_builder_end_object(builder); /* End account stanza */
+			
 			gtk_tree_model_iter_next(GTK_TREE_MODEL(data_passer->list_store_temporary), &iter_temporary);
+		}
+		g_free(account_number);
+		g_free(account_name);
+		g_free(account_description);
+		g_free(routing_number);
+		
+		json_builder_end_array(builder); /* accounts */
+		/* Create the top-level JSON object. */
 
-			g_free(account_number);
-			g_free(account_name);
-			g_free(account_description);
-			g_free(routing_number);
+		json_builder_set_member_name (builder, "configuration");
+		json_builder_begin_object (builder);
+
+
+		set_int_value(builder, "font_size_sans_serif", data_passer->font_size_sans_serif);
+		set_int_value(builder, "font_size_monospace", data_passer->font_size_monospace);
+		set_string_value(builder, "font_family_sans", data_passer->font_family_sans);
+		set_string_value(builder, "font_face_micr", data_passer->font_face_micr);
+		set_string_value(builder, "font_family_mono", data_passer->font_family_mono);
+		set_double_value(builder, "font_size_static_label_scaling", data_passer->font_size_static_label_scaling);
+
+		set_boolean_value(builder, "print_name_account_labels", data_passer->print_name_account_labels);
+
+		json_builder_set_member_name (builder, "front");
+		json_builder_begin_object (builder);
+		set_int_value(builder, "name_account_label_x", data_passer->front->name_account_label_x);
+		set_int_value(builder, "name_account_date_value_x", data_passer->front->name_account_date_value_x);
+		set_int_value(builder, "name_y", data_passer->front->name_y);
+		set_int_value(builder, "account_y", data_passer->front->account_y);
+		set_int_value(builder, "date_y", data_passer->front->date_y);
+		set_int_value(builder, "micr_y", data_passer->front->micr_y);
+		set_int_value(builder, "micr_x", data_passer->front->micr_x);
+		set_int_value(builder, "first_amount_y", data_passer->front->first_amount_y);
+		set_int_value(builder, "amount_pitch", data_passer->front->amount_pitch);
+		set_int_value(builder, "subtotal_y", data_passer->front->subtotal_y);
+		set_int_value(builder, "total_y", data_passer->front->total_y);
+		set_int_value(builder, "total_x", data_passer->front->total_x);
+		json_builder_end_object(builder); /* front */
+
+		json_builder_set_member_name (builder, "back");
+		json_builder_begin_object (builder);
+		set_int_value(builder, "amount_x", data_passer->back->amount_x);
+		set_int_value(builder, "first_amount_y", data_passer->back->first_amount_y);
+		set_int_value(builder, "amount_pitch", data_passer->back->amount_pitch);
+		set_int_value(builder, "total_y", data_passer->back->total_y);
+		json_builder_end_object(builder); /* back */
+
+		json_builder_end_object(builder); /* configuration */
+
+		json_builder_end_object (builder); /* root */
+
+		JsonNode *root = json_builder_get_root (builder);
+		JsonGenerator *generator = json_generator_new ();
+		GError *error;
+		json_generator_set_root (generator, root);
+		json_generator_to_file (generator, CONFIG_FILE, &error);
+
+		if (error) {
+			g_print("Unable to save the new configuration file.\n%s\nYou should rename the backup %s to %s\n", error->message, CONFIG_FILE_BACKUP, CONFIG_FILE);
+			g_error_free(error);
 		}
 
-		/* Create the top-level JSON object. */
-		JsonObject *object = json_object_new();
-		json_object_set_array_member(object, "accounts", account_array);
-
-		/* Create a node for the top-level JSON object, from which we create a JsonGenerator. */
-		JsonNode *node = json_node_new(JSON_NODE_OBJECT);
-		json_node_set_object(node, object);
-
-		JsonGenerator *generator;
-		generator = json_generator_new();
-		json_generator_set_root(generator, node);
-
-		/* Create the configuration object. */
-		JsonObject *configuration_object = json_object_new();
-		json_object_set_int_member(configuration_object, "right_margin_screen", data_passer->right_margin_screen);
-		json_object_set_int_member(configuration_object, "right_margin_print_front", data_passer->right_margin_print_front);
-		json_object_set_int_member(configuration_object, "right_margin_print_back", data_passer->right_margin_print_back);
-		json_object_set_int_member(configuration_object, "font_size_sans_serif", data_passer->font_size_sans_serif);
-		json_object_set_int_member(configuration_object, "font_size_monospace", data_passer->font_size_monospace);
-		json_object_set_string_member(configuration_object, "font_family_sans", data_passer->font_family_sans);
-		json_object_set_string_member(configuration_object, "font_face_micr", data_passer->font_face_micr);
-		json_object_set_string_member(configuration_object, "font_family_mono", data_passer->font_family_mono);
-		json_object_set_double_member(configuration_object, "font_size_static_label_scaling", data_passer->font_size_static_label_scaling);
-		json_object_set_boolean_member(configuration_object, "print_name_account_labels", data_passer->print_name_account_labels);
-
-		/* Add the layout object to the root object. */
-		json_object_set_object_member(object, "configuration", configuration_object);
-
-		write_coordinates(configuration_object, data_passer->layout, "name_label");
-		write_coordinates(configuration_object, data_passer->layout, "name_value");
-		write_coordinates(configuration_object, data_passer->layout, "account_label");
-		write_coordinates(configuration_object, data_passer->layout, "account_value");
-		write_coordinates(configuration_object, data_passer->layout, "date_value");
-		write_coordinates(configuration_object, data_passer->layout, "micr_account_value");
-		write_coordinates(configuration_object, data_passer->layout, "total_value");
-		write_coordinates(configuration_object, data_passer->layout, "back_side_value");
-		write_coordinates(configuration_object, data_passer->layout, "back_side_subtotal");
-		write_coordinates(configuration_object, data_passer->layout, "back_side_subtotal_on_front");
-		write_coordinates(configuration_object, data_passer->layout, "front_values");
-		write_coordinates(configuration_object, data_passer->layout, "back_values");
-
-		/* Go write the JsonGenerator to a file. */
-		save_account_numbers(generator);
-
-		/* Free memory allocated to the JSON object. */
-		//   json_object_unref(configuration_object);
-		g_hash_table_foreach_remove(data_passer->layout, remove_layout_hash, NULL);
-
 		g_object_unref(generator);
-		json_object_unref(object);
-		json_array_unref(account_array);
+		g_object_unref(builder);
 
 		/* Free memory allocated to the master and temporary list stores. */
 		gtk_list_store_clear(data_passer->list_store_master);
 		gtk_list_store_clear(data_passer->list_store_temporary);
 		g_free(data_passer->font_face_micr);
 		g_free(data_passer);
+
 
 	} else {
 		g_print("Could not find first iter for saving the temporary list\n");
@@ -225,21 +243,6 @@ void read_coordinates(JsonObject *configuration_object, GHashTable *layout_hash,
 	Coordinates *coordinates = (Coordinates *)g_hash_table_lookup(layout_hash, hash_key);
 	coordinates->x = json_object_get_int_member(x_y_object, "x");
 	coordinates->y = json_object_get_int_member(x_y_object, "y");
-}
-
-/**
- * Writes coordinates into a `JsonObject` from a hash of coordinates.
- * @param configuration_object JSON object containing the coordinates from the configuration file.
- * @param layout_hash GHashTable containing coordinates.
- * @param hash_key Key into `layout_hash`.
- */
-void write_coordinates(JsonObject *configuration_object, GHashTable *layout_hash, const gchar *hash_key) {
-	JsonObject *coordinate_object = json_object_new();
-	Coordinates *coordinates = (Coordinates *)g_hash_table_lookup(layout_hash, hash_key);
-
-	json_object_set_int_member(coordinate_object, "x", coordinates->x);
-	json_object_set_int_member(coordinate_object, "y", coordinates->y);
-	json_object_set_object_member(configuration_object, hash_key, coordinate_object);
 }
 
 /**
