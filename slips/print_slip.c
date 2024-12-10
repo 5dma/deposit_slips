@@ -191,8 +191,16 @@ void draw_page(GtkPrintOperation *self, GtkPrintContext *context, gint page_nr, 
 	cairo_select_font_face(cr, data_passer->font_family_sans, CAIRO_FONT_SLANT_NORMAL, CAIRO_FONT_WEIGHT_BOLD);
 	cairo_set_font_size(cr, data_passer->font_size_sans_serif);
 
+	/* Rotate the surface counter-clockwise 90 degrees. */
 	cairo_rotate (cr, -G_PI_2);
-	cairo_translate(cr, -432, 216);
+
+	/* 
+		Next, translate the surface so that the deposit slip appears in the top middle of the printed page.
+		Length of deposit slip is 6 * 72 = 432
+		Width of deposit slip is 2 5/8 * 72 = 211
+	 */
+	cairo_translate(cr, -432, 211);
+
 	Front *front = data_passer->front;
 	/* Write Name Label */
 	if (data_passer->print_name_account_labels) {
@@ -228,7 +236,7 @@ void draw_page(GtkPrintOperation *self, GtkPrintContext *context, gint page_nr, 
 	/* Write Account in MICR */
 	gchar *account_with_transit = g_strconcat(account_number, "O", NULL);
 	cairo_move_to(cr, front->micr_x, front->micr_y);
-	cairo_set_font_size(cr, data_passer->font_size_sans_serif);
+	cairo_set_font_size(cr, 20); /* Need to put this in the configuration structure. */
 	cairo_select_font_face(cr, data_passer->font_face_micr, CAIRO_FONT_SLANT_NORMAL, CAIRO_FONT_WEIGHT_NORMAL);
 	cairo_show_text(cr, account_with_transit);
 	g_free(account_with_transit);
