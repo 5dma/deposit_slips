@@ -12,7 +12,10 @@
 void update_config_spinner(GtkWidget *widget, gpointer user_data) {
 	gdouble *value = (gdouble *)user_data;
 	gdouble spin_value = gtk_spin_button_get_value(GTK_SPIN_BUTTON(widget));
+	g_print("inside The address is %p\n", value);
 	*value = spin_value;
+	g_print("The new value is  %f\n", *value);
+
 }
 
 /**
@@ -33,7 +36,7 @@ void update_config_boolean(GtkWidget *widget, gpointer user_data) {
  * @param grid_layout_fields Grid into which the field is added.
  */
 void add_one_value_configuration(const gchar *label,
-								 double value,
+								 double *value,
 								 gint top,
 								 GtkWidget *grid_layout_fields) {
 	GtkWidget *label_field_name = gtk_label_new(label);
@@ -42,18 +45,18 @@ void add_one_value_configuration(const gchar *label,
 	GtkWidget *spin_button;
 	/* If displaying the font scaling spin button, allow for decimal places. Otherwise, all spin buttons are integers. */
 	if (g_strcmp0 (label, "Static label scale") == 0) {
-		GtkAdjustment *adjustment = gtk_adjustment_new (value, 0.1, 1.0, 0.1, 0.1, 0.0);
+		GtkAdjustment *adjustment = gtk_adjustment_new (*value, 0.1, 1.0, 0.1, 0.1, 0.0);
 		spin_button = gtk_spin_button_new (adjustment, 0.1, 1);
 	} else {
 		spin_button = gtk_spin_button_new_with_range(0, 1000, 1);
-		gtk_spin_button_set_value(GTK_SPIN_BUTTON(spin_button), value);
+		gtk_spin_button_set_value(GTK_SPIN_BUTTON(spin_button), *value);
 	}
 
 	gtk_entry_set_alignment(GTK_ENTRY(spin_button), 1);
 	
 	gtk_grid_attach(GTK_GRID(grid_layout_fields), label_field_name, 0, top, 1, 1);
 	gtk_grid_attach(GTK_GRID(grid_layout_fields), spin_button, 4, top, 1, 1);
-	g_signal_connect(GTK_WIDGET(spin_button), "value-changed", G_CALLBACK(update_config_spinner), &value);
+	g_signal_connect(GTK_WIDGET(spin_button), "value-changed", G_CALLBACK(update_config_spinner), value);
 
 	/* Get events the spinner can receive, and block out the scrolling event. */
 	gint all_spin_events = gtk_widget_get_events(GTK_WIDGET(spin_button));
@@ -168,62 +171,80 @@ GtkWidget *make_configuration_view(Data_passer *data_passer) {
 	gint row_number = 0;
 
 	add_one_value_configuration("Name/Account label x",
-								data_passer->front->name_account_label_x,
+								&(data_passer->front->name_account_label_x),
 								row_number++,
 								grid_layout_fields);
 
 	add_one_value_configuration("Name/Account/Date value x",
-								data_passer->front->name_account_date_value_x,
+								&(data_passer->front->name_account_date_value_x),
 								row_number++,
 								grid_layout_fields);
 
 	add_one_value_configuration("Name y",
-								data_passer->front->name_y,
+								&(data_passer->front->name_y),
 								row_number++,
 								grid_layout_fields);
 
 	add_one_value_configuration("Account y",
-								data_passer->front->account_y,
+								&(data_passer->front->account_y),
 								row_number++,
 								grid_layout_fields);
 
+
+/* 	GtkWidget *label_field_name = gtk_label_new("Account y");
+	gtk_label_set_xalign(GTK_LABEL(label_field_name), 0.0);
+
+	GtkWidget *spin_button = gtk_spin_button_new_with_range(0, 1000, 1);
+	gtk_spin_button_set_value(GTK_SPIN_BUTTON(spin_button), data_passer->front->account_y);
+	gtk_entry_set_alignment(GTK_ENTRY(spin_button), 1);
+	gtk_grid_attach(GTK_GRID(grid_layout_fields), label_field_name, 0, 3, 1, 1);
+	gtk_grid_attach(GTK_GRID(grid_layout_fields), spin_button, 4, 3, 1, 1);
+	g_signal_connect(GTK_WIDGET(spin_button), "value-changed", G_CALLBACK(update_config_spinner), &(data_passer->front->account_y));
+	g_print("outside The address is %p\n", &(data_passer->front->account_y));
+
+
+	gint all_spin_events = gtk_widget_get_events(GTK_WIDGET(spin_button));
+	gtk_widget_set_events (GTK_WIDGET(spin_button), all_spin_events ^ GDK_SCROLL_MASK);
+	row_number++; */
+
+
 	add_one_value_configuration("Date y",
-								data_passer->front->date_y,
+								&(data_passer->front->date_y),
 								row_number++,
 								grid_layout_fields);
 
 	add_one_value_configuration("MICR x",
-								data_passer->front->micr_x,
+								&(data_passer->front->micr_x),
 								row_number++,
 								grid_layout_fields);
 
 	add_one_value_configuration("MICR y",
-								data_passer->front->micr_y,
+								&(data_passer->front->micr_y),
 								row_number++,
 								grid_layout_fields);
 
 	add_one_value_configuration("First amount y",
-								data_passer->front->first_amount_y,
+								&(data_passer->front->first_amount_y),
 								row_number++,
 								grid_layout_fields);
 
 	add_one_value_configuration("Amount pitch",
-								data_passer->front->amount_pitch,
+								&(data_passer->front->amount_pitch),
 								row_number++,
 								grid_layout_fields);
 
 	add_one_value_configuration("Subtotal y",
-								data_passer->front->subtotal_y,
+								&(data_passer->front->subtotal_y),
 								row_number++,
 								grid_layout_fields);
 
 	add_one_value_configuration("Total x",
-								data_passer->front->total_x,
+								&(data_passer->front->total_x),
 								row_number++,
 								grid_layout_fields);
 
 	add_one_value_configuration("Total y",
-								data_passer->front->total_y,
+								&(data_passer->front->total_y),
 								row_number++,
 								grid_layout_fields);
 
@@ -231,40 +252,40 @@ GtkWidget *make_configuration_view(Data_passer *data_passer) {
 
 
 	add_one_value_configuration("Amount x",
-								data_passer->back->amount_x,
+								&(data_passer->back->amount_x),
 								row_number++,
 								grid_layout_fields);
 
 	add_one_value_configuration("First amount y",
-								data_passer->back->first_amount_y,
+								&(data_passer->back->first_amount_y),
 								row_number++,
 								grid_layout_fields);
 
 	add_one_value_configuration("Amount pitch",
-								data_passer->back->amount_pitch,
+								&(data_passer->back->amount_pitch),
 								row_number++,
 								grid_layout_fields);
 
 
 	add_one_value_configuration("Total y",
-								data_passer->back->total_y,
+								&(data_passer->back->total_y),
 								row_number++,
 								grid_layout_fields);
 
 
 
 	add_one_value_configuration("Font size text",
-								data_passer->font_size_sans_serif,
+								&(data_passer->font_size_sans_serif),
 								row_number++,
 								grid_layout_fields);
 
 	add_one_value_configuration("Font size amounts",
-								data_passer->font_size_monospace,
+								&(data_passer->font_size_monospace),
 								row_number++,
 								grid_layout_fields);
 
 	add_one_value_configuration("Static label scale",
-								data_passer->font_size_static_label_scaling,
+								&(data_passer->font_size_static_label_scaling),
 								row_number++,
 								grid_layout_fields);
 

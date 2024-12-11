@@ -46,26 +46,26 @@ typedef struct {
 
 
 typedef struct Front {
- 	gint name_account_label_x;
-	gint name_account_date_value_x;
-	gint name_y;
-	gint account_y;
-	gint date_y;
-	gint micr_y;
-	gint micr_x;
-	gint first_amount_y;
-	gint amount_pitch;
-	gint subtotal_y;
-	gint total_y;
-	gint total_x;
+ 	gdouble name_account_label_x;
+	gdouble name_account_date_value_x;
+	gdouble name_y;
+	gdouble account_y;
+	gdouble date_y;
+	gdouble micr_y;
+	gdouble micr_x;
+	gdouble first_amount_y;
+	gdouble amount_pitch;
+	gdouble subtotal_y;
+	gdouble total_y;
+	gdouble total_x;
 } Front;
 
 
 typedef struct Back {
- 	gint amount_x;
-	gint first_amount_y;
-	gint amount_pitch;
-	gint total_y;
+ 	gdouble amount_x;
+	gdouble first_amount_y;
+	gdouble amount_pitch;
+	gdouble total_y;
 } Back;
 
 
