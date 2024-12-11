@@ -43,3 +43,6 @@ static const char NEW_AMOUNT[] = "0.00";
 
 #define CONFIG_FILE "/home/abba/.deposit_slip/deposit_slips.json"
 #define CONFIG_FILE_BACKUP "/home/abba/.deposit_slip/deposit_slips_backup.json"
+
+#define MICR_TRANSIT "A"
+#define MICR_ON_US "C"

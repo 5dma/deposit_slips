@@ -234,7 +234,7 @@ void draw_page(GtkPrintOperation *self, GtkPrintContext *context, gint page_nr, 
 	g_free(date_time_string);
 
 	/* Write Account in MICR */
-	gchar *account_with_transit = g_strconcat(account_number, "O", NULL);
+	gchar *account_with_transit = g_strconcat(account_number, MICR_ON_US, NULL);
 	cairo_move_to(cr, front->micr_x, front->micr_y);
 	cairo_set_font_size(cr, 20); /* Need to put this in the configuration structure. */
 	cairo_select_font_face(cr, data_passer->font_face_micr, CAIRO_FONT_SLANT_NORMAL, CAIRO_FONT_WEIGHT_NORMAL);

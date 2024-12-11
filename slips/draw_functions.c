@@ -125,7 +125,7 @@ void draw_front_preview(GtkWidget *widget, cairo_t *cr, gpointer data) {
 	cairo_stroke(cr);
 
 	/* Write Routing number */
-	gchar *routing_with_transit = g_strconcat("A", routing_number, "A", NULL);
+	gchar *routing_with_transit = g_strconcat(MICR_TRANSIT, routing_number, MICR_TRANSIT, NULL);
 	cairo_select_font_face(cr, "MICR Encoding", CAIRO_FONT_SLANT_NORMAL, CAIRO_FONT_WEIGHT_BOLD);
 	cairo_set_font_size(cr, 10);
 	cairo_move_to(cr, 15, 135);
@@ -133,7 +133,7 @@ void draw_front_preview(GtkWidget *widget, cairo_t *cr, gpointer data) {
 	g_free(routing_with_transit);
 
 	/* Write account number MICR*/
-	gchar *account_with_transit = g_strconcat(account_number, "C009", NULL);
+	gchar *account_with_transit = g_strconcat(account_number, MICR_ON_US, "009", NULL);
 	cairo_set_font_size(cr, 10);
 	cairo_move_to(cr, 120, 135);
 	cairo_show_text(cr, account_with_transit);

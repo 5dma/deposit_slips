@@ -230,9 +230,6 @@ GtkWidget *make_configuration_view(Data_passer *data_passer) {
 								row_number++,
 								grid_layout_fields);
 
-
-
-
 	add_one_value_configuration("Amount x (back)",
 								&(data_passer->back->amount_x),
 								row_number++,
@@ -253,8 +250,6 @@ GtkWidget *make_configuration_view(Data_passer *data_passer) {
 								&(data_passer->back->total_y),
 								row_number++,
 								grid_layout_fields);
-
-
 
 	add_one_value_configuration("Font size text",
 								&(data_passer->font_size_sans_serif),
