@@ -19,7 +19,7 @@ enum {
 };
 
 /**
- * Enum for declaring a list store of checks (only one column in this store).
+ * Enum for declaring a list store of checks.
 */
 enum {
 	CHECK_AMOUNT, /**< 0 */
@@ -119,13 +119,20 @@ typedef struct Data_passer {
 	Back *back;
 } Data_passer;
 
+/**
+ * Current UI state of a selected check.
+ */
+typedef struct CheckSelections {
+	GtkTreePath *path; /**< Path to selected check. */
+	gboolean at_least_one_check_selected; /**< Indicates at least one check is selected */
+} CheckSelection;
 
 void on_app_activate(GApplication *app, gpointer data);
 void build_list_store(gpointer account, gpointer list_builder_struct);
 
-GtkWidget * make_tree_view(GtkListStore *list_store );
+GtkWidget *make_tree_view(GtkListStore *list_store );
 
-GtkWidget * get_child_from_parent (GtkWidget * parent, const gchar * child_name);
+GtkWidget *get_child_from_parent (GtkWidget * parent, const gchar * child_name);
 void read_configuration_data(Data_passer *data_passer);
 GtkWidget *make_accounts_buttons_hbox(Data_passer *data_passer);
 GtkWidget *make_configuration_view(Data_passer *data_passer);
@@ -146,8 +153,6 @@ gchar *comma_formatted_amount(gfloat amount);
 
 GDestroyNotify free_gslist_account(gpointer data);
 
-void read_coordinates(JsonObject *configuration_object, GHashTable *layout_hash, const gchar *hash_key);
-void write_coordinates(JsonObject *configuration_object, GHashTable *layout_hash, const gchar *hash_key);
 GtkWidget *make_slip_view(Data_passer *data_passer);
 void update_label(GtkTreeView *tree_view, gpointer user_data);
 void deposit_amount_edited(GtkCellRendererText *self, gchar *path, gchar *new_text, gpointer data);
@@ -156,15 +161,5 @@ void toggle_slip_view(GtkWidget *widget, gpointer data);
 void add_check_row(GtkWidget *widget, gpointer data);
 void delete_check_rows(GtkWidget *widget, gpointer data);
 void draw_preview(GtkWidget *widget, cairo_t *cr, gpointer data);
-
-/**
- * Current UI state of a selected check.
- */
-typedef struct CheckSelections {
-	GtkTreePath *path; /**< Path to selected check. */
-	gboolean at_least_one_check_selected; /**< Indicates at least one check is selected */
-} CheckSelection;
-
-
 gint number_of_checks (Data_passer *data_passer);
 
