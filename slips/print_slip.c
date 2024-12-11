@@ -296,9 +296,6 @@ void print_deposit_slip(GtkButton *self, gpointer data) {
 	GError *error;
 	gint res;
 
-
-	g_print("printing The address is %p and value is %f\n", &(data_passer->front->account_y), data_passer->front->account_y);
-
 	operation = gtk_print_operation_new();
 
 	gtk_print_operation_set_unit(operation, GTK_UNIT_POINTS);
@@ -321,7 +318,6 @@ void print_deposit_slip(GtkButton *self, gpointer data) {
 			if (settings != NULL)
 				g_object_unref(settings);
 			settings = g_object_ref(gtk_print_operation_get_print_settings(operation));
-
 			break;
 		case GTK_PRINT_OPERATION_RESULT_CANCEL:
 			g_print("Cancel\n");

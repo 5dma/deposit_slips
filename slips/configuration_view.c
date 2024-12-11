@@ -12,10 +12,7 @@
 void update_config_spinner(GtkWidget *widget, gpointer user_data) {
 	gdouble *value = (gdouble *)user_data;
 	gdouble spin_value = gtk_spin_button_get_value(GTK_SPIN_BUTTON(widget));
-	g_print("inside The address is %p\n", value);
 	*value = spin_value;
-	g_print("The new value is  %f\n", *value);
-
 }
 
 /**
@@ -220,7 +217,7 @@ GtkWidget *make_configuration_view(Data_passer *data_passer) {
 								row_number++,
 								grid_layout_fields);
 
-	add_one_value_configuration("Total x",
+	add_one_value_configuration("Amounts x",
 								&(data_passer->front->total_x),
 								row_number++,
 								grid_layout_fields);
