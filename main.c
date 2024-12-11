@@ -10,6 +10,13 @@
  * code documentation, run `doxygen Doxyfile`. The output is in the `html/` 
  * directory of this source code.
  */
+
+/**
+	Entry point to the program. Instantiates the GTK application, connects the activate signal, and runs the application.
+	@param argc The parent node.
+	@param argv Key to be added.
+	@return An integer corresponding to the result of `g_application_run`.
+*/
 int main(int argc, char *argv[]) {
 
 	GtkApplication *app = gtk_application_new(

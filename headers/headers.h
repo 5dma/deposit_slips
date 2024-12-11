@@ -39,27 +39,32 @@ typedef struct Accounts {
 } Account;
 
 
+/**
+ * Structure holding printing coordinates on the front side of the deposit slip. Corresponds to the `front` stanza in the configuration file.
+*/ 
 typedef struct Front {
- 	gdouble name_account_label_x;
-	gdouble name_account_date_value_x;
-	gdouble name_y;
-	gdouble account_y;
-	gdouble date_y;
-	gdouble micr_y;
-	gdouble micr_x;
-	gdouble first_amount_y;
-	gdouble amount_pitch;
-	gdouble subtotal_y;
-	gdouble total_y;
-	gdouble total_x;
+ 	gdouble name_account_label_x;  /**< x position of the **Name** and **Account** labels. */
+	gdouble name_account_date_value_x; /**< x position of the **Name**, **Account**, and **Date** values. */
+	gdouble name_y; /**< y position of the **Name** value. */
+	gdouble account_y; /**< y position of the **Account** value. */
+	gdouble date_y; /**< y position of the **Date** value. */
+	gdouble micr_y; /**< y position of the account's MICR rendition. */
+	gdouble micr_x; /**< x position of the account's MICR rendition. */
+	gdouble first_amount_y;  /**< y position of the first amount. */
+	gdouble amount_pitch;  /**< Line spacing between amounts. */
+	gdouble subtotal_y;  /**< y position of the subtotal carried from the back side of the deposit slip. */
+	gdouble total_y;  /**< y position of the total. */
+	gdouble total_x;  /**< x position of all amounts. */
 } Front;
 
-
+/**
+ * Structure holding printing coordinates on the back side of the deposit slip. Corresponds to the `back` stanza in the configuration file.
+*/ 
 typedef struct Back {
- 	gdouble amount_x;
-	gdouble first_amount_y;
-	gdouble amount_pitch;
-	gdouble total_y;
+ 	gdouble amount_x; /**< x position of all amounts. */
+	gdouble first_amount_y;  /**< y position of the first amount. */
+	gdouble amount_pitch;  /**< Line spacing between amounts. */
+	gdouble total_y;  /**< y position of the total. */
 } Back;
 
 
@@ -115,7 +120,9 @@ typedef struct Data_passer {
 	gdouble font_size_static_label_scaling;
 /** Flag indicating the Name and Account labels are printed on the deposit slip.*/
 	gboolean print_name_account_labels;
+/** Structure containing printing coordinates on the front side of the deposit slip. See Front.*/
 	Front *front;
+/** Structure containing printing coordinates on the back side of the deposit slip. See Back.*/
 	Back *back;
 } Data_passer;
 

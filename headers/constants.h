@@ -41,8 +41,12 @@ static const char NEW_AMOUNT[] = "0.00";
 /** Right-margin of the deposit slip on the screen */
 #define RIGHT_MARGIN_SCREEN 485
 
+/** Path to configuration file */
 #define CONFIG_FILE "/home/abba/.deposit_slip/deposit_slips.json"
+/** Path to backup configuration file. See write_config_free_memory(). */
 #define CONFIG_FILE_BACKUP "/home/abba/.deposit_slip/deposit_slips_backup.json"
 
+/** Character corresponding to the `transit` character in MICR. This character can change depending on the MICR font. */
 #define MICR_TRANSIT "A"
+/** Character corresponding to the `on-us` character in MICR.  This character can change depending on the MICR font. */
 #define MICR_ON_US "C"

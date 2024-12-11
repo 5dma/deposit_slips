@@ -81,7 +81,6 @@ void started_cell_editing(GtkCellRenderer *self, GtkCellEditable *editable, gcha
 /**
  * Creates the view of checks appearing in a deposit slip.
  * @param data_passer Pointer to user data.
- * @return A tree view with two columns: one for amounts, another a checkbox to delete an amount.
  */
 void make_checks_view(Data_passer *data_passer) {
 	GtkWidget *tree;

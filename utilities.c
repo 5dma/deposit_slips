@@ -29,21 +29,45 @@ GtkWidget *get_child_from_parent(GtkWidget *parent, const gchar *child_name) {
 }
 
 
+/**
+	Adds an integer key/value pair to a passed JSON builder.
+	@param builder The parent node.
+	@param key Key to be added.
+	@param value Integer to be added.
+*/
 void set_int_value (JsonBuilder *builder, gchar *key, gint value) {
 	json_builder_set_member_name (builder, key);
 	json_builder_add_int_value (builder, value);
 }
 
+/**
+	Adds a string key/value pair to a passed JSON builder.
+	@param builder The parent node.
+	@param key Key to be added.
+	@param value String to be added.
+*/
 void set_string_value (JsonBuilder *builder, gchar *key, gchar *value) {
 	json_builder_set_member_name (builder, key);
 	json_builder_add_string_value (builder, value);
 }
 
+/**
+	Adds a double key/value pair to a passed JSON builder.
+	@param builder The parent node.
+	@param key Key to be added.
+	@param value Double to be added.
+*/
 void set_double_value (JsonBuilder *builder, gchar *key, gdouble value) {
 	json_builder_set_member_name (builder, key);
 	json_builder_add_double_value (builder, value);
 }
 
+/**
+	Adds a boolean key/value pair to a passed JSON builder.
+	@param builder The parent node.
+	@param key Key to be added.
+	@param value Boolean to be added.
+*/
 void set_boolean_value (JsonBuilder *builder, gchar *key, gboolean value) {
 	json_builder_set_member_name (builder, key);
 	json_builder_add_boolean_value (builder, value);

@@ -86,25 +86,20 @@ void add_font_configuration(const gchar *label,
 /**
 * Adds a field and two spin buttosn to the passed grid.
 * @param label Field's label.
-*
+* @param value Pointer to the value inside the data passer. This pointer is assigned as user data to the callback.
 * @param top Row in which the field is placed within the grid.
 * @param grid_layout_fields Grid into which the field is added.
 */
-void add_boolean_configuration(const gchar *label,
-                                                               gboolean *value,
-                                                               gint top,
-                                                               GtkWidget *grid_layout_fields) {
-      GtkWidget *label_field_name = gtk_label_new(label);
-      gtk_label_set_xalign(GTK_LABEL(label_field_name), 0.0);
+void add_boolean_configuration(const gchar *label, gboolean *value, gint top, GtkWidget *grid_layout_fields) {
+	GtkWidget *label_field_name = gtk_label_new(label);
+	gtk_label_set_xalign(GTK_LABEL(label_field_name), 0.0);
 
-      GtkWidget *checkbox;
-       
-       checkbox = gtk_check_button_new();
-       gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON(checkbox), *value);
+	GtkWidget *checkbox = gtk_check_button_new();
+	gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON(checkbox), *value);
  
-       gtk_grid_attach(GTK_GRID(grid_layout_fields), label_field_name, 0, top, 1, 1);
-       gtk_grid_attach(GTK_GRID(grid_layout_fields), checkbox, 4, top, 1, 1);
-       g_signal_connect(GTK_WIDGET(checkbox), "toggled", G_CALLBACK(update_config_boolean), value);
+	gtk_grid_attach(GTK_GRID(grid_layout_fields), label_field_name, 0, top, 1, 1);
+	gtk_grid_attach(GTK_GRID(grid_layout_fields), checkbox, 4, top, 1, 1);
+	g_signal_connect(GTK_WIDGET(checkbox), "toggled", G_CALLBACK(update_config_boolean), value);
 }
 
 

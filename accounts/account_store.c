@@ -10,24 +10,34 @@
  * @brief Sets up the store for accounts.
  */
 
-gint retrieve_json_int(JsonReader *reader, gchar *name) {
-	json_reader_read_member(reader, name);
+/**
+ * Reads an integer value for the passed key and the passed reader.
+ * @param reader A reader pointing to an object in the JSON file.
+ * @param key Key within the object.
+ * @return Integer value associated with the key.
+  */
+gint retrieve_json_int(JsonReader *reader, gchar *key) {
+	json_reader_read_member(reader, key);
 	gint value = json_reader_get_int_value(reader);
 	json_reader_end_member(reader);
 	return value;
 }
 
-
-void retrieve_json_string(JsonReader *reader, gchar *name, gchar *destination) {
-	json_reader_read_member(reader, name);
+/**
+ * Copies a retrieved JSON string into the passed destination buffer.
+ * @param reader A reader pointing to an object in the JSON file.
+ * @param key Key within the object.
+ * @param destination Character array into which the string value is copied. This character array must have previously been allocated.
+  */
+void retrieve_json_string(JsonReader *reader, gchar *key, gchar *destination) {
+	json_reader_read_member(reader, key);
 	strcpy(destination,json_reader_get_string_value(reader));
 	json_reader_end_member(reader);
 }
 
-
-
 /**
- * Reads configuration from a JSON file in `~/.deposit_slip/deposit_slips.json`.
+ * Reads configuration from a JSON file whose path is defined in CONFIG_FILE.
+ * @param data_passer Pointer to user data.
  */
 void read_configuration_data(Data_passer *data_passer) {
 	GSList *local_struct_list = NULL;
