@@ -137,7 +137,7 @@ void read_configuration_data(Data_passer *data_passer) {
 	data_passer->front->amount_pitch = retrieve_json_int(reader,"amount_pitch");
 	data_passer->front->subtotal_y = retrieve_json_int(reader,"subtotal_y");
 	data_passer->front->total_y = retrieve_json_int(reader,"total_y");
-	data_passer->front->total_x = retrieve_json_int(reader,"total_x");
+	data_passer->front->amount_x = retrieve_json_int(reader,"amount_x");
 	json_reader_end_member(reader); /* front */
 
 	json_reader_read_member(reader, "back");

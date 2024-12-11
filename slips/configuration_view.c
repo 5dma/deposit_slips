@@ -213,7 +213,7 @@ GtkWidget *make_configuration_view(Data_passer *data_passer) {
 								grid_layout_fields);
 
 	add_one_value_configuration("Amounts x",
-								&(data_passer->front->total_x),
+								&(data_passer->front->amount_x),
 								row_number++,
 								grid_layout_fields);
 

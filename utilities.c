@@ -189,7 +189,7 @@ void write_config_free_memory(GtkWidget *window, gpointer data) {
 		set_int_value(builder, "amount_pitch", data_passer->front->amount_pitch);
 		set_int_value(builder, "subtotal_y", data_passer->front->subtotal_y);
 		set_int_value(builder, "total_y", data_passer->front->total_y);
-		set_int_value(builder, "total_x", data_passer->front->total_x);
+		set_int_value(builder, "amount_x", data_passer->front->amount_x);
 		json_builder_end_object(builder); /* front */
 
 		json_builder_set_member_name (builder, "back");

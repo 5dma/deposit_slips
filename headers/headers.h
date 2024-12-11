@@ -54,7 +54,7 @@ typedef struct Front {
 	gdouble amount_pitch;  /**< Line spacing between amounts. */
 	gdouble subtotal_y;  /**< y position of the subtotal carried from the back side of the deposit slip. */
 	gdouble total_y;  /**< y position of the total. */
-	gdouble total_x;  /**< x position of all amounts. */
+	gdouble amount_x;  /**< x position of all amounts. */
 } Front;
 
 /**

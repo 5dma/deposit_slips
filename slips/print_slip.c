@@ -63,7 +63,7 @@ gboolean print_deposit_amounts_front(GtkTreeModel *model,
 	cairo_text_extents(cr, formatted_amount, &extents);
 
 	Front *front = data_passer->front;
-	cairo_move_to(cr, front->total_x - extents.width, front->first_amount_y + (row_number * front->amount_pitch));
+	cairo_move_to(cr, front->amount_x - extents.width, front->first_amount_y + (row_number * front->amount_pitch));
 	cairo_show_text(cr, formatted_amount);
 
 	g_free(formatted_amount);
@@ -254,7 +254,7 @@ void draw_page(GtkPrintOperation *self, GtkPrintContext *context, gint page_nr, 
 	cairo_text_extents_t extents;
 	gchar *formatted_total = comma_formatted_amount(data_passer->total_deposit);
 	cairo_text_extents(cr, formatted_total, &extents);
-	cairo_move_to(cr, front->total_x - extents.width, front->total_y);
+	cairo_move_to(cr, front->amount_x - extents.width, front->total_y);
 	cairo_set_font_size(cr, data_passer->font_size_monospace);
 	cairo_select_font_face(cr, data_passer->font_family_mono, CAIRO_FONT_SLANT_NORMAL, CAIRO_FONT_WEIGHT_BOLD);
 	cairo_show_text(cr, formatted_total);
@@ -268,7 +268,7 @@ void draw_page(GtkPrintOperation *self, GtkPrintContext *context, gint page_nr, 
 		cairo_text_extents_t extents;
 		cairo_text_extents(data_passer->cairo_context, formatted_total, &extents);
 
-		cairo_move_to(cr, front->total_x - extents.width, front->subtotal_y);
+		cairo_move_to(cr, front->amount_x - extents.width, front->subtotal_y);
 
 		cairo_show_text(data_passer->cairo_context, formatted_total);
 
