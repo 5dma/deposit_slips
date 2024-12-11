@@ -190,24 +190,6 @@ GtkWidget *make_configuration_view(Data_passer *data_passer) {
 								row_number++,
 								grid_layout_fields);
 
-
-/* 	GtkWidget *label_field_name = gtk_label_new("Account y");
-	gtk_label_set_xalign(GTK_LABEL(label_field_name), 0.0);
-
-	GtkWidget *spin_button = gtk_spin_button_new_with_range(0, 1000, 1);
-	gtk_spin_button_set_value(GTK_SPIN_BUTTON(spin_button), data_passer->front->account_y);
-	gtk_entry_set_alignment(GTK_ENTRY(spin_button), 1);
-	gtk_grid_attach(GTK_GRID(grid_layout_fields), label_field_name, 0, 3, 1, 1);
-	gtk_grid_attach(GTK_GRID(grid_layout_fields), spin_button, 4, 3, 1, 1);
-	g_signal_connect(GTK_WIDGET(spin_button), "value-changed", G_CALLBACK(update_config_spinner), &(data_passer->front->account_y));
-	g_print("outside The address is %p\n", &(data_passer->front->account_y));
-
-
-	gint all_spin_events = gtk_widget_get_events(GTK_WIDGET(spin_button));
-	gtk_widget_set_events (GTK_WIDGET(spin_button), all_spin_events ^ GDK_SCROLL_MASK);
-	row_number++; */
-
-
 	add_one_value_configuration("Date y",
 								&(data_passer->front->date_y),
 								row_number++,
@@ -251,23 +233,23 @@ GtkWidget *make_configuration_view(Data_passer *data_passer) {
 
 
 
-	add_one_value_configuration("Amount x",
+	add_one_value_configuration("Amount x (back)",
 								&(data_passer->back->amount_x),
 								row_number++,
 								grid_layout_fields);
 
-	add_one_value_configuration("First amount y",
+	add_one_value_configuration("First amount y (back)",
 								&(data_passer->back->first_amount_y),
 								row_number++,
 								grid_layout_fields);
 
-	add_one_value_configuration("Amount pitch",
+	add_one_value_configuration("Amount pitch (back)",
 								&(data_passer->back->amount_pitch),
 								row_number++,
 								grid_layout_fields);
 
 
-	add_one_value_configuration("Total y",
+	add_one_value_configuration("Total y (back)",
 								&(data_passer->back->total_y),
 								row_number++,
 								grid_layout_fields);
