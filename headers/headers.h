@@ -39,12 +39,6 @@ typedef struct Accounts {
 } Account;
 
 
-typedef struct {
-	gdouble x;
-	gdouble y;
-} Coordinates;
-
-
 typedef struct Front {
  	gdouble name_account_label_x;
 	gdouble name_account_date_value_x;
