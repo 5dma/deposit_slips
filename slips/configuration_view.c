@@ -163,37 +163,32 @@ GtkWidget *make_configuration_view(Data_passer *data_passer) {
 	gint row_number = 0;
 
 	add_one_value_configuration("Name/Account label x",
-								&(data_passer->front->name_account_label_x),
+								&(data_passer->front->date_name_address_label_x),
 								row_number++,
 								grid_layout_fields);
 
 	add_one_value_configuration("Name/Account/Date value x",
-								&(data_passer->front->name_account_date_value_x),
+								&(data_passer->front->date_name_value_x),
 								row_number++,
 								grid_layout_fields);
 
 	add_one_value_configuration("Name y",
-								&(data_passer->front->name_y),
-								row_number++,
-								grid_layout_fields);
-
-	add_one_value_configuration("Account y",
-								&(data_passer->front->account_y),
+								&(data_passer->front->name_value_y),
 								row_number++,
 								grid_layout_fields);
 
 	add_one_value_configuration("Date y",
-								&(data_passer->front->date_y),
+								&(data_passer->front->date_value_y),
 								row_number++,
 								grid_layout_fields);
 
 	add_one_value_configuration("MICR x",
-								&(data_passer->front->micr_x),
+								&(data_passer->front->micr_account_number_label_x),
 								row_number++,
 								grid_layout_fields);
 
 	add_one_value_configuration("MICR y",
-								&(data_passer->front->micr_y),
+								&(data_passer->front->micr_account_number_label_y),
 								row_number++,
 								grid_layout_fields);
 

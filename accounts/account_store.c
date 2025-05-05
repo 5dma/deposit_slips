@@ -126,13 +126,12 @@ void read_configuration_data(Data_passer *data_passer) {
 	retrieve_json_string( reader, "font_family_mono", data_passer->font_family_mono);
 
 	json_reader_read_member(reader, "front");
-	data_passer->front->name_account_label_x = retrieve_json_int(reader,"name_account_label_x");
-	data_passer->front->name_account_date_value_x = retrieve_json_int(reader,"name_account_date_value_x");
-	data_passer->front->name_y = retrieve_json_int(reader,"name_y");
-	data_passer->front->account_y = retrieve_json_int(reader,"account_y");
-	data_passer->front->date_y = retrieve_json_int(reader,"date_y");
-	data_passer->front->micr_y = retrieve_json_int(reader,"micr_y");
-	data_passer->front->micr_x = retrieve_json_int(reader,"micr_x");
+	data_passer->front->date_name_address_label_x = retrieve_json_int(reader,"date_name_address_label_x");
+	data_passer->front->date_name_value_x = retrieve_json_int(reader,"date_name_value_x");
+	data_passer->front->name_value_y = retrieve_json_int(reader,"name_value_y");
+	data_passer->front->date_value_y = retrieve_json_int(reader,"date_value_y");
+	data_passer->front->micr_account_number_label_y = retrieve_json_int(reader,"micr_account_number_label_y");
+	data_passer->front->micr_account_number_label_x = retrieve_json_int(reader,"micr_account_number_label_x");
 	data_passer->front->first_amount_y = retrieve_json_int(reader,"first_amount_y");
 	data_passer->front->amount_pitch = retrieve_json_int(reader,"amount_pitch");
 	data_passer->front->subtotal_y = retrieve_json_int(reader,"subtotal_y");

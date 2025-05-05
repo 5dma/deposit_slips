@@ -204,38 +204,38 @@ void draw_page(GtkPrintOperation *self, GtkPrintContext *context, gint page_nr, 
 	Front *front = data_passer->front;
 	/* Write Name Label */
 	if (data_passer->print_name_account_labels) {
-		cairo_move_to(cr, front->name_account_label_x, front->name_y);
+		cairo_move_to(cr, front->date_name_address_label_x, front->name_value_y);
 		cairo_set_font_size(cr, data_passer->font_size_sans_serif * data_passer->font_size_static_label_scaling);
 		cairo_show_text(cr, "Name");
 	}
 	/* Write Name value */
-	cairo_move_to(cr, front->name_account_date_value_x, front->name_y);
+	cairo_move_to(cr, front->date_name_value_x, front->name_value_y);
 	cairo_set_font_size(cr, data_passer->font_size_sans_serif);
 	cairo_show_text(cr, account_name);
 
 	/* Write Account Label */
 	if (data_passer->print_name_account_labels) {
-		cairo_move_to(cr, front->name_account_label_x, front->account_y);
+		cairo_move_to(cr, front->date_name_address_label_x, front->account_y);
 		cairo_set_font_size(cr, data_passer->font_size_sans_serif * data_passer->font_size_static_label_scaling);
 		cairo_show_text(cr, "Account No");
 	}
 
 	/* Write Account Value */
-	cairo_move_to(cr, front->name_account_date_value_x, front->account_y);
+	cairo_move_to(cr, front->date_name_value_x, front->account_y);
 	cairo_set_font_size(cr, data_passer->font_size_sans_serif);
 	cairo_show_text(cr, account_number);
 
 	/* Write date */
 	GDateTime *date_time = g_date_time_new_now_local();
 	gchar *date_time_string = g_date_time_format(date_time, "%B %e, %Y");
-	cairo_move_to(cr, front->name_account_date_value_x, front->date_y);
+	cairo_move_to(cr, front->date_name_value_x, front->date_value_y);
 	cairo_set_font_size(cr, data_passer->font_size_sans_serif);
 	cairo_show_text(cr, date_time_string);
 	g_free(date_time_string);
 
 	/* Write Account in MICR */
 	gchar *account_with_transit = g_strconcat(account_number, MICR_ON_US, NULL);
-	cairo_move_to(cr, front->micr_x, front->micr_y);
+	cairo_move_to(cr, front->micr_account_number_label_x, front->micr_account_number_label_y);
 	cairo_set_font_size(cr, 20); /* Need to put this in the configuration structure. */
 	cairo_select_font_face(cr, data_passer->font_face_micr, CAIRO_FONT_SLANT_NORMAL, CAIRO_FONT_WEIGHT_NORMAL);
 	cairo_show_text(cr, account_with_transit);

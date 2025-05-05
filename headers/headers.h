@@ -43,13 +43,70 @@ typedef struct Accounts {
  * Structure holding printing coordinates on the front side of the deposit slip. Corresponds to the `front` stanza in the configuration file.
 */ 
 typedef struct Front {
- 	gdouble name_account_label_x;  /**< x position of the **Name** and **Account** labels. */
-	gdouble name_account_date_value_x; /**< x position of the **Name**, **Account**, and **Date** values. */
-	gdouble name_y; /**< y position of the **Name** value. */
-	gdouble account_y; /**< y position of the **Account** value. */
-	gdouble date_y; /**< y position of the **Date** value. */
-	gdouble micr_y; /**< y position of the account's MICR rendition. */
-	gdouble micr_x; /**< x position of the account's MICR rendition. */
+	gdouble checks_other_items_label_x;  /**< x position of the rotated "Checks and other itmes.." label */
+	gdouble checks_other_items_label_y;  /**< y position of the rotated "Checks and other itmes.." label */
+	gdouble deposit_label_x;  /**< x position of the **Deposit** label */
+	gdouble deposit_label_y;  /**< y position of the **Deposit** label */
+
+	gdouble date_name_address_label_x;  /**< x position of the **Date**, **Name**, and **Address** labels. */
+	gdouble date_label_y; /**< y position of the **Date** label. */
+	gdouble name_label_y; /**< y position of the **Name** label. */
+	gdouble date_name_value_x; /**< x position of the **Name** and **Date** values. */
+	gdouble date_value_y; /**< y position of the **Date** value. */
+	gdouble name_value_y; /**< y position of the **Name** value. */
+	
+	gdouble date_name_line_x; /**<x position of the line for the date and name field. */
+	gdouble date_name_line_y; /**<y position of the line for the date and name field. */
+	gdouble date_name_line_length; /**< Length of the line for the date and name field. */
+
+	gdouble address_label_y; /**< y position of the **Address** label. */
+
+	gdouble address_line_x; /**<x position of the line for the address field. */
+	gdouble address_line_y; /**<y position of the line for the address field. */
+	gdouble address_line_length; /**< Length of the line for the address field. */
+
+	gdouble account_number_label_x; /**< x position of the **Account Number** label. */
+	gdouble account_number_label_y; /**< y position of the **Account Number** label. */
+	gdouble account_number_human_value_x; /**< x position of the human-readable account number. */
+	gdouble account_number_human_value_y; /**< y position of the human-readable account number. */
+	gdouble account_number_squares_x; /**< x position of the series of squares holding the human-readable account number. */
+	gdouble account_number_squares_y; /**< y position of the series of squares holding the human-readable account number. */
+	gdouble account_number_squares_width; /**< Width of each square holding the human-readable account number. */
+	gdouble account_number_squares_height; /**< Height of each square holding the human-readable account number. */
+	
+	gdouble micr_routing_number_label_x; /**< x position of MICR routing number. */
+	gdouble micr_routing_number_label_y; /**< y position of MICR routing number. */
+	gdouble micr_account_number_label_x; /**< x position of MICR account number. */
+	gdouble micr_account_number_label_y; /**< y position of MICR account number. */
+	gdouble micr_serial_number_label_x; /**< x position of MICR serial number */
+	gdouble micr_serial_number_label_y; /**< y position of MICR serial number. */
+
+	gdouble cash_label_x; /**< x position of **Cash** label. */
+	gdouble cash_label_y; /**< y position of **Cash** label. */
+	gdouble checks_label_x; /**< x position of **Checks** label. */
+	gdouble checks_label_y; /**< y position of **Checks** label. */
+	gdouble subtotal_label_x; /**< x position of **Subtotal** label. */
+	gdouble subtotal_label_y; /**< y position of **Subtotal** label. */
+	gdouble less_cash_label_x; /**< x position of **Less Cash Received** label. */
+	gdouble less_cash_label_y; /**< y position of **Less Cash Received** label. */
+	gdouble net_deposit_label_x; /**< x position of **Net Deposit** label. */
+	gdouble net_deposit_label_y; /**< y position of **Net Deposit** label. */
+	gdouble dollar_label_x; /**< x position of **$** label. */
+	gdouble dollar_label_y; /**< y position of **$** label. */
+
+
+	gdouble checks_bracket_x; /**< x position of first checks bracket. */
+	gdouble checks_bracket_y; /**< y position of first checks bracket. */
+	gdouble checks_bracket_width; /**< Width of checks bracket. */
+	gdouble checks_bracket_height; /**< Height of checks bracket. */
+	gdouble checks_bracket_spacing; /**< Spacing between the two checks brackets. */
+
+	gdouble amount_boxes_x; /**< x position of the gray squares for amounts. */
+	gdouble amount_boxes_y; /**< y position of the gray squares for amounts. */
+	gdouble amount_boxes_width; /**< Width of each amount box */
+	gdouble amount_boxes_height; /**< Height of each amount box. */
+	gdouble amount_boxes_separator_height; /**< Height of each separator line in amount boxes. */
+
 	gdouble first_amount_y;  /**< y position of the first amount. */
 	gdouble amount_pitch;  /**< Line spacing between amounts. */
 	gdouble subtotal_y;  /**< y position of the subtotal carried from the back side of the deposit slip. */
