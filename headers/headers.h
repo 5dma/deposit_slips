@@ -124,6 +124,8 @@ typedef struct Data_passer {
 	Front *front;
 /** Structure containing printing coordinates on the back side of the deposit slip. See Back.*/
 	Back *back;
+/** Object containing the CSS definitions.*/
+	GtkCssProvider* css_provider;
 } Data_passer;
 
 /**
@@ -158,7 +160,7 @@ gboolean preview_deposit_amounts_back(GtkTreeModel *model,
 void print_deposit_slip(GtkButton *self, gpointer data);
 gchar *comma_formatted_amount(gfloat amount);
 
-GDestroyNotify free_gslist_account(gpointer data);
+void free_gslist_account(gpointer data);
 
 GtkWidget *make_slip_view(Data_passer *data_passer);
 void update_label(GtkTreeView *tree_view, gpointer user_data);

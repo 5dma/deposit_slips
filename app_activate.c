@@ -32,6 +32,9 @@ void on_app_activate(GApplication *app, gpointer data) {
 	data_passer->front = (Front *)g_malloc(sizeof(Front));
 	data_passer->back = (Back *)g_malloc(sizeof(Back));
 
+	data_passer->css_provider = gtk_css_provider_new();
+	gtk_css_provider_load_from_path(data_passer->css_provider, "/home/abba/programming/c_programs/deposit_slips/styles.css", NULL);
+	gtk_style_context_add_provider_for_screen(gdk_screen_get_default(), GTK_STYLE_PROVIDER(data_passer->css_provider), GTK_STYLE_PROVIDER_PRIORITY_USER);
 
 	GtkWidget *window = gtk_application_window_new(GTK_APPLICATION(app));
 	gtk_window_set_resizable(GTK_WINDOW(window), FALSE);
@@ -46,6 +49,11 @@ void on_app_activate(GApplication *app, gpointer data) {
 	GtkWidget *label_slip = gtk_label_new("Slip");
 	GtkWidget *label_account = gtk_label_new("Accounts");
 	GtkWidget *label_configuration = gtk_label_new("Configuration");
+
+	gtk_widget_set_name (vbox_slip, "vbox_slip");
+	gtk_widget_set_name (vbox_accounts, "vbox_accounts");
+	gtk_widget_set_name (vbox_configuration, "vbox_configuration");
+
 
 	gtk_notebook_append_page(GTK_NOTEBOOK(notebook), vbox_slip, label_slip);
 	gtk_notebook_append_page(GTK_NOTEBOOK(notebook), vbox_accounts, label_account);

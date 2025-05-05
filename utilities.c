@@ -77,9 +77,8 @@ void set_boolean_value (JsonBuilder *builder, gchar *key, gboolean value) {
 /**
 Frees memory allocated to a GSList of accounts. Called from write_config_free_memory().
 * @param data Pointer to user data, which is to an Account entry in a GSList.
-* @return A `GDestroyNotify` object.
 */
-GDestroyNotify free_gslist_account(gpointer data) {
+void free_gslist_account(gpointer data) {
 	Account *account = (Account *)data;
 	g_free(account);
 }
@@ -220,6 +219,7 @@ void write_config_free_memory(GtkWidget *window, gpointer data) {
 		/* Free memory allocated to the master and temporary list stores. */
 		gtk_list_store_clear(data_passer->list_store_master);
 		gtk_list_store_clear(data_passer->list_store_temporary);
+		g_object_unref(data_passer->css_provider);
 		g_free(data_passer);
 
 
