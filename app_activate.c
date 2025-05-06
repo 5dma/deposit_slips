@@ -1,5 +1,6 @@
 #include <gtk/gtk.h>
 #include <headers.h>
+#include <constants.h>
 
 /**
  * @file app_activate.c
@@ -31,6 +32,17 @@ void on_app_activate(GApplication *app, gpointer data) {
 	data_passer->btn_go_to_last = NULL;
 	data_passer->front = (Front *)g_malloc(sizeof(Front));
 	data_passer->back = (Back *)g_malloc(sizeof(Back));
+	data_passer->new_account_foreground.red = 0.35; 
+	data_passer->new_account_foreground.green = 0.35; 
+	data_passer->new_account_foreground.blue = 0.35; 
+	data_passer->new_account_foreground.alpha = 1; 
+
+	data_passer->existing_account_foreground.red = 0; 
+	data_passer->existing_account_foreground.green = 0; 
+	data_passer->existing_account_foreground.blue = 0; 
+	data_passer->existing_account_foreground.alpha = 1; 
+
+
 
 	data_passer->css_provider = gtk_css_provider_new();
 	gtk_css_provider_load_from_path(data_passer->css_provider, "/home/abba/programming/c_programs/deposit_slips/styles.css", NULL);
@@ -70,7 +82,7 @@ void on_app_activate(GApplication *app, gpointer data) {
 	read_configuration_data(data_passer);
 
 	/* Make the view for the Accounts tab. */
-	GtkWidget *accounts_tab_tree = make_tree_view(data_passer->list_store_temporary);
+	GtkWidget *accounts_tab_tree = make_tree_view(data_passer->list_store_temporary, data_passer);
 	/* Make the view for the Slip  tab. */
 	GtkWidget *slips_tab_tree = make_slip_view(data_passer);
 

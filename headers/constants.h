@@ -12,11 +12,6 @@ static const char NEW_DESCRIPTION[] = "(Description)";
 static const char NEW_NAME[] = "(Name)";
  /** Dummy routing string for the new account row. */
 static const char NEW_ROUTING[] = "(Routing No)";
- /** Soft gray text color for rendering the new account row. */
-static const struct _GdkRGBA NEW_ACCOUNT_FOREGROUND = {0.35,0.35,0.35,1}; 
-/** Black text color for rendering the new account row. */
-static const struct _GdkRGBA EXISTING_ACCOUNT_FOREGROUND = {0,0,0,1}; 
-
 
 /** Name for the Revert button. */
 static const char BUTTON_NAME_REVERT[] = "btnAccountsRevert"; 

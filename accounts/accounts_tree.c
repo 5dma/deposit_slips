@@ -23,16 +23,17 @@ void account_column_formatter(GtkTreeViewColumn *col,
 							  GtkTreeModel *model,
 							  GtkTreeIter *iter,
 							  gpointer user_data) {
+	Data_passer *data_passer = (Data_passer *)user_data;
 	gchararray account_number[500];
 	gtk_tree_model_get(model, iter, ACCOUNT_NUMBER, account_number, -1);
 
 	g_object_set(renderer, "text", *account_number, NULL);
 	if (strcmp(*account_number, NEW_NUMBER) == 0) {
-		g_object_set(renderer, "foreground-rgba", &NEW_ACCOUNT_FOREGROUND, NULL);
+		g_object_set(renderer, "foreground-rgba", &(data_passer->new_account_foreground), NULL);
 		g_object_set(renderer, "style", PANGO_STYLE_ITALIC, NULL);
 
 	} else {
-		g_object_set(renderer, "foreground-rgba", &EXISTING_ACCOUNT_FOREGROUND, NULL);
+		g_object_set(renderer, "foreground-rgba", &(data_passer->existing_account_foreground), NULL);
 		g_object_set(renderer, "style", PANGO_STYLE_NORMAL, NULL);
 	}
 }
@@ -51,15 +52,16 @@ void name_column_formatter(GtkTreeViewColumn *col,
 						   GtkTreeModel *model,
 						   GtkTreeIter *iter,
 						   gpointer user_data) {
+	Data_passer *data_passer = (Data_passer *)user_data;
 	gchararray name[500];
 	gtk_tree_model_get(model, iter, ACCOUNT_NAME, name, -1);
 	g_object_set(renderer, "text", *name, NULL);
 	if (strcmp(*name, NEW_NAME) == 0) {
-		g_object_set(renderer, "foreground-rgba", &NEW_ACCOUNT_FOREGROUND, NULL);
+		g_object_set(renderer, "foreground-rgba", &(data_passer->new_account_foreground), NULL);
 		g_object_set(renderer, "style", PANGO_STYLE_ITALIC, NULL);
 
 	} else {
-		g_object_set(renderer, "foreground-rgba", &EXISTING_ACCOUNT_FOREGROUND, NULL);
+		g_object_set(renderer, "foreground-rgba", &(data_passer->existing_account_foreground), NULL);
 		g_object_set(renderer, "style", PANGO_STYLE_NORMAL, NULL);
 	}
 }
@@ -78,14 +80,15 @@ void description_column_formatter(GtkTreeViewColumn *col,
 								  GtkTreeModel *model,
 								  GtkTreeIter *iter,
 								  gpointer user_data) {
+	Data_passer *data_passer = (Data_passer *)user_data;
 	gchararray description[500];
 	gtk_tree_model_get(model, iter, DESCRIPTION, description, -1);
 	g_object_set(renderer, "text", *description, NULL);
 	if (strcmp(*description, NEW_DESCRIPTION) == 0) {
-		g_object_set(renderer, "foreground-rgba", &NEW_ACCOUNT_FOREGROUND, NULL);
+		g_object_set(renderer, "foreground-rgba", &(data_passer->new_account_foreground), NULL);
 		g_object_set(renderer, "style", PANGO_STYLE_ITALIC, NULL);
 	} else {
-		g_object_set(renderer, "foreground-rgba", &EXISTING_ACCOUNT_FOREGROUND, NULL);
+		g_object_set(renderer, "foreground-rgba", &(data_passer->existing_account_foreground), NULL);
 		g_object_set(renderer, "style", PANGO_STYLE_NORMAL, NULL);
 	}
 }
@@ -104,14 +107,15 @@ void routing_column_formatter(GtkTreeViewColumn *col,
 							  GtkTreeModel *model,
 							  GtkTreeIter *iter,
 							  gpointer user_data) {
+	Data_passer *data_passer = (Data_passer *)user_data;
 	gchararray routing[500];
 	gtk_tree_model_get(model, iter, ROUTING_NUMBER, routing, -1);
 	g_object_set(renderer, "text", *routing, NULL);
 	if (strcmp(*routing, NEW_ROUTING) == 0) {
-		g_object_set(renderer, "foreground-rgba", &NEW_ACCOUNT_FOREGROUND, NULL);
+		g_object_set(renderer, "foreground-rgba", &(data_passer->new_account_foreground), NULL);
 		g_object_set(renderer, "style", PANGO_STYLE_ITALIC, NULL);
 	} else {
-		g_object_set(renderer, "foreground-rgba", &EXISTING_ACCOUNT_FOREGROUND, NULL);
+		g_object_set(renderer, "foreground-rgba", &(data_passer->existing_account_foreground), NULL);
 		g_object_set(renderer, "style", PANGO_STYLE_NORMAL, NULL);
 	}
 }
@@ -275,7 +279,7 @@ static void toggle_clicked(GtkCellRendererToggle *renderer,
  * @param list_store Pointer to the `GtkListStore` associated with the tree view this function creates.
  * @return A pointer to the created tree view.
 */
-GtkWidget *make_tree_view(GtkListStore *list_store) {
+GtkWidget *make_tree_view(GtkListStore *list_store, Data_passer *data_passer) {
 	GtkWidget *tree;
 
 	tree = gtk_tree_view_new_with_model(GTK_TREE_MODEL(list_store));
@@ -348,10 +352,10 @@ GtkWidget *make_tree_view(GtkListStore *list_store) {
 	gtk_tree_view_append_column(GTK_TREE_VIEW(tree), columnRouting);
 	gtk_tree_view_append_column(GTK_TREE_VIEW(tree), columnToggle);
 
-	gtk_tree_view_column_set_cell_data_func(columnAccount, rendererAccount, account_column_formatter, NULL, NULL);
-	gtk_tree_view_column_set_cell_data_func(columnName, rendererName, name_column_formatter, NULL, NULL);
-	gtk_tree_view_column_set_cell_data_func(columnDescription, rendererDescription, description_column_formatter, NULL, NULL);
-	gtk_tree_view_column_set_cell_data_func(columnRouting, rendererRouting, routing_column_formatter, NULL, NULL);
+	gtk_tree_view_column_set_cell_data_func(columnAccount, rendererAccount, account_column_formatter, data_passer, NULL);
+	gtk_tree_view_column_set_cell_data_func(columnName, rendererName, name_column_formatter, data_passer, NULL);
+	gtk_tree_view_column_set_cell_data_func(columnDescription, rendererDescription, description_column_formatter, data_passer, NULL);
+	gtk_tree_view_column_set_cell_data_func(columnRouting, rendererRouting, routing_column_formatter, data_passer, NULL);
 
 	return tree;
 }

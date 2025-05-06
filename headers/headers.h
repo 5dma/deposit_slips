@@ -43,9 +43,12 @@ typedef struct Accounts {
  * Structure holding printing coordinates on the front side of the deposit slip. Corresponds to the `front` stanza in the configuration file.
 */ 
 typedef struct Front {
-	gdouble checks_other_items_label_x;  /**< x position of the rotated "Checks and other itmes.." label */
-	gdouble checks_other_items_label_y;  /**< y position of the rotated "Checks and other itmes.." label */
-	gdouble deposit_label_y;  /**< y position of the **Deposit** label (x-position determined by centering on the deposit slip)*/
+	gdouble checks_other_items_label_x;  /**< x position of the rotated "Checks and other itmes.." label. */
+	gdouble checks_other_items_label_y;  /**< y position of the rotated "Checks and other itmes.." label. */
+	gfloat checks_other_items_font_size;  /**< Font size for the rotated "Checks and other itmes.." label.*/
+
+	gdouble deposit_label_y;  /**< y position of the **Deposit** label (x-position determined by centering on the deposit slip).*/
+	gdouble deposit_label_font_size;  /**< Font size for the **Deposit** label.*/
 
 	gdouble date_name_address_label_x;  /**< x position of the **Date**, **Name**, and **Address** labels. */
 	gdouble date_label_y; /**< y position of the **Date** label. */
@@ -179,6 +182,10 @@ typedef struct Data_passer {
 	Back *back;
 /** Object containing the CSS definitions.*/
 	GtkCssProvider* css_provider;
+ /** Soft gray text color for rendering the new account row. */	
+	GdkRGBA new_account_foreground;
+/** Black text color for rendering the new account row. */	
+	GdkRGBA existing_account_foreground;
 } Data_passer;
 
 /**
@@ -192,7 +199,7 @@ typedef struct CheckSelections {
 void on_app_activate(GApplication *app, gpointer data);
 void build_list_store(gpointer account, gpointer list_builder_struct);
 
-GtkWidget *make_tree_view(GtkListStore *list_store );
+GtkWidget *make_tree_view(GtkListStore *list_store, Data_passer *data_passer);
 
 GtkWidget *get_child_from_parent (GtkWidget * parent, const gchar * child_name);
 void read_configuration_data(Data_passer *data_passer);
