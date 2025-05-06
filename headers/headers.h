@@ -45,7 +45,7 @@ typedef struct Accounts {
 typedef struct Front {
 	gdouble checks_other_items_label_x;  /**< x position of the rotated "Checks and other itmes.." label. */
 	gdouble checks_other_items_label_y;  /**< y position of the rotated "Checks and other itmes.." label. */
-	gfloat checks_other_items_font_size;  /**< Font size for the rotated "Checks and other itmes.." label.*/
+	gdouble checks_other_items_font_size;  /**< Font size for the rotated "Checks and other itmes.." label.*/
 
 	gdouble deposit_label_y;  /**< y position of the **Deposit** label (x-position determined by centering on the deposit slip).*/
 	gdouble deposit_label_font_size;  /**< Font size for the **Deposit** label.*/

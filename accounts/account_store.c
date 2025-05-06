@@ -24,6 +24,19 @@ gint retrieve_json_int(JsonReader *reader, gchar *key) {
 }
 
 /**
+ * Reads a double float value for the passed key and the passed reader.
+ * @param reader A reader pointing to an object in the JSON file.
+ * @param key Key within the object.
+ * @return Integer value associated with the key.
+  */
+ gdouble retrieve_json_double(JsonReader *reader, gchar *key) {
+	json_reader_read_member(reader, key);
+	gdouble value = json_reader_get_double_value(reader);
+	json_reader_end_member(reader);
+	return value;
+}
+
+/**
  * Copies a retrieved JSON string into the passed destination buffer.
  * @param reader A reader pointing to an object in the JSON file.
  * @param key Key within the object.
@@ -122,7 +135,10 @@ void read_configuration_data(Data_passer *data_passer) {
 	json_reader_read_member(reader, "front");
 	data_passer->front->checks_other_items_label_x = retrieve_json_int(reader,"checks_other_items_label_x");
 	data_passer->front->checks_other_items_label_y = retrieve_json_int(reader,"checks_other_items_label_y");
+	data_passer->front->checks_other_items_font_size = retrieve_json_double(reader, "checks_other_items_font_size");
+
 	data_passer->front->deposit_label_y = retrieve_json_int(reader,"deposit_label_y");
+	data_passer->front->deposit_label_font_size = retrieve_json_int(reader,"deposit_label_font_size");
 
 	data_passer->front->date_name_address_label_x = retrieve_json_int(reader,"date_name_address_label_x");
 	data_passer->front->date_label_y = retrieve_json_int(reader,"date_label_y");

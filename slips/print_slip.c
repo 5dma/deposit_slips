@@ -1,6 +1,5 @@
-#include <gtk/gtk.h>
-
 #include <constants.h>
+#include <gtk/gtk.h>
 #include <headers.h>
 
 /**
@@ -31,14 +30,13 @@ gboolean print_deposit_amounts_front(GtkTreeModel *model,
 	guint64 row_number = 0;
 	GError *gerror = NULL;
 
-	 g_ascii_string_to_unsigned(
-		pathstring,  /* path of the current row */
-		10,          /* Base 10 */
-		0,           /* minimum value */
-		100,         /* maximum value */
+	g_ascii_string_to_unsigned(
+		pathstring, /* path of the current row */
+		10, /* Base 10 */
+		0, /* minimum value */
+		100, /* maximum value */
 		&row_number, /* returned row number */
-		&gerror);    /* pointer for GError *. */
-
+		&gerror); /* pointer for GError *. */
 
 	/* Stop rendering of checks after the second one in the store. */
 	if (row_number > 1) {
@@ -105,12 +103,12 @@ gboolean print_deposit_amounts_back(GtkTreeModel *model,
 	GError *gerror = NULL;
 
 	g_ascii_string_to_unsigned(
-		pathstring,  /* path of the current row */
-		10,          /* Base 10 */
-		0,           /* minimum value */
-		100,         /* maximum value */
+		pathstring, /* path of the current row */
+		10, /* Base 10 */
+		0, /* minimum value */
+		100, /* maximum value */
 		&row_number, /* returned row number */
-		&gerror);    
+		&gerror);
 
 	/* Ignore rendering of checks before the second one in the store. */
 	if (row_number < 2) {
@@ -145,7 +143,7 @@ gboolean print_deposit_amounts_back(GtkTreeModel *model,
 	cairo_text_extents(cr, formatted_amount, &extents);
 
 	Back *back = data_passer->back;
-	cairo_move_to(cr, back->amount_x - extents.width, back->first_amount_y +  (row_number * back->amount_pitch));
+	cairo_move_to(cr, back->amount_x - extents.width, back->first_amount_y + (row_number * back->amount_pitch));
 	cairo_show_text(cr, formatted_amount);
 	g_free(formatted_amount);
 	g_free(amount);
@@ -185,61 +183,91 @@ void draw_page(GtkPrintOperation *self, GtkPrintContext *context, gint page_nr, 
 						   -1);
 	}
 
+	cairo_text_extents_t extents;
 	cairo_t *cr;
 	cr = gtk_print_context_get_cairo_context(context);
 
 	cairo_select_font_face(cr, data_passer->font_family_sans, CAIRO_FONT_SLANT_NORMAL, CAIRO_FONT_WEIGHT_BOLD);
 	cairo_set_font_size(cr, data_passer->font_size_sans_serif);
 
-	/* Rotate the surface counter-clockwise 90 degrees. */
-	cairo_rotate (cr, -G_PI_2);
-
-	/* 
-		Next, translate the surface so that the deposit slip appears in the top middle of the printed page.
-		Length of deposit slip is 6 * 72 = 432
-		Width of deposit slip is 2 5/8 * 72 = 211
+	/*
+		Translate the surface so that the deposit slip appears in the top middle of the printed page.
+		Width of paper is 8.5 * 72 = 612
+		Width of deposit slip is 6 * 72 = 432
+		Difference is 180
+		Therefore there is a margin of 90 on each side of the deposit slip
 	 */
-	cairo_translate(cr, -432, 211);
+	cairo_translate(cr, 90, 0);
 
 	Front *front = data_passer->front;
-	/* Write Name Label */
-	if (data_passer->print_name_account_labels) {
+	/*
+		Write Deposit label. This label is centered on the deposit slip, so
+		we need to move to the center and then offset by 1/2 the length of the
+		text "DEPOSIT."
+
+		The center of the deposit slip is 6 * 72 / 2 = 216.
+	*/
+	cairo_set_font_size(cr, front->deposit_label_font_size);
+	cairo_text_extents(cr, "DEPOSIT", &extents);
+	cairo_move_to(cr, 216 - (extents.width / 2), front->deposit_label_y);
+	cairo_show_text(cr, "DEPOSIT");
+
+
+	/* Write "Checks and other Items" label. This label is rotated 90 degrees. */
+	cairo_set_font_size(cr, front->checks_other_items_font_size);
+	cairo_push_group (cr);
+	cairo_move_to(cr, 0, 0);
+	cairo_rotate(cr, -1.570796);
+	cairo_move_to(cr, -126, 7);
+	cairo_show_text(cr, "CHECKS AND OTHER ITEMS ARE RECEIVED FOR DEPOSIT SUBJECT");
+	cairo_move_to(cr, -117, 11);
+	cairo_show_text(cr, "TO THE PROVISIONS OF THE UNIFORM COMMERCIAL CODE");
+	cairo_move_to(cr, -108, 15);
+	cairo_show_text(cr, "OR ANY APPLICABLE COLLECTION AGREEMENT");
+	cairo_move_to(cr, 50, 50);
+	cairo_pop_group_to_source (cr);
+	cairo_paint (cr);
+	
+	//cairo_move_to(cr, 50, 100);
+	//cairo_show_text(cr, "TO THE PROVISIONS OF THE UNIFORM COMMERCIAL CODE");
+	
+	/* Write Name Label
+
 		cairo_move_to(cr, front->date_name_address_label_x, front->name_value_y);
 		cairo_set_font_size(cr, data_passer->font_size_sans_serif * data_passer->font_size_static_label_scaling);
-		cairo_show_text(cr, "Name");
-	}
-	/* Write Name value */
+		cairo_show_text(cr, "Name");*/
+
+	/* Write Name value
 	cairo_move_to(cr, front->date_name_value_x, front->name_value_y);
 	cairo_set_font_size(cr, data_passer->font_size_sans_serif);
-	cairo_show_text(cr, account_name);
+	cairo_show_text(cr, account_name);*/
 
-	/* Write Account Label */
-	if (data_passer->print_name_account_labels) {
-		cairo_move_to(cr, front->date_name_address_label_x, front->account_y);
+	/* Write Account Label
+
+		cairo_move_to(cr, front->date_name_address_label_x, front->account_number_human_value_y);
 		cairo_set_font_size(cr, data_passer->font_size_sans_serif * data_passer->font_size_static_label_scaling);
-		cairo_show_text(cr, "Account No");
-	}
+		cairo_show_text(cr, "Account No");*/
 
-	/* Write Account Value */
-	cairo_move_to(cr, front->date_name_value_x, front->account_y);
+	/* Write Account Value
+	cairo_move_to(cr, front->date_name_value_x, front->account_number_human_value_y);
 	cairo_set_font_size(cr, data_passer->font_size_sans_serif);
-	cairo_show_text(cr, account_number);
+	cairo_show_text(cr, account_number);*/
 
-	/* Write date */
+	/* Write date
 	GDateTime *date_time = g_date_time_new_now_local();
 	gchar *date_time_string = g_date_time_format(date_time, "%B %e, %Y");
 	cairo_move_to(cr, front->date_name_value_x, front->date_value_y);
 	cairo_set_font_size(cr, data_passer->font_size_sans_serif);
 	cairo_show_text(cr, date_time_string);
-	g_free(date_time_string);
+	g_free(date_time_string);*/
 
-	/* Write Account in MICR */
+	/* Write Account in MICR
 	gchar *account_with_transit = g_strconcat(account_number, MICR_ON_US, NULL);
 	cairo_move_to(cr, front->micr_account_number_label_x, front->micr_account_number_label_y);
-	cairo_set_font_size(cr, 20); /* Need to put this in the configuration structure. */
+	cairo_set_font_size(cr, 20); // Need to put this in the configuration structure.
 	cairo_select_font_face(cr, data_passer->font_face_micr, CAIRO_FONT_SLANT_NORMAL, CAIRO_FONT_WEIGHT_NORMAL);
 	cairo_show_text(cr, account_with_transit);
-	g_free(account_with_transit);
+	g_free(account_with_transit);*/
 
 	data_passer->cairo_context = cr;
 	data_passer->total_deposit = 0;
@@ -251,7 +279,7 @@ void draw_page(GtkPrintOperation *self, GtkPrintContext *context, gint page_nr, 
 	data_passer->total_deposit += data_passer->total_back_side;
 
 	/* Get the width of the total amount, and move to that point to print the total. */
-	cairo_text_extents_t extents;
+
 	gchar *formatted_total = comma_formatted_amount(data_passer->total_deposit);
 	cairo_text_extents(cr, formatted_total, &extents);
 	cairo_move_to(cr, front->amount_x - extents.width, front->total_y);
@@ -259,7 +287,6 @@ void draw_page(GtkPrintOperation *self, GtkPrintContext *context, gint page_nr, 
 	cairo_select_font_face(cr, data_passer->font_family_mono, CAIRO_FONT_SLANT_NORMAL, CAIRO_FONT_WEIGHT_BOLD);
 	cairo_show_text(cr, formatted_total);
 	g_free(formatted_total);
-
 
 	/* If there are more than two checks, print their subtotal on the front side. */
 	if (number_of_checks(data_passer) > 2) {

@@ -95,7 +95,7 @@ void write_config_free_memory(GtkWidget *window, gpointer data) {
 	GtkTreeIter iter_temporary;
 
 	/* Copy the settings file to a backup file. */
-	g_rename (CONFIG_FILE, CONFIG_FILE_BACKUP);
+	//g_rename (CONFIG_FILE, CONFIG_FILE_BACKUP);
 
 
 	JsonBuilder *builder = json_builder_new (); /* root */
@@ -204,11 +204,11 @@ void write_config_free_memory(GtkWidget *window, gpointer data) {
 		JsonGenerator *generator = json_generator_new ();
 		GError *error = NULL;
 		json_generator_set_root (generator, root);
-		json_generator_to_file (generator, CONFIG_FILE, &error);
-		if (error) {
-			g_print("Unable to save the new configuration file.\n%s\nYou should rename the backup %s to %s\n",  error->message, CONFIG_FILE_BACKUP, CONFIG_FILE);
-			g_error_free(error);
-		}
+		//json_generator_to_file (generator, CONFIG_FILE, &error);
+		//if (error) {
+		//	g_print("Unable to save the new configuration file.\n%s\nYou should rename the backup %s to %s\n",  error->message, CONFIG_FILE_BACKUP, CONFIG_FILE);
+		//	g_error_free(error);
+		//}
 
 		g_object_unref(generator);
 		g_object_unref(builder);
