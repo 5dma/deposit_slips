@@ -94,7 +94,6 @@ typedef struct Front {
 	gdouble dollar_label_x; /**< x position of **$** label. */
 	gdouble dollar_label_y; /**< y position of **$** label. */
 
-
 	gdouble checks_bracket_x; /**< x position of first checks bracket. */
 	gdouble checks_bracket_y; /**< y position of first checks bracket. */
 	gdouble checks_bracket_width; /**< Width of checks bracket. */
@@ -175,8 +174,6 @@ typedef struct Data_passer {
 	gpointer btn_font_monospace;
 /** Scaling for font size, applied to the static Name and Account labels. */	
 	gdouble font_size_static_label_scaling;
-/** Flag indicating the Name and Account labels are printed on the deposit slip.*/
-	gboolean print_name_account_labels;
 /** Structure containing printing coordinates on the front side of the deposit slip. See Front.*/
 	Front *front;
 /** Structure containing printing coordinates on the back side of the deposit slip. See Back.*/

@@ -253,12 +253,7 @@ GtkWidget *make_configuration_view(Data_passer *data_passer) {
 								row_number++,
 								grid_layout_fields);
 
-	add_boolean_configuration("Print Name/Account labels",
-								&(data_passer->print_name_account_labels),
-								row_number++,
-								grid_layout_fields);
 
-	
 
 	GtkWidget *scrolled_window_layout = gtk_scrolled_window_new(NULL, NULL);
 	gtk_scrolled_window_set_policy(GTK_SCROLLED_WINDOW(scrolled_window_layout), GTK_POLICY_NEVER, GTK_POLICY_AUTOMATIC);

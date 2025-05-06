@@ -173,8 +173,6 @@ void write_config_free_memory(GtkWidget *window, gpointer data) {
 		set_string_value(builder, "font_family_mono", data_passer->font_family_mono);
 		set_double_value(builder, "font_size_static_label_scaling", data_passer->font_size_static_label_scaling);
 
-		set_boolean_value(builder, "print_name_account_labels", data_passer->print_name_account_labels);
-
 		json_builder_set_member_name (builder, "front");
 		json_builder_begin_object (builder);
 		set_int_value(builder, "date_name_address_label_x", data_passer->front->date_name_address_label_x);
