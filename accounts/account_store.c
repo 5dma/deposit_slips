@@ -112,20 +112,85 @@ void read_configuration_data(Data_passer *data_passer) {
 	/* Read the configuration parameters. */
 	json_reader_read_member(reader, "configuration");
 
-
 	data_passer->font_size_sans_serif = retrieve_json_int(reader, "font_size_sans_serif");
 	data_passer->font_size_monospace = retrieve_json_int(reader, "font_size_monospace");
 	data_passer->font_size_static_label_scaling = retrieve_json_int(reader, "font_size_static_label_scaling");
 	retrieve_json_string( reader, "font_family_sans", data_passer->font_family_sans);
 	retrieve_json_string( reader, "font_face_micr", data_passer->font_face_micr);
-
-	json_reader_read_member(reader, "print_name_account_labels");
-	data_passer->print_name_account_labels = json_reader_get_boolean_value (reader);
-	json_reader_end_member(reader);
-
 	retrieve_json_string( reader, "font_family_mono", data_passer->font_family_mono);
 
 	json_reader_read_member(reader, "front");
+	data_passer->front->checks_other_items_label_x = retrieve_json_int(reader,"checks_other_items_label_x");
+	data_passer->front->checks_other_items_label_y = retrieve_json_int(reader,"checks_other_items_label_y");
+	data_passer->front->deposit_label_x = retrieve_json_int(reader,"deposit_label_x");
+	data_passer->front->deposit_label_y = retrieve_json_int(reader,"deposit_label_y");
+
+	data_passer->front->date_name_address_label_x = retrieve_json_int(reader,"date_name_address_label_x");
+	data_passer->front->date_label_y = retrieve_json_int(reader,"date_label_y");
+	data_passer->front->name_label_y = retrieve_json_int(reader,"name_label_y");
+	data_passer->front->date_name_value_x = retrieve_json_int(reader,"date_name_value_x");
+	data_passer->front->date_value_y = retrieve_json_int(reader,"date_value_y");
+	data_passer->front->name_value_y = retrieve_json_int(reader,"name_value_y");
+	
+	data_passer->front->date_name_line_x = retrieve_json_int(reader,"date_name_line_x");
+	data_passer->front->date_name_line_y = retrieve_json_int(reader,"date_name_line_y");
+	data_passer->front->date_name_line_length = retrieve_json_int(reader,"date_name_line_length");
+
+	data_passer->front->address_label_y = retrieve_json_int(reader,"address_label_y");
+
+	data_passer->front->address_line_x = retrieve_json_int(reader,"address_line_x");
+	data_passer->front->address_line_y = retrieve_json_int(reader,"address_line_y");
+	data_passer->front->address_line_length = retrieve_json_int(reader,"address_line_length");
+
+	data_passer->front->account_number_label_x = retrieve_json_int(reader,"account_number_label_x");
+	data_passer->front->account_number_label_y = retrieve_json_int(reader,"account_number_label_y");
+	data_passer->front->account_number_human_value_x = retrieve_json_int(reader,"account_number_human_value_x");
+	data_passer->front->account_number_human_value_y = retrieve_json_int(reader,"account_number_human_value_y");
+	data_passer->front->account_number_squares_x = retrieve_json_int(reader,"account_number_squares_x");
+	data_passer->front->account_number_squares_y = retrieve_json_int(reader,"account_number_squares_y");
+	data_passer->front->account_number_squares_width = retrieve_json_int(reader,"account_number_squares_width");
+	data_passer->front->account_number_squares_height = retrieve_json_int(reader,"account_number_squares_height");
+	
+	data_passer->front->micr_routing_number_label_x = retrieve_json_int(reader,"micr_routing_number_label_x");
+	data_passer->front->micr_routing_number_label_y = retrieve_json_int(reader,"micr_routing_number_label_y");
+	data_passer->front->micr_account_number_label_x = retrieve_json_int(reader,"micr_account_number_label_x");
+	data_passer->front->micr_account_number_label_y = retrieve_json_int(reader,"micr_account_number_label_y");
+	data_passer->front->micr_serial_number_label_x = retrieve_json_int(reader,"micr_serial_number_label_x");
+	data_passer->front->micr_serial_number_label_y = retrieve_json_int(reader,"micr_serial_number_label_y");
+
+	data_passer->front->cash_label_x = retrieve_json_int(reader,"cash_label_x");
+	data_passer->front->cash_label_y = retrieve_json_int(reader,"cash_label_y");
+	data_passer->front->checks_label_x = retrieve_json_int(reader,"checks_label_x");
+	data_passer->front->checks_label_y = retrieve_json_int(reader,"checks_label_y");
+	data_passer->front->subtotal_label_x = retrieve_json_int(reader,"subtotal_label_x");
+	data_passer->front->subtotal_label_y = retrieve_json_int(reader,"subtotal_label_y");
+	data_passer->front->less_cash_label_x = retrieve_json_int(reader,"less_cash_label_x");
+	data_passer->front->less_cash_label_y = retrieve_json_int(reader,"less_cash_label_y");
+	data_passer->front->net_deposit_label_x = retrieve_json_int(reader,"net_deposit_label_x");
+	data_passer->front->net_deposit_label_y = retrieve_json_int(reader,"net_deposit_label_y");
+	data_passer->front->dollar_label_x = retrieve_json_int(reader,"dollar_label_x");
+	data_passer->front->dollar_label_y = retrieve_json_int(reader,"dollar_label_y");
+
+	data_passer->front->checks_bracket_x = retrieve_json_int(reader,"checks_bracket_x");
+	data_passer->front->checks_bracket_y = retrieve_json_int(reader,"checks_bracket_y");
+	data_passer->front->checks_bracket_width = retrieve_json_int(reader,"checks_bracket_width");
+	data_passer->front->checks_bracket_height = retrieve_json_int(reader,"checks_bracket_height");
+	data_passer->front->checks_bracket_spacing = retrieve_json_int(reader,"checks_bracket_spacing");
+
+	data_passer->front->amount_boxes_x = retrieve_json_int(reader,"amount_boxes_x");
+	data_passer->front->amount_boxes_y = retrieve_json_int(reader,"amount_boxes_y");
+	data_passer->front->amount_boxes_width = retrieve_json_int(reader,"amount_boxes_width");
+	data_passer->front->amount_boxes_height = retrieve_json_int(reader,"amount_boxes_height");
+	data_passer->front->amount_boxes_separator_height = retrieve_json_int(reader,"amount_boxes_separator_height");
+
+	data_passer->front->first_amount_y = retrieve_json_int(reader,"first_amount_y");
+	data_passer->front->amount_pitch = retrieve_json_int(reader,"amount_pitch");
+	data_passer->front->subtotal_y = retrieve_json_int(reader,"subtotal_y");
+	data_passer->front->total_y = retrieve_json_int(reader,"total_y");
+	data_passer->front->amount_x = retrieve_json_int(reader,"amount_x");
+
+
+/*
 	data_passer->front->date_name_address_label_x = retrieve_json_int(reader,"date_name_address_label_x");
 	data_passer->front->date_name_value_x = retrieve_json_int(reader,"date_name_value_x");
 	data_passer->front->name_value_y = retrieve_json_int(reader,"name_value_y");
@@ -136,7 +201,7 @@ void read_configuration_data(Data_passer *data_passer) {
 	data_passer->front->amount_pitch = retrieve_json_int(reader,"amount_pitch");
 	data_passer->front->subtotal_y = retrieve_json_int(reader,"subtotal_y");
 	data_passer->front->total_y = retrieve_json_int(reader,"total_y");
-	data_passer->front->amount_x = retrieve_json_int(reader,"amount_x");
+	data_passer->front->amount_x = retrieve_json_int(reader,"amount_x");*/
 	json_reader_end_member(reader); /* front */
 
 	json_reader_read_member(reader, "back");
