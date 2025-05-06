@@ -45,8 +45,7 @@ typedef struct Accounts {
 typedef struct Front {
 	gdouble checks_other_items_label_x;  /**< x position of the rotated "Checks and other itmes.." label */
 	gdouble checks_other_items_label_y;  /**< y position of the rotated "Checks and other itmes.." label */
-	gdouble deposit_label_x;  /**< x position of the **Deposit** label */
-	gdouble deposit_label_y;  /**< y position of the **Deposit** label */
+	gdouble deposit_label_y;  /**< y position of the **Deposit** label (x-position determined by centering on the deposit slip)*/
 
 	gdouble date_name_address_label_x;  /**< x position of the **Date**, **Name**, and **Address** labels. */
 	gdouble date_label_y; /**< y position of the **Date** label. */

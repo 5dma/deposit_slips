@@ -122,7 +122,6 @@ void read_configuration_data(Data_passer *data_passer) {
 	json_reader_read_member(reader, "front");
 	data_passer->front->checks_other_items_label_x = retrieve_json_int(reader,"checks_other_items_label_x");
 	data_passer->front->checks_other_items_label_y = retrieve_json_int(reader,"checks_other_items_label_y");
-	data_passer->front->deposit_label_x = retrieve_json_int(reader,"deposit_label_x");
 	data_passer->front->deposit_label_y = retrieve_json_int(reader,"deposit_label_y");
 
 	data_passer->front->date_name_address_label_x = retrieve_json_int(reader,"date_name_address_label_x");
