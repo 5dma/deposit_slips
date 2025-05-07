@@ -59,7 +59,9 @@ typedef struct Front {
 	
 	gdouble date_name_line_x; /**<x position of the line for the date and name field. */
 	gdouble date_name_line_y; /**<y position of the line for the date and name field. */
-	gdouble date_name_line_length; /**< Length of the line for the date and name field. */
+	gdouble date_line_length; /**< Length of the line for the date field. */
+	gdouble name_line_length; /**< Length of the line for the name field. */
+	gdouble date_name_address_font_size;  /**< Font size for the **Date**, **Name**, and **Address** labels.*/
 
 	gdouble address_label_y; /**< y position of the **Address** label. */
 

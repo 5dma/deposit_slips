@@ -189,6 +189,7 @@ void draw_page(GtkPrintOperation *self, GtkPrintContext *context, gint page_nr, 
 
 	cairo_select_font_face(cr, data_passer->font_family_sans, CAIRO_FONT_SLANT_NORMAL, CAIRO_FONT_WEIGHT_BOLD);
 	cairo_set_font_size(cr, data_passer->font_size_sans_serif);
+	cairo_set_source_rgb(cr, 0, 0, 0);
 
 	/*
 		Translate the surface so that the deposit slip appears in the top middle of the printed page.
@@ -204,9 +205,9 @@ void draw_page(GtkPrintOperation *self, GtkPrintContext *context, gint page_nr, 
 	/*
 		Write rectangle arround the deposit slip.
 	*/
-	cairo_rectangle (cr, 0, 0, 432, 180);
-	cairo_set_line_width (cr, 0.5);
-	cairo_stroke (cr);
+	cairo_rectangle(cr, 0, 0, 432, 180);
+	cairo_set_line_width(cr, 0.5);
+	cairo_stroke(cr);
 
 	/*
 		Write Deposit label. This label is centered on the deposit slip, so
@@ -235,12 +236,25 @@ void draw_page(GtkPrintOperation *self, GtkPrintContext *context, gint page_nr, 
 	cairo_pop_group_to_source(cr);
 	cairo_paint(cr);
 
+	/* Write Date label and line */
 
-	/* Write Name Label
+	cairo_set_source_rgb(cr, 0, 0, 0);
+	cairo_move_to(cr, front->date_name_address_label_x, front->date_label_y);
+	cairo_set_font_size(cr, front->date_name_address_font_size);
+	cairo_show_text(cr, "DATE");
+	cairo_move_to(cr, front->date_name_line_x, front->date_label_y);
+	cairo_line_to(cr, front->date_name_line_x + front->date_line_length, front->date_label_y);
+	cairo_stroke(cr);
 
-		cairo_move_to(cr, front->date_name_address_label_x, front->name_value_y);
-		cairo_set_font_size(cr, data_passer->font_size_sans_serif * data_passer->font_size_static_label_scaling);
-		cairo_show_text(cr, "Name");*/
+	/* Write Name label and line */
+
+	cairo_move_to(cr, front->date_name_address_label_x, front->name_label_y);
+	cairo_show_text(cr, "NAME");
+	cairo_move_to(cr, front->date_name_line_x, front->name_label_y);
+	cairo_line_to(cr, front->date_name_line_x + front->name_line_length, front->name_label_y);
+	cairo_stroke(cr);
+
+
 
 	/* Write Name value
 	cairo_move_to(cr, front->date_name_value_x, front->name_value_y);
