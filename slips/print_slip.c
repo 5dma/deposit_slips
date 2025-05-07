@@ -200,6 +200,14 @@ void draw_page(GtkPrintOperation *self, GtkPrintContext *context, gint page_nr, 
 	cairo_translate(cr, 90, 0);
 
 	Front *front = data_passer->front;
+
+	/*
+		Write rectangle arround the deposit slip.
+	*/
+	cairo_rectangle (cr, 0, 0, 432, 180);
+	cairo_set_line_width (cr, 0.5);
+	cairo_stroke (cr);
+
 	/*
 		Write Deposit label. This label is centered on the deposit slip, so
 		we need to move to the center and then offset by 1/2 the length of the
@@ -212,10 +220,9 @@ void draw_page(GtkPrintOperation *self, GtkPrintContext *context, gint page_nr, 
 	cairo_move_to(cr, 216 - (extents.width / 2), front->deposit_label_y);
 	cairo_show_text(cr, "DEPOSIT");
 
-
 	/* Write "Checks and other Items" label. This label is rotated 90 degrees. */
 	cairo_set_font_size(cr, front->checks_other_items_font_size);
-	cairo_push_group (cr);
+	cairo_push_group(cr);
 	cairo_move_to(cr, 0, 0);
 	cairo_rotate(cr, -1.570796);
 	cairo_move_to(cr, -126, 7);
@@ -225,12 +232,10 @@ void draw_page(GtkPrintOperation *self, GtkPrintContext *context, gint page_nr, 
 	cairo_move_to(cr, -108, 15);
 	cairo_show_text(cr, "OR ANY APPLICABLE COLLECTION AGREEMENT");
 	cairo_move_to(cr, 50, 50);
-	cairo_pop_group_to_source (cr);
-	cairo_paint (cr);
-	
-	//cairo_move_to(cr, 50, 100);
-	//cairo_show_text(cr, "TO THE PROVISIONS OF THE UNIFORM COMMERCIAL CODE");
-	
+	cairo_pop_group_to_source(cr);
+	cairo_paint(cr);
+
+
 	/* Write Name Label
 
 		cairo_move_to(cr, front->date_name_address_label_x, front->name_value_y);
