@@ -237,7 +237,6 @@ void draw_page(GtkPrintOperation *self, GtkPrintContext *context, gint page_nr, 
 	cairo_paint(cr);
 
 	/* Write Date label and line */
-
 	cairo_set_source_rgb(cr, 0, 0, 0);
 	cairo_move_to(cr, front->date_name_address_label_x, front->date_label_y);
 	cairo_set_font_size(cr, front->date_name_address_font_size);
@@ -247,13 +246,18 @@ void draw_page(GtkPrintOperation *self, GtkPrintContext *context, gint page_nr, 
 	cairo_stroke(cr);
 
 	/* Write Name label and line */
-
 	cairo_move_to(cr, front->date_name_address_label_x, front->name_label_y);
 	cairo_show_text(cr, "NAME");
 	cairo_move_to(cr, front->date_name_line_x, front->name_label_y);
 	cairo_line_to(cr, front->date_name_line_x + front->name_line_length, front->name_label_y);
 	cairo_stroke(cr);
 
+	/* Write Address label and line */
+	cairo_move_to(cr, front->date_name_address_label_x, front->address_label_y);
+	cairo_show_text(cr, "ADDRESS");
+	cairo_move_to(cr, front->address_line_x, front->address_label_y);
+	cairo_line_to(cr, front->date_name_line_x + front->name_line_length, front->address_label_y);
+	cairo_stroke(cr);
 
 
 	/* Write Name value

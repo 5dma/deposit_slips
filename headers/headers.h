@@ -66,7 +66,6 @@ typedef struct Front {
 	gdouble address_label_y; /**< y position of the **Address** label. */
 
 	gdouble address_line_x; /**<x position of the line for the address field. */
-	gdouble address_line_y; /**<y position of the line for the address field. */
 	gdouble address_line_length; /**< Length of the line for the address field. */
 
 	gdouble account_number_label_x; /**< x position of the **Account Number** label. */

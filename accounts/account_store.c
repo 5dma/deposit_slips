@@ -155,7 +155,6 @@ void read_configuration_data(Data_passer *data_passer) {
 	data_passer->front->address_label_y = retrieve_json_int(reader,"address_label_y");
 
 	data_passer->front->address_line_x = retrieve_json_int(reader,"address_line_x");
-	data_passer->front->address_line_y = retrieve_json_int(reader,"address_line_y");
 	data_passer->front->address_line_length = retrieve_json_int(reader,"address_line_length");
 	data_passer->front->date_name_address_font_size = retrieve_json_int(reader,"date_name_address_font_size");
 
