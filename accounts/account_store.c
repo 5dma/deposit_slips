@@ -155,11 +155,12 @@ void read_configuration_data(Data_passer *data_passer) {
 	data_passer->front->address_label_y = retrieve_json_int(reader,"address_label_y");
 
 	data_passer->front->address_line_x = retrieve_json_int(reader,"address_line_x");
-	data_passer->front->address_line_length = retrieve_json_int(reader,"address_line_length");
 	data_passer->front->date_name_address_font_size = retrieve_json_int(reader,"date_name_address_font_size");
 
 	data_passer->front->account_number_label_x = retrieve_json_int(reader,"account_number_label_x");
 	data_passer->front->account_number_label_y = retrieve_json_int(reader,"account_number_label_y");
+	data_passer->front->account_number_label_font_size = retrieve_json_double(reader,"account_number_label_font_size");
+
 	data_passer->front->account_number_human_value_x = retrieve_json_int(reader,"account_number_human_value_x");
 	data_passer->front->account_number_human_value_y = retrieve_json_int(reader,"account_number_human_value_y");
 	data_passer->front->account_number_squares_x = retrieve_json_int(reader,"account_number_squares_x");

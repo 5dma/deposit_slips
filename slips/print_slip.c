@@ -20,7 +20,8 @@
 gboolean print_deposit_amounts_front(GtkTreeModel *model,
 									 GtkTreePath *path,
 									 GtkTreeIter *iter,
-									 gpointer data) {
+									 gpointer data)
+{
 	Data_passer *data_passer = (Data_passer *)data;
 	cairo_t *cr = data_passer->cairo_context;
 	gchar *amount;
@@ -31,15 +32,16 @@ gboolean print_deposit_amounts_front(GtkTreeModel *model,
 	GError *gerror = NULL;
 
 	g_ascii_string_to_unsigned(
-		pathstring, /* path of the current row */
-		10, /* Base 10 */
-		0, /* minimum value */
-		100, /* maximum value */
+		pathstring,	 /* path of the current row */
+		10,			 /* Base 10 */
+		0,			 /* minimum value */
+		100,		 /* maximum value */
 		&row_number, /* returned row number */
-		&gerror); /* pointer for GError *. */
+		&gerror);	 /* pointer for GError *. */
 
 	/* Stop rendering of checks after the second one in the store. */
-	if (row_number > 1) {
+	if (row_number > 1)
+	{
 		return TRUE;
 	}
 
@@ -92,7 +94,8 @@ gboolean print_deposit_amounts_front(GtkTreeModel *model,
 gboolean print_deposit_amounts_back(GtkTreeModel *model,
 									GtkTreePath *path,
 									GtkTreeIter *iter,
-									gpointer data) {
+									gpointer data)
+{
 	Data_passer *data_passer = (Data_passer *)data;
 	cairo_t *cr = data_passer->cairo_context;
 	gchar *amount;
@@ -103,27 +106,29 @@ gboolean print_deposit_amounts_back(GtkTreeModel *model,
 	GError *gerror = NULL;
 
 	g_ascii_string_to_unsigned(
-		pathstring, /* path of the current row */
-		10, /* Base 10 */
-		0, /* minimum value */
-		100, /* maximum value */
+		pathstring,	 /* path of the current row */
+		10,			 /* Base 10 */
+		0,			 /* minimum value */
+		100,		 /* maximum value */
 		&row_number, /* returned row number */
 		&gerror);
 
 	/* Ignore rendering of checks before the second one in the store. */
-	if (row_number < 2) {
+	if (row_number < 2)
+	{
 		return FALSE;
 	}
 
-	if (gerror != NULL) {
+	if (gerror != NULL)
+	{
 		g_print("Failed converstion: %d: %s\n", gerror->code, gerror->message);
 	}
 
 	cairo_save(cr); /* Save passed context */
 
-	cairo_rotate(cr, G_PI_2); /* Rotate 90 degrees clockwise relative to previous context */
+	cairo_rotate(cr, G_PI_2);		/* Rotate 90 degrees clockwise relative to previous context */
 	cairo_translate(cr, -90, -432); /* Cancel original translation */
-	cairo_translate(cr, 215, 0); /* Apply translation for the back side.*/
+	cairo_translate(cr, 215, 0);	/* Apply translation for the back side.*/
 
 	/* The current amount needs to be printed at a particular coordinate
 	in the preview. The horizontal coordinate is fixed, but the vertical coordinate
@@ -163,7 +168,8 @@ gboolean print_deposit_amounts_back(GtkTreeModel *model,
  * \sa print_deposit_amounts_front()
  * \sa print_deposit_amounts_back()
  */
-void draw_page(GtkPrintOperation *self, GtkPrintContext *context, gint page_nr, gpointer data) {
+void draw_page(GtkPrintOperation *self, GtkPrintContext *context, gint page_nr, gpointer data)
+{
 	Data_passer *data_passer = (Data_passer *)data;
 
 	gchar *routing_number = NULL;
@@ -175,7 +181,8 @@ void draw_page(GtkPrintOperation *self, GtkPrintContext *context, gint page_nr, 
 
 	GtkTreeSelection *tree_selection = gtk_tree_view_get_selection(GTK_TREE_VIEW(data_passer->checks_accounts_treeview));
 
-	if (gtk_tree_selection_get_selected(tree_selection, &model, &iter)) {
+	if (gtk_tree_selection_get_selected(tree_selection, &model, &iter))
+	{
 		gtk_tree_model_get(model, &iter,
 						   ACCOUNT_NUMBER, &account_number,
 						   ACCOUNT_NAME, &account_name,
@@ -259,7 +266,31 @@ void draw_page(GtkPrintOperation *self, GtkPrintContext *context, gint page_nr, 
 	cairo_line_to(cr, front->date_name_line_x + front->name_line_length, front->address_label_y);
 	cairo_stroke(cr);
 
+	/* Write Gray Account Number label*/
+	cairo_set_source_rgb(cr, 0.75, 0.75, 0.75);
+	cairo_move_to(cr, front->account_number_label_x, front->account_number_label_y);
+	cairo_set_font_size(cr, front->account_number_label_font_size);
+	cairo_show_text(cr, "ACCOUNT NUMBER");
 
+	/* Write boxes for account number */
+	cairo_rectangle(cr, front->account_number_squares_x,
+					front->account_number_squares_y,
+					front->account_number_squares_width * 10,
+					front->account_number_squares_height);
+	cairo_set_line_width(cr, 2.0);
+	cairo_stroke(cr);
+
+	gdouble y_position = front->account_number_squares_y + front->account_number_squares_height;
+	cairo_set_line_width(cr, 1.5);
+	for (gint i = 1; i <= 9; i++)
+	{
+		gdouble x_position = front->account_number_squares_x + (i * front->account_number_squares_width);
+		cairo_move_to(cr, x_position, front->account_number_squares_y);
+		cairo_line_to(cr, x_position, y_position);
+		cairo_stroke(cr);
+	}
+
+	
 	/* Write Name value
 	cairo_move_to(cr, front->date_name_value_x, front->name_value_y);
 	cairo_set_font_size(cr, data_passer->font_size_sans_serif);
@@ -312,7 +343,8 @@ void draw_page(GtkPrintOperation *self, GtkPrintContext *context, gint page_nr, 
 	g_free(formatted_total);
 
 	/* If there are more than two checks, print their subtotal on the front side. */
-	if (number_of_checks(data_passer) > 2) {
+	if (number_of_checks(data_passer) > 2)
+	{
 		gchar *formatted_total = comma_formatted_amount(data_passer->total_back_side);
 		/* Move to the correct position to print the amount such that it is right-aligned. */
 		cairo_text_extents_t extents;
@@ -340,7 +372,8 @@ void draw_page(GtkPrintOperation *self, GtkPrintContext *context, gint page_nr, 
  * @param self Pointer to the clicked button.
  * @param data Pointer to user data.
  */
-void print_deposit_slip(GtkButton *self, gpointer data) {
+void print_deposit_slip(GtkButton *self, gpointer data)
+{
 	Data_passer *data_passer = (Data_passer *)data;
 	GtkPrintOperation *operation;
 	GError *error;
@@ -360,22 +393,23 @@ void print_deposit_slip(GtkButton *self, gpointer data) {
 	g_signal_connect(G_OBJECT(operation), "draw_page", G_CALLBACK(draw_page), data_passer);
 
 	res = gtk_print_operation_run(operation, GTK_PRINT_OPERATION_ACTION_PRINT_DIALOG, GTK_WINDOW(data_passer->application_window), &error);
-	switch (res) {
-		case GTK_PRINT_OPERATION_RESULT_ERROR:
-			g_print("Error\n");
-			break;
-		case GTK_PRINT_OPERATION_RESULT_APPLY:
-			if (settings != NULL)
-				g_object_unref(settings);
-			settings = g_object_ref(gtk_print_operation_get_print_settings(operation));
-			break;
-		case GTK_PRINT_OPERATION_RESULT_CANCEL:
-			g_print("Cancel\n");
-			break;
-		case GTK_PRINT_OPERATION_RESULT_IN_PROGRESS:
-			g_print("In progress\n");
-			break;
-		default:
+	switch (res)
+	{
+	case GTK_PRINT_OPERATION_RESULT_ERROR:
+		g_print("Error\n");
+		break;
+	case GTK_PRINT_OPERATION_RESULT_APPLY:
+		if (settings != NULL)
+			g_object_unref(settings);
+		settings = g_object_ref(gtk_print_operation_get_print_settings(operation));
+		break;
+	case GTK_PRINT_OPERATION_RESULT_CANCEL:
+		g_print("Cancel\n");
+		break;
+	case GTK_PRINT_OPERATION_RESULT_IN_PROGRESS:
+		g_print("In progress\n");
+		break;
+	default:
 	}
 	g_object_unref(operation);
 }
