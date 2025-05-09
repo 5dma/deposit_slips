@@ -267,9 +267,11 @@ void draw_page(GtkPrintOperation *self, GtkPrintContext *context, gint page_nr, 
 	cairo_stroke(cr);
 
 	/* Write Gray Account Number label*/
+	gdouble boxes_midpoint = (front->account_number_squares_width * 5)  + front->account_number_squares_x;
 	cairo_set_source_rgb(cr, 0.75, 0.75, 0.75);
-	cairo_move_to(cr, front->account_number_label_x, front->account_number_label_y);
 	cairo_set_font_size(cr, front->account_number_label_font_size);
+	cairo_text_extents(cr, "ACCOUNT NUMBER", &extents);
+	cairo_move_to(cr, (boxes_midpoint - (extents.width / 2)), front->account_number_label_y);
 	cairo_show_text(cr, "ACCOUNT NUMBER");
 
 	/* Write boxes for account number */
