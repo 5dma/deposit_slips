@@ -222,8 +222,9 @@ void draw_page(GtkPrintOperation *self, GtkPrintContext *context, gint page_nr, 
 	cairo_show_text(cr, "DEPOSIT");
 
 	/* Write "Checks and other Items" label. This label is rotated 90 degrees. */
+	cairo_save(cr); /* Start new state */
+	cairo_select_font_face(cr, data_passer->font_family_sans, CAIRO_FONT_SLANT_NORMAL, CAIRO_FONT_WEIGHT_NORMAL);
 	cairo_set_font_size(cr, front->checks_other_items_font_size);
-	cairo_push_group(cr); /* New group for rotating */
 	cairo_move_to(cr, 0, 0);
 	cairo_rotate(cr, -1.570796);
 	cairo_move_to(cr, -126, 7);
@@ -233,13 +234,11 @@ void draw_page(GtkPrintOperation *self, GtkPrintContext *context, gint page_nr, 
 	cairo_move_to(cr, -108, 15);
 	cairo_show_text(cr, "OR ANY APPLICABLE COLLECTION AGREEMENT");
 	cairo_move_to(cr, 50, 50);
-	cairo_pop_group_to_source(cr);
-	cairo_paint(cr);
+	cairo_restore(cr); /* remove rotation, font size*/
 
 	/* Write Date label and line */
-	cairo_set_source_rgb(cr, 0, 0, 0);
-	cairo_move_to(cr, front->date_name_address_label_x, front->date_label_y);
 	cairo_set_font_size(cr, front->date_name_address_font_size);
+	cairo_move_to(cr, front->date_name_address_label_x, front->date_label_y);
 	cairo_show_text(cr, "DATE");
 	cairo_move_to(cr, front->date_name_line_x, front->date_label_y);
 	cairo_line_to(cr, front->date_name_line_x + front->date_line_length, front->date_label_y);
@@ -259,11 +258,10 @@ void draw_page(GtkPrintOperation *self, GtkPrintContext *context, gint page_nr, 
 	cairo_line_to(cr, front->date_name_line_x + front->name_line_length, front->address_label_y);
 	cairo_stroke(cr);
 
-
 	/* Write Gray Account Number label*/
-	cairo_push_group(cr); /* New group for rgb */
+	cairo_save(cr); /* New state for rgb */
+	cairo_set_source_rgb(cr, 0.85, 0.85, 0.85);
 	gdouble boxes_midpoint = (front->account_number_squares_width * 5) + front->account_number_squares_x;
-	cairo_set_source_rgb(cr, 0.75, 0.75, 0.75);
 	cairo_set_font_size(cr, front->account_number_label_font_size);
 	cairo_text_extents(cr, "ACCOUNT NUMBER", &extents);
 	cairo_move_to(cr, (boxes_midpoint - (extents.width / 2)), front->account_number_label_y);
@@ -274,32 +272,65 @@ void draw_page(GtkPrintOperation *self, GtkPrintContext *context, gint page_nr, 
 					front->account_number_squares_y,
 					front->account_number_squares_width * 10,
 					front->account_number_squares_height);
-	cairo_set_line_width(cr, 2.0);
-	cairo_stroke(cr);
+	cairo_set_line_width(cr, 1.0);
 
 	gdouble y_position = front->account_number_squares_y + front->account_number_squares_height;
-	cairo_set_line_width(cr, 1.5);
-	for (gint i = 1; i <= 9; i++)
-	{
+
+	for (gint i = 1; i <= 9; i++) {
 		gdouble x_position = front->account_number_squares_x + (i * front->account_number_squares_width);
 		cairo_move_to(cr, x_position, front->account_number_squares_y);
 		cairo_line_to(cr, x_position, y_position);
 		cairo_stroke(cr);
 	}
 
-	cairo_pop_group_to_source(cr);
-	cairo_paint(cr); /* Pop the group with the gray stroke.*/
+	/* Write boxes for cash, checks, subtotal, less cash */
+
+	cairo_set_line_width(cr, 1.0);
+	gint big_box_width = front->amount_boxes_width * 8;
+	gint sixth_dividing_line_x = front->amount_boxes_x + 6 * front->amount_boxes_width;
+	for (gint i = 0; i <= 4; i++) {
+		/* Draw a rectangle for a row of boxes. */
+		gint line_top = front->amount_boxes_y + (i * front->amount_boxes_height);
+		cairo_rectangle(cr, front->amount_boxes_x,
+			line_top,
+						big_box_width,
+						front->amount_boxes_height);
+
+		gint line_bottom = line_top + front->amount_boxes_height;
+		gint short_line_top = line_bottom - front->amount_boxes_separator_height;
+
+		/* Draw separator lines within current row */
+		for (gint j = 1; j <= 7; j++) {
+			if (j == 6) continue;
+			if (j == 7) {
+				cairo_move_to(cr, front->amount_boxes_x + j * front->amount_boxes_width, line_top);
+			} else {
+				cairo_move_to(cr, front->amount_boxes_x + j * front->amount_boxes_width, short_line_top);
+			}
+			cairo_line_to(cr, front->amount_boxes_x + j * front->amount_boxes_width, line_bottom);
+		}
+		cairo_stroke(cr);
+		/* Draw thick line before cents boxes */
+		cairo_save(cr); /* New state for thick line*/
+		cairo_set_line_width(cr, 1.8);
+		cairo_move_to(cr, sixth_dividing_line_x, line_top);
+		cairo_line_to(cr, sixth_dividing_line_x, line_bottom);
+		cairo_stroke(cr);
+		cairo_restore(cr);
+
+	}
+
 
 	/* Write MICR routing number */
 	cairo_push_group(cr); /* New group for MICR */
-	cairo_set_source_rgb(cr, 0,0,0);
+	cairo_set_source_rgb(cr, 0, 0, 0);
 	cairo_select_font_face(cr, data_passer->font_face_micr, CAIRO_FONT_SLANT_NORMAL, CAIRO_FONT_WEIGHT_NORMAL);
 	cairo_set_font_size(cr, front->micr_font_size);
 	cairo_move_to(cr, front->micr_routing_number_label_x, front->micr_routing_number_label_y);
 	cairo_show_text(cr, "A53001007A");
 
 	/* Write MICR account number */
-	cairo_move_to(cr, front->micr_account_number_label_x , front->micr_routing_number_label_y);
+	cairo_move_to(cr, front->micr_account_number_label_x, front->micr_routing_number_label_y);
 	cairo_show_text(cr, account_number);
 
 	/* Write MICR serial number */
