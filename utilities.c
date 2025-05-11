@@ -179,7 +179,6 @@ void write_config_free_memory(GtkWidget *window, gpointer data) {
 		set_int_value(builder, "date_name_value_x", data_passer->front->date_name_value_x);
 		set_int_value(builder, "name_value_y", data_passer->front->name_value_y);
 		set_int_value(builder, "date_value_y", data_passer->front->date_value_y);
-		set_int_value(builder, "micr_account_number_label_y", data_passer->front->micr_account_number_label_y);
 		set_int_value(builder, "micr_account_number_label_x", data_passer->front->micr_account_number_label_x);
 		set_int_value(builder, "first_amount_y", data_passer->front->first_amount_y);
 		set_int_value(builder, "amount_pitch", data_passer->front->amount_pitch);

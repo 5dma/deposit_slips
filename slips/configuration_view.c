@@ -187,11 +187,6 @@ GtkWidget *make_configuration_view(Data_passer *data_passer) {
 								row_number++,
 								grid_layout_fields);
 
-	add_one_value_configuration("MICR y",
-								&(data_passer->front->micr_account_number_label_y),
-								row_number++,
-								grid_layout_fields);
-
 	add_one_value_configuration("First amount y",
 								&(data_passer->front->first_amount_y),
 								row_number++,

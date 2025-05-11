@@ -230,7 +230,7 @@ void draw_page(GtkPrintOperation *self, GtkPrintContext *context, gint page_nr, 
 
 	/* Write "Checks and other Items" label. This label is rotated 90 degrees. */
 	cairo_set_font_size(cr, front->checks_other_items_font_size);
-	cairo_push_group(cr);
+	cairo_push_group(cr); /* New group for rotating */
 	cairo_move_to(cr, 0, 0);
 	cairo_rotate(cr, -1.570796);
 	cairo_move_to(cr, -126, 7);
@@ -266,8 +266,10 @@ void draw_page(GtkPrintOperation *self, GtkPrintContext *context, gint page_nr, 
 	cairo_line_to(cr, front->date_name_line_x + front->name_line_length, front->address_label_y);
 	cairo_stroke(cr);
 
+
 	/* Write Gray Account Number label*/
-	gdouble boxes_midpoint = (front->account_number_squares_width * 5)  + front->account_number_squares_x;
+	cairo_push_group(cr); /* New group for rgb */
+	gdouble boxes_midpoint = (front->account_number_squares_width * 5) + front->account_number_squares_x;
 	cairo_set_source_rgb(cr, 0.75, 0.75, 0.75);
 	cairo_set_font_size(cr, front->account_number_label_font_size);
 	cairo_text_extents(cr, "ACCOUNT NUMBER", &extents);
@@ -292,11 +294,27 @@ void draw_page(GtkPrintOperation *self, GtkPrintContext *context, gint page_nr, 
 		cairo_stroke(cr);
 	}
 
-	
-	/* Write Name value
-	cairo_move_to(cr, front->date_name_value_x, front->name_value_y);
-	cairo_set_font_size(cr, data_passer->font_size_sans_serif);
-	cairo_show_text(cr, account_name);*/
+	cairo_pop_group_to_source(cr);
+	cairo_paint(cr); /* Pop the group with the gray stroke.*/
+
+	/* Write MICR routing number */
+	cairo_push_group(cr); /* New group for MICR */
+	cairo_set_source_rgb(cr, 0,0,0);
+	cairo_select_font_face(cr, data_passer->font_face_micr, CAIRO_FONT_SLANT_NORMAL, CAIRO_FONT_WEIGHT_NORMAL);
+	cairo_set_font_size(cr, front->micr_font_size);
+	cairo_move_to(cr, front->micr_routing_number_label_x, front->micr_routing_number_label_y);
+	cairo_show_text(cr, "A53001007A");
+
+	/* Write MICR account number */
+	cairo_move_to(cr, front->micr_account_number_label_x , front->micr_routing_number_label_y);
+	cairo_show_text(cr, account_number);
+
+	/* Write MICR serial number */
+	cairo_move_to(cr, front->micr_serial_number_label_x, front->micr_routing_number_label_y);
+	cairo_show_text(cr, "009");
+
+	cairo_pop_group_to_source(cr);
+	cairo_paint(cr); /* Pop the group with the MICR.*/
 
 	/* Write Account Label
 

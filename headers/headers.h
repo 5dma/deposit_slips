@@ -80,9 +80,8 @@ typedef struct Front {
 	gdouble micr_routing_number_label_x; /**< x position of MICR routing number. */
 	gdouble micr_routing_number_label_y; /**< y position of MICR routing number. */
 	gdouble micr_account_number_label_x; /**< x position of MICR account number. */
-	gdouble micr_account_number_label_y; /**< y position of MICR account number. */
 	gdouble micr_serial_number_label_x; /**< x position of MICR serial number */
-	gdouble micr_serial_number_label_y; /**< y position of MICR serial number. */
+	gdouble micr_font_size; /**< Font size for MICR characters. */
 
 	gdouble cash_label_x; /**< x position of **Cash** label. */
 	gdouble cash_label_y; /**< y position of **Cash** label. */
