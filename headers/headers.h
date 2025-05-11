@@ -83,16 +83,15 @@ typedef struct Front {
 	gdouble micr_serial_number_label_x; /**< x position of MICR serial number */
 	gdouble micr_font_size; /**< Font size for MICR characters. */
 
-	gdouble cash_label_x; /**< x position of **Cash** label. */
-	gdouble cash_label_y; /**< y position of **Cash** label. */
+	gdouble cash_label_x; /**< x position of **Cash** label (y position determined from `amount_boxes_y`). */
 	gdouble checks_label_x; /**< x position of **Checks** label. */
 	gdouble checks_label_y; /**< y position of **Checks** label. */
-	gdouble subtotal_label_x; /**< x position of **Subtotal** label. */
-	gdouble subtotal_label_y; /**< y position of **Subtotal** label. */
-	gdouble less_cash_label_x; /**< x position of **Less Cash Received** label. */
-	gdouble less_cash_label_y; /**< y position of **Less Cash Received** label. */
+
+	gdouble subtotal_label_y; /**< y position of **Subtotal** label (x-position determined by right-aligning on the **Cash** label). */
+	gdouble less_cash_label_y; /**< y position of **Less Cash Received** label (x-position determined by right-aligning on the **Cash** label). */
 	gdouble net_deposit_label_x; /**< x position of **Net Deposit** label. */
 	gdouble net_deposit_label_y; /**< y position of **Net Deposit** label. */
+	gdouble cash_label_font_size; /**< Font size for **Cash**, **Checks**, **Subtotal**, *Less Cash**, and **Net Deposit** labels. */
 	gdouble dollar_label_x; /**< x position of **$** label. */
 	gdouble dollar_label_y; /**< y position of **$** label. */
 

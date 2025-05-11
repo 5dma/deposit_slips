@@ -292,9 +292,9 @@ void draw_page(GtkPrintOperation *self, GtkPrintContext *context, gint page_nr, 
 		/* Draw a rectangle for a row of boxes. */
 		gint line_top = front->amount_boxes_y + (i * front->amount_boxes_height);
 		cairo_rectangle(cr, front->amount_boxes_x,
-			line_top,
-						big_box_width,
-						front->amount_boxes_height);
+				line_top,
+				big_box_width,
+				front->amount_boxes_height);
 
 		gint line_bottom = line_top + front->amount_boxes_height;
 		gint short_line_top = line_bottom - front->amount_boxes_separator_height;
@@ -316,14 +316,14 @@ void draw_page(GtkPrintOperation *self, GtkPrintContext *context, gint page_nr, 
 		cairo_move_to(cr, sixth_dividing_line_x, line_top);
 		cairo_line_to(cr, sixth_dividing_line_x, line_bottom);
 		cairo_stroke(cr);
-		cairo_restore(cr);
+		cairo_restore(cr); /* Restore previous line width*/
 
 	}
+	cairo_restore(cr); /* Restore previous color*/
 
 
 	/* Write MICR routing number */
-	cairo_push_group(cr); /* New group for MICR */
-	cairo_set_source_rgb(cr, 0, 0, 0);
+	cairo_save(cr); /* New state for MICR */
 	cairo_select_font_face(cr, data_passer->font_face_micr, CAIRO_FONT_SLANT_NORMAL, CAIRO_FONT_WEIGHT_NORMAL);
 	cairo_set_font_size(cr, front->micr_font_size);
 	cairo_move_to(cr, front->micr_routing_number_label_x, front->micr_routing_number_label_y);
@@ -337,8 +337,21 @@ void draw_page(GtkPrintOperation *self, GtkPrintContext *context, gint page_nr, 
 	cairo_move_to(cr, front->micr_serial_number_label_x, front->micr_routing_number_label_y);
 	cairo_show_text(cr, "009");
 
-	cairo_pop_group_to_source(cr);
-	cairo_paint(cr); /* Pop the group with the MICR.*/
+	cairo_restore(cr); /* Pop the group with the MICR.*/
+
+
+	/* Write cash, subtotal, less cash received, net deposit*/
+	cairo_save(cr); /* New state for smaller font size */
+	cairo_select_font_face(cr, data_passer->font_family_sans, CAIRO_FONT_SLANT_NORMAL, CAIRO_FONT_WEIGHT_NORMAL);
+	cairo_set_font_size(cr, front->cash_label_font_size);
+	cairo_text_extents(cr, "CASH", &extents);
+
+	cairo_move_to(cr, front->cash_label_x - extents.width, front->amount_boxes_y + 
+		(front->amount_boxes_height / 2) + 
+		extents.height / 2);
+	cairo_show_text(cr, "CASH");
+
+
 
 	/* Write Account Label
 
