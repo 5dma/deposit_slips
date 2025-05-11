@@ -350,14 +350,39 @@ void draw_page(GtkPrintOperation *self, GtkPrintContext *context, gint page_nr, 
 	cairo_move_to(cr, front->cash_label_x - extents.width, front->amount_boxes_y + (3 * front->amount_boxes_height)+ (front->amount_boxes_height / 2) + extents.height / 2);
 	cairo_show_text(cr, "SUB TOTAL");
 
-
 	/* Write Less Cash Received label*/
-		cairo_text_extents(cr, "LESS CASH", &extents);
+	cairo_text_extents(cr, "LESS CASH", &extents);
 	cairo_move_to(cr, front->cash_label_x - extents.width, front->amount_boxes_y + (4 * front->amount_boxes_height)+ (front->amount_boxes_height / 2) + (extents.height / 2) - line_spacer);
 	cairo_show_text(cr, "LESS CASH");
 	cairo_move_to(cr, front->cash_label_x - extents.width, front->amount_boxes_y + (4 * front->amount_boxes_height)+ (front->amount_boxes_height / 2) + (extents.height / 2) + line_spacer);
 	cairo_show_text(cr, "RECEIVED");
 
+	/* Write triangles */
+	/* First triangle*/
+	cairo_new_path (cr);
+	cairo_move_to(cr, 310, 40);
+	cairo_line_to(cr, 310, 45);
+	cairo_line_to(cr, 314, 42.5);
+	cairo_close_path (cr);
+	cairo_fill (cr);
+
+	/* Second triangle */
+	cairo_new_path (cr);
+	cairo_move_to(cr, 310, 94);
+	cairo_line_to(cr, 310, 99);
+	cairo_line_to(cr, 314, 96.5);
+	cairo_close_path (cr);
+	cairo_fill (cr);
+
+	/* Third triangle */
+	cairo_new_path (cr);
+	cairo_move_to(cr, 310, 111);
+	cairo_line_to(cr, 310, 116);
+	cairo_line_to(cr, 314, 113.5);
+	cairo_close_path (cr);
+	cairo_fill (cr);
+	
+	
 
 	/* Write Account Label
 
