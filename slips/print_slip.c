@@ -287,19 +287,21 @@ void draw_page(GtkPrintOperation *self, GtkPrintContext *context, gint page_nr, 
 
 	cairo_set_line_width(cr, 1.0);
 	gint big_box_width = front->amount_boxes_width * 8;
-	gint sixth_dividing_line_x = front->amount_boxes_x + 6 * front->amount_boxes_width;
+	gint cents_dividing_line_x = front->amount_boxes_x + 6 * front->amount_boxes_width;
+	gint line_top;
+	gint short_line_top;
+	gint line_bottom;
 
 	for (gint i = 0; i <= 4; i++) {
 		/* Draw a rectangle for a row of boxes. */
-		gint line_top = front->amount_boxes_y + (i * front->amount_boxes_height);
+		line_top = front->amount_boxes_y + (i * front->amount_boxes_height);
 		cairo_rectangle(cr, front->amount_boxes_x,
 						line_top,
 						big_box_width,
 						front->amount_boxes_height);
 
-		gint line_bottom = line_top + front->amount_boxes_height;
-		gint short_line_top = line_bottom - front->amount_boxes_separator_height;
-		
+		line_bottom = line_top + front->amount_boxes_height;
+		short_line_top = line_bottom - front->amount_boxes_separator_height;
 
 		/* Draw separator lines within current row */
 		for (gint j = 1; j <= 7; j++) {
@@ -315,11 +317,38 @@ void draw_page(GtkPrintOperation *self, GtkPrintContext *context, gint page_nr, 
 		/* Draw thick line before cents boxes */
 		cairo_save(cr); /* New state for thick line*/
 		cairo_set_line_width(cr, 1.8);
-		cairo_move_to(cr, sixth_dividing_line_x, line_top);
-		cairo_line_to(cr, sixth_dividing_line_x, line_bottom);
+		cairo_move_to(cr, cents_dividing_line_x, line_top);
+		cairo_line_to(cr, cents_dividing_line_x, line_bottom);
 		cairo_stroke(cr);
 		cairo_restore(cr); /* Restore previous line width*/
 	}
+	/* Draw amount boxes for net deposit */
+	line_top = front->amount_boxes_y + (5 * front->amount_boxes_height);
+	gint net_deposit_left_edge = front->amount_boxes_x - front->amount_boxes_width;
+	cairo_rectangle(cr, net_deposit_left_edge,
+					line_top,
+					big_box_width + front->amount_boxes_width,
+					front->amount_boxes_height);
+	line_bottom = line_top + front->amount_boxes_height;
+	short_line_top = line_bottom - front->amount_boxes_separator_height;
+	for (gint j = 1; j <= 8; j++) {
+		if (j == 7) continue;
+		if (j == 8) {
+			cairo_move_to(cr, net_deposit_left_edge + j * front->amount_boxes_width, line_top);
+		} else {
+			cairo_move_to(cr, net_deposit_left_edge + j * front->amount_boxes_width, short_line_top);
+		}
+		cairo_line_to(cr, net_deposit_left_edge + j * front->amount_boxes_width, line_bottom);
+	}
+	cairo_stroke(cr);
+
+	/* Draw thick line before cents boxes */
+	cairo_save(cr); /* New state for thick line*/
+	cairo_set_line_width(cr, 1.8);
+	cairo_move_to(cr, cents_dividing_line_x, line_top);
+	cairo_line_to(cr, cents_dividing_line_x, line_bottom);
+	cairo_stroke(cr);
+	cairo_restore(cr); /* Restore previous line width*/
 
 	/* Write brackets for checks deposited. */
 	/* First bracket */
@@ -329,10 +358,9 @@ void draw_page(GtkPrintOperation *self, GtkPrintContext *context, gint page_nr, 
 	cairo_new_path(cr);
 	cairo_move_to(cr, front->checks_bracket_right_x, checks_bracket_top);
 	cairo_line_to(cr, front->checks_bracket_right_x, bottom_second_row_y);
-	cairo_line_to(cr, checks_bracket_left , bottom_second_row_y);
-	cairo_line_to(cr, checks_bracket_left , checks_bracket_top);
+	cairo_line_to(cr, checks_bracket_left, bottom_second_row_y);
+	cairo_line_to(cr, checks_bracket_left, checks_bracket_top);
 	cairo_stroke(cr);
-
 
 	/* Second bracket */
 	bottom_second_row_y = front->amount_boxes_y + 3 * front->amount_boxes_height;
@@ -340,8 +368,8 @@ void draw_page(GtkPrintOperation *self, GtkPrintContext *context, gint page_nr, 
 	cairo_new_path(cr);
 	cairo_move_to(cr, front->checks_bracket_right_x, checks_bracket_top);
 	cairo_line_to(cr, front->checks_bracket_right_x, bottom_second_row_y);
-	cairo_line_to(cr, checks_bracket_left , bottom_second_row_y);
-	cairo_line_to(cr, checks_bracket_left , checks_bracket_top);
+	cairo_line_to(cr, checks_bracket_left, bottom_second_row_y);
+	cairo_line_to(cr, checks_bracket_left, checks_bracket_top);
 	cairo_stroke(cr);
 
 	cairo_restore(cr); /* Restore previous color*/
@@ -373,58 +401,50 @@ void draw_page(GtkPrintOperation *self, GtkPrintContext *context, gint page_nr, 
 
 	/* Write Subtotal label*/
 	cairo_text_extents(cr, "SUB TOTAL", &extents);
-	cairo_move_to(cr, front->cash_label_x - extents.width, front->amount_boxes_y + (3 * front->amount_boxes_height)+ (front->amount_boxes_height / 2) + extents.height / 2);
+	cairo_move_to(cr, front->cash_label_x - extents.width, front->amount_boxes_y + (3 * front->amount_boxes_height) + (front->amount_boxes_height / 2) + extents.height / 2);
 	cairo_show_text(cr, "SUB TOTAL");
 
 	/* Write Less Cash Received label*/
 	cairo_text_extents(cr, "LESS CASH", &extents);
-	cairo_move_to(cr, front->cash_label_x - extents.width, front->amount_boxes_y + (4 * front->amount_boxes_height)+ (front->amount_boxes_height / 2) + (extents.height / 2) - line_spacer);
+	cairo_move_to(cr, front->cash_label_x - extents.width, front->amount_boxes_y + (4 * front->amount_boxes_height) + (front->amount_boxes_height / 2) + (extents.height / 2) - line_spacer);
 	cairo_show_text(cr, "LESS CASH");
-	cairo_move_to(cr, front->cash_label_x - extents.width, front->amount_boxes_y + (4 * front->amount_boxes_height)+ (front->amount_boxes_height / 2) + (extents.height / 2) + line_spacer);
+	cairo_move_to(cr, front->cash_label_x - extents.width, front->amount_boxes_y + (4 * front->amount_boxes_height) + (front->amount_boxes_height / 2) + (extents.height / 2) + line_spacer);
 	cairo_show_text(cr, "RECEIVED");
 
 	/* Write Checks vertically */
 	cairo_set_font_size(cr, 5);
 	gchar checks[7] = "CHECKS";
 	gchar strings[2];
-	for (gint i=0; i<=5; i++) {
+	for (gint i = 0; i <= 5; i++) {
 		cairo_move_to(cr, front->checks_label_x, front->checks_label_y + (i * front->checks_label_spacing));
-		g_strlcpy (strings, checks + i, 2);
+		g_strlcpy(strings, checks + i, 2);
 		cairo_show_text(cr, strings);
 	}
 
 	/* Write triangles */
 	/* First triangle*/
-	cairo_new_path (cr);
+	cairo_new_path(cr);
 	cairo_move_to(cr, 310, 40);
 	cairo_line_to(cr, 310, 45);
 	cairo_line_to(cr, front->checks_bracket_right_x, 42.5);
-	cairo_close_path (cr);
-	cairo_fill (cr);
+	cairo_close_path(cr);
+	cairo_fill(cr);
 
 	/* Second triangle */
-	cairo_new_path (cr);
+	cairo_new_path(cr);
 	cairo_move_to(cr, 310, 94);
 	cairo_line_to(cr, 310, 99);
 	cairo_line_to(cr, front->checks_bracket_right_x, 96.5);
-	cairo_close_path (cr);
-	cairo_fill (cr);
+	cairo_close_path(cr);
+	cairo_fill(cr);
 
 	/* Third triangle */
-	cairo_new_path (cr);
+	cairo_new_path(cr);
 	cairo_move_to(cr, 310, 111);
 	cairo_line_to(cr, 310, 116);
 	cairo_line_to(cr, front->checks_bracket_right_x, 113.5);
-	cairo_close_path (cr);
-	cairo_fill (cr);
-	
-	
-
-	/* Write Account Label
-
-		cairo_move_to(cr, front->date_name_address_label_x, front->account_number_human_value_y);
-		cairo_set_font_size(cr, data_passer->font_size_sans_serif * data_passer->font_size_static_label_scaling);
-		cairo_show_text(cr, "Account No");*/
+	cairo_close_path(cr);
+	cairo_fill(cr);
 
 	/* Write Account Value
 	cairo_move_to(cr, front->date_name_value_x, front->account_number_human_value_y);
