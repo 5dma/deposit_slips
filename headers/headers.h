@@ -86,6 +86,7 @@ typedef struct Front {
 	gdouble cash_label_x; /**< x position of **Cash** label (y position determined from `amount_boxes_y`). */
 	gdouble checks_label_x; /**< x position of **Checks** label. */
 	gdouble checks_label_y; /**< y position of **Checks** label. */
+	gdouble checks_label_spacing; /**< Line spacing between each letter in the **Checks** label. */
 
 	gdouble subtotal_label_y; /**< y position of **Subtotal** label (x-position determined by right-aligning on the **Cash** label). */
 	gdouble less_cash_label_y; /**< y position of **Less Cash Received** label (x-position determined by right-aligning on the **Cash** label). */

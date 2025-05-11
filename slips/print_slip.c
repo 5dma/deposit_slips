@@ -383,6 +383,16 @@ void draw_page(GtkPrintOperation *self, GtkPrintContext *context, gint page_nr, 
 	cairo_move_to(cr, front->cash_label_x - extents.width, front->amount_boxes_y + (4 * front->amount_boxes_height)+ (front->amount_boxes_height / 2) + (extents.height / 2) + line_spacer);
 	cairo_show_text(cr, "RECEIVED");
 
+	/* Write Checks vertically */
+	cairo_set_font_size(cr, 5);
+	gchar checks[7] = "CHECKS";
+	gchar strings[2];
+	for (gint i=0; i<=5; i++) {
+		cairo_move_to(cr, front->checks_label_x, front->checks_label_y + (i * front->checks_label_spacing));
+		g_strlcpy (strings, checks + i, 2);
+		cairo_show_text(cr, strings);
+	}
+
 	/* Write triangles */
 	/* First triangle*/
 	cairo_new_path (cr);

@@ -176,6 +176,7 @@ void read_configuration_data(Data_passer *data_passer) {
 	data_passer->front->cash_label_x = retrieve_json_int(reader,"cash_label_x");
 	data_passer->front->checks_label_x = retrieve_json_int(reader,"checks_label_x");
 	data_passer->front->checks_label_y = retrieve_json_int(reader,"checks_label_y");
+	data_passer->front->checks_label_spacing = retrieve_json_int(reader,"checks_label_spacing");
 	data_passer->front->subtotal_label_y = 0;
 	data_passer->front->less_cash_label_y = 0;
 	data_passer->front->net_deposit_label_x = retrieve_json_int(reader,"net_deposit_label_x");
