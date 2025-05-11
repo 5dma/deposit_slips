@@ -185,8 +185,7 @@ void read_configuration_data(Data_passer *data_passer) {
 	data_passer->front->dollar_label_x = retrieve_json_int(reader,"dollar_label_x");
 	data_passer->front->dollar_label_y = retrieve_json_int(reader,"dollar_label_y");
 
-	data_passer->front->checks_bracket_x = retrieve_json_int(reader,"checks_bracket_x");
-	data_passer->front->checks_bracket_y = retrieve_json_int(reader,"checks_bracket_y");
+	data_passer->front->checks_bracket_right_x = retrieve_json_int(reader,"checks_bracket_right_x");
 	data_passer->front->checks_bracket_width = retrieve_json_int(reader,"checks_bracket_width");
 	data_passer->front->checks_bracket_height = retrieve_json_int(reader,"checks_bracket_height");
 	data_passer->front->checks_bracket_spacing = retrieve_json_int(reader,"checks_bracket_spacing");

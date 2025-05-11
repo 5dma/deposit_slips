@@ -288,6 +288,7 @@ void draw_page(GtkPrintOperation *self, GtkPrintContext *context, gint page_nr, 
 	cairo_set_line_width(cr, 1.0);
 	gint big_box_width = front->amount_boxes_width * 8;
 	gint sixth_dividing_line_x = front->amount_boxes_x + 6 * front->amount_boxes_width;
+
 	for (gint i = 0; i <= 4; i++) {
 		/* Draw a rectangle for a row of boxes. */
 		gint line_top = front->amount_boxes_y + (i * front->amount_boxes_height);
@@ -298,6 +299,7 @@ void draw_page(GtkPrintOperation *self, GtkPrintContext *context, gint page_nr, 
 
 		gint line_bottom = line_top + front->amount_boxes_height;
 		gint short_line_top = line_bottom - front->amount_boxes_separator_height;
+		
 
 		/* Draw separator lines within current row */
 		for (gint j = 1; j <= 7; j++) {
@@ -318,6 +320,30 @@ void draw_page(GtkPrintOperation *self, GtkPrintContext *context, gint page_nr, 
 		cairo_stroke(cr);
 		cairo_restore(cr); /* Restore previous line width*/
 	}
+
+	/* Write brackets for checks deposited. */
+	/* First bracket */
+	gint bottom_second_row_y = front->amount_boxes_y + 2 * front->amount_boxes_height;
+	gint checks_bracket_left = front->checks_bracket_right_x - front->checks_bracket_width;
+	gint checks_bracket_top = bottom_second_row_y - front->checks_bracket_height;
+	cairo_new_path(cr);
+	cairo_move_to(cr, front->checks_bracket_right_x, checks_bracket_top);
+	cairo_line_to(cr, front->checks_bracket_right_x, bottom_second_row_y);
+	cairo_line_to(cr, checks_bracket_left , bottom_second_row_y);
+	cairo_line_to(cr, checks_bracket_left , checks_bracket_top);
+	cairo_stroke(cr);
+
+
+	/* Second bracket */
+	bottom_second_row_y = front->amount_boxes_y + 3 * front->amount_boxes_height;
+	checks_bracket_top = bottom_second_row_y - front->checks_bracket_height;
+	cairo_new_path(cr);
+	cairo_move_to(cr, front->checks_bracket_right_x, checks_bracket_top);
+	cairo_line_to(cr, front->checks_bracket_right_x, bottom_second_row_y);
+	cairo_line_to(cr, checks_bracket_left , bottom_second_row_y);
+	cairo_line_to(cr, checks_bracket_left , checks_bracket_top);
+	cairo_stroke(cr);
+
 	cairo_restore(cr); /* Restore previous color*/
 
 	/* Write MICR routing number */
@@ -362,7 +388,7 @@ void draw_page(GtkPrintOperation *self, GtkPrintContext *context, gint page_nr, 
 	cairo_new_path (cr);
 	cairo_move_to(cr, 310, 40);
 	cairo_line_to(cr, 310, 45);
-	cairo_line_to(cr, 314, 42.5);
+	cairo_line_to(cr, front->checks_bracket_right_x, 42.5);
 	cairo_close_path (cr);
 	cairo_fill (cr);
 
@@ -370,7 +396,7 @@ void draw_page(GtkPrintOperation *self, GtkPrintContext *context, gint page_nr, 
 	cairo_new_path (cr);
 	cairo_move_to(cr, 310, 94);
 	cairo_line_to(cr, 310, 99);
-	cairo_line_to(cr, 314, 96.5);
+	cairo_line_to(cr, front->checks_bracket_right_x, 96.5);
 	cairo_close_path (cr);
 	cairo_fill (cr);
 
@@ -378,7 +404,7 @@ void draw_page(GtkPrintOperation *self, GtkPrintContext *context, gint page_nr, 
 	cairo_new_path (cr);
 	cairo_move_to(cr, 310, 111);
 	cairo_line_to(cr, 310, 116);
-	cairo_line_to(cr, 314, 113.5);
+	cairo_line_to(cr, front->checks_bracket_right_x, 113.5);
 	cairo_close_path (cr);
 	cairo_fill (cr);
 	

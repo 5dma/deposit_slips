@@ -95,8 +95,7 @@ typedef struct Front {
 	gdouble dollar_label_x; /**< x position of **$** label. */
 	gdouble dollar_label_y; /**< y position of **$** label. */
 
-	gdouble checks_bracket_x; /**< x position of first checks bracket. */
-	gdouble checks_bracket_y; /**< y position of first checks bracket. */
+	gdouble checks_bracket_right_x; /**< x position of first checks bracket. */
 	gdouble checks_bracket_width; /**< Width of checks bracket. */
 	gdouble checks_bracket_height; /**< Height of checks bracket. */
 	gdouble checks_bracket_spacing; /**< Spacing between the two checks brackets. */
