@@ -33,6 +33,9 @@ static const char LABEL_ACCOUNT_DESCRIPTION[] = "lblAccountDescription";
 /** Dummy amount string for the new check row. */
 static const char NEW_AMOUNT[] = "0.00"; 
 
+/**< Amount to adjust vertical position for two-line label. */
+static const int line_spacer = 3;
+
 /** Right-margin of the deposit slip on the screen */
 #define RIGHT_MARGIN_SCREEN 485
 
