@@ -411,6 +411,13 @@ void draw_page(GtkPrintOperation *self, GtkPrintContext *context, gint page_nr, 
 	cairo_move_to(cr, front->cash_label_x - extents.width, front->amount_boxes_y + (4 * front->amount_boxes_height) + (front->amount_boxes_height / 2) + (extents.height / 2) + line_spacer);
 	cairo_show_text(cr, "RECEIVED");
 
+	/* Write Net Deposit label*/
+	cairo_text_extents(cr, "DEPOSIT", &extents);
+	cairo_move_to(cr, front->net_deposit_label_x - extents.width, front->amount_boxes_y + (5 * front->amount_boxes_height) + (front->amount_boxes_height / 2) + (extents.height / 2) - line_spacer);
+	cairo_show_text(cr, "NET");
+	cairo_move_to(cr, front->net_deposit_label_x - extents.width, front->amount_boxes_y + (5 * front->amount_boxes_height) + (front->amount_boxes_height / 2) + (extents.height / 2) + line_spacer);
+	cairo_show_text(cr, "DEPOSIT");
+
 	/* Write Checks vertically */
 	cairo_set_font_size(cr, 5);
 	gchar checks[7] = "CHECKS";
@@ -445,6 +452,13 @@ void draw_page(GtkPrintOperation *self, GtkPrintContext *context, gint page_nr, 
 	cairo_line_to(cr, front->checks_bracket_right_x, 113.5);
 	cairo_close_path(cr);
 	cairo_fill(cr);
+
+	/* Write dollar sign */
+	cairo_save(cr); /* New state for large font size. */
+	cairo_set_font_size(cr, 14);
+	cairo_move_to(cr, 292, 138);
+	cairo_show_text(cr, "$");
+	cairo_restore(cr); /* Restore from large font size.*/
 
 	/* Write Account Value
 	cairo_move_to(cr, front->date_name_value_x, front->account_number_human_value_y);
