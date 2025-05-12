@@ -237,7 +237,7 @@ void draw_page(GtkPrintOperation *self, GtkPrintContext *context, gint page_nr, 
 	cairo_restore(cr); /* remove rotation, font size*/
 
 	/* Write Date label and line */
-	cairo_set_font_size(cr, front->date_name_address_font_size);
+	cairo_set_font_size(cr, front->date_name_address_label_font_size);
 	cairo_move_to(cr, front->date_name_address_label_x, front->date_label_y);
 	cairo_show_text(cr, "DATE");
 	cairo_move_to(cr, front->date_name_line_x, front->date_label_y);
@@ -387,11 +387,15 @@ void draw_page(GtkPrintOperation *self, GtkPrintContext *context, gint page_nr, 
 	cairo_select_font_face(cr, data_passer->font_face_micr, CAIRO_FONT_SLANT_NORMAL, CAIRO_FONT_WEIGHT_NORMAL);
 	cairo_set_font_size(cr, front->micr_font_size);
 	cairo_move_to(cr, front->micr_routing_number_label_x, front->micr_routing_number_label_y);
-	cairo_show_text(cr, "A53001007A");
+	gchar *routing_with_transit = g_strconcat(MICR_TRANSIT, routing_number, MICR_TRANSIT, NULL);
+	cairo_show_text(cr, routing_with_transit);
+	g_free(routing_with_transit);	
 
 	/* Write MICR account number */
 	cairo_move_to(cr, front->micr_account_number_label_x, front->micr_routing_number_label_y);
-	cairo_show_text(cr, account_number);
+	gchar *account_with_transit = g_strconcat(account_number, MICR_ON_US, NULL);
+	cairo_show_text(cr, account_with_transit);
+	g_free(account_with_transit);
 
 	/* Write MICR serial number */
 	cairo_move_to(cr, front->micr_serial_number_label_x, front->micr_routing_number_label_y);
@@ -473,22 +477,22 @@ void draw_page(GtkPrintOperation *self, GtkPrintContext *context, gint page_nr, 
 	cairo_set_font_size(cr, data_passer->font_size_sans_serif);
 	cairo_show_text(cr, account_number);*/
 
-	/* Write date
+	/* Write date and name values */
+	cairo_save(cr); /* New state for font and size */
+	cairo_select_font_face(cr, data_passer->font_family_mono, CAIRO_FONT_SLANT_NORMAL,  CAIRO_FONT_WEIGHT_BOLD );
+	cairo_set_font_size(cr, front->date_name_address_value_font_size);
 	GDateTime *date_time = g_date_time_new_now_local();
 	gchar *date_time_string = g_date_time_format(date_time, "%B %e, %Y");
 	cairo_move_to(cr, front->date_name_value_x, front->date_value_y);
 	cairo_set_font_size(cr, data_passer->font_size_sans_serif);
 	cairo_show_text(cr, date_time_string);
-	g_free(date_time_string);*/
+	g_free(date_time_string);
 
-	/* Write Account in MICR
-	gchar *account_with_transit = g_strconcat(account_number, MICR_ON_US, NULL);
-	cairo_move_to(cr, front->micr_account_number_label_x, front->micr_account_number_label_y);
-	cairo_set_font_size(cr, 20); // Need to put this in the configuration structure.
-	cairo_select_font_face(cr, data_passer->font_face_micr, CAIRO_FONT_SLANT_NORMAL, CAIRO_FONT_WEIGHT_NORMAL);
-	cairo_show_text(cr, account_with_transit);
-	g_free(account_with_transit);*/
+	cairo_move_to(cr, front->date_name_value_x, front->name_value_y);
+	cairo_show_text(cr, account_name);
 
+	cairo_restore(cr); /* Restore default font size*/
+	
 	data_passer->cairo_context = cr;
 	data_passer->total_deposit = 0;
 
