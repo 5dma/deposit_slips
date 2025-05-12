@@ -187,7 +187,7 @@ void draw_page(GtkPrintOperation *self, GtkPrintContext *context, gint page_nr, 
 	cairo_t *cr;
 	cr = gtk_print_context_get_cairo_context(context);
 
-	cairo_select_font_face(cr, data_passer->font_family_sans, CAIRO_FONT_SLANT_NORMAL, CAIRO_FONT_WEIGHT_BOLD);
+	cairo_select_font_face(cr, data_passer->font_family_sans, CAIRO_FONT_SLANT_NORMAL, CAIRO_FONT_WEIGHT_NORMAL);
 	cairo_set_font_size(cr, data_passer->font_size_sans_serif);
 	cairo_set_source_rgb(cr, 0, 0, 0);
 
@@ -198,14 +198,14 @@ void draw_page(GtkPrintOperation *self, GtkPrintContext *context, gint page_nr, 
 		Difference is 180
 		Therefore there is a margin of 90 on each side of the deposit slip
 	 */
-	cairo_translate(cr, 90, 0);
+	cairo_translate(cr, 90, 10);
 
 	Front *front = data_passer->front;
 
 	/*
 		Write rectangle arround the deposit slip.
 	*/
-	cairo_rectangle(cr, 0, 0, 432, 180);
+	cairo_rectangle(cr, 0, 0, 432, 198);
 	cairo_set_line_width(cr, 0.5);
 	cairo_stroke(cr);
 
