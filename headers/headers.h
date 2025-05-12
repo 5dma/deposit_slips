@@ -73,6 +73,7 @@ typedef struct Front {
 
 	gdouble account_number_human_value_x; /**< x position of the human-readable account number. */
 	gdouble account_number_human_value_y; /**< y position of the human-readable account number. */
+	gdouble account_number_human_font_size; /**< Font size of the human-readable account number. */
 	gdouble account_number_squares_x; /**< x position of the series of squares holding the human-readable account number. */
 	gdouble account_number_squares_y; /**< y position of the series of squares holding the human-readable account number. */
 	gdouble account_number_squares_width; /**< Width of each square holding the human-readable account number. */

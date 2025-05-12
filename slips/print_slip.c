@@ -7,6 +7,35 @@
  * @brief Prints the actual deposit slip.
  */
 
+
+/**
+ * Prints text in outlined boxes.
+ */
+void print_amounts_in_boxes(cairo_t *cr, 
+	const gchar *text, 
+	const gchar *font_face, 
+	const gint font_size, 
+	const gint right_x, 
+	const gint y, 
+	const gint pitch) {
+	gchar destination[4];
+	cairo_save(cr);
+
+	gint current_x = right_x;	
+	cairo_select_font_face(cr, font_face, CAIRO_FONT_SLANT_NORMAL, CAIRO_FONT_WEIGHT_BOLD);
+	cairo_set_font_size(cr, font_size);
+	guint string_length = strlen (text);
+	for (gint i=string_length - 1; i>=0; i--) {
+		g_strlcpy (destination, text + i, 2);
+		cairo_move_to(cr, current_x, y);
+		cairo_show_text(cr, destination);
+		current_x -= pitch;
+	}
+	cairo_restore(cr);
+}
+
+
+
 /**
  * Callback fired while iterating over all checks. This function prints the first two checks in the store on the front side of the deposit slip.
  * @param model Pointer to the model containing the checks.
@@ -493,6 +522,15 @@ void draw_page(GtkPrintOperation *self, GtkPrintContext *context, gint page_nr, 
 
 	cairo_restore(cr); /* Restore default font size*/
 	
+	/* Print account number in boxes */
+	print_amounts_in_boxes(cr, account_number, 
+		data_passer->font_family_mono, 
+		front->account_number_human_font_size,  
+		front->account_number_squares_x + ( 9.3 * front ->account_number_squares_width), 
+		front->account_number_squares_y + front->account_number_squares_height - 3, 
+		front->account_number_squares_width);
+
+
 	data_passer->cairo_context = cr;
 	data_passer->total_deposit = 0;
 
