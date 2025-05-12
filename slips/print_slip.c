@@ -9,7 +9,15 @@
 
 
 /**
- * Prints text in outlined boxes.
+ * Prints text in outlined boxes. The function prints the characters in reverse order, 
+ * ensuring the rightmost character is aligned with the rightmost box.
+ * @param cr Cairo context.
+ * @param text Pointer to text to be printed (account number or amount).
+ * @param font_face Font face used to print the text.
+ * @param font_size Font size used to print the text.
+ * @param right_x Right edge of the text.
+ * @param y y position of the text.
+ * @param pitch Spacing between printed letters.
  */
 void print_amounts_in_boxes(cairo_t *cr, 
 	const gchar *text, 
@@ -25,6 +33,8 @@ void print_amounts_in_boxes(cairo_t *cr,
 	cairo_select_font_face(cr, font_face, CAIRO_FONT_SLANT_NORMAL, CAIRO_FONT_WEIGHT_BOLD);
 	cairo_set_font_size(cr, font_size);
 	guint string_length = strlen (text);
+
+	/* In reverse order, print the current character.*/
 	for (gint i=string_length - 1; i>=0; i--) {
 		g_strlcpy (destination, text + i, 2);
 		cairo_move_to(cr, current_x, y);

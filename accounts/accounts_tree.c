@@ -277,6 +277,7 @@ static void toggle_clicked(GtkCellRendererToggle *renderer,
 /**
  * Function that creates the tree view for the account listing in the Accounts tab.
  * @param list_store Pointer to the `GtkListStore` associated with the tree view this function creates.
+ * @param data_passer Pointer to user data.
  * @return A pointer to the created tree view.
 */
 GtkWidget *make_tree_view(GtkListStore *list_store, Data_passer *data_passer) {
