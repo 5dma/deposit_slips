@@ -374,6 +374,14 @@ void draw_page(GtkPrintOperation *self, GtkPrintContext *context, gint page_nr, 
 
 	cairo_restore(cr); /* Restore previous color*/
 
+	/*
+	Write decimal point in net deposit row.
+	The values for cents_dividing_line_x and line_bottom were
+	assigned when drawing the amount boxes for the net deposit row.
+	 */
+	cairo_arc(cr, cents_dividing_line_x, line_bottom, 0.9, 0, 2 * G_PI);
+	cairo_fill(cr);
+
 	/* Write MICR routing number */
 	cairo_save(cr); /* New state for MICR */
 	cairo_select_font_face(cr, data_passer->font_face_micr, CAIRO_FONT_SLANT_NORMAL, CAIRO_FONT_WEIGHT_NORMAL);
