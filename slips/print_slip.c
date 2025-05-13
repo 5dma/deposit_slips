@@ -88,22 +88,34 @@ gboolean print_deposit_amounts_front(GtkTreeModel *model,
 	the current check is, the farther down it is in the preview. The vertical coordinate
 	is therefore a function of the `path` passed to the callback. */
 
+
+
 	cairo_select_font_face(cr, data_passer->font_family_mono, CAIRO_FONT_SLANT_NORMAL, CAIRO_FONT_WEIGHT_BOLD);
 	cairo_set_font_size(cr, data_passer->font_size_monospace);
 
 	/* Get the formatted string corresponding to this check's amount. */
-	gfloat current_amount = atof(amount);
-	gchar *formatted_amount = comma_formatted_amount(current_amount); /* Memory freed below. */
+	guint current_amount = atof(amount) * 100;
+
+	gchar formatted_amount[10];
+	g_snprintf (formatted_amount, 11, "%d", current_amount);
+
+	print_amounts_in_boxes(cr, 
+		formatted_amount, 
+		data_passer->font_family_mono, 
+		data_passer->front->account_number_human_font_size,
+		data_passer->front->amount_boxes_x + (7 * data_passer->front->amount_boxes_width + 3),
+		data_passer->front->amount_boxes_y + (2 * data_passer->front->amount_boxes_height) - 3, 
+		data_passer->front->amount_boxes_width);
 
 	/* Move to the correct position to print the amount such that it is right-aligned. */
-	cairo_text_extents_t extents;
+	/*cairo_text_extents_t extents;
 	cairo_text_extents(cr, formatted_amount, &extents);
 
 	Front *front = data_passer->front;
 	cairo_move_to(cr, front->amount_x - extents.width, front->first_amount_y + (row_number * front->amount_pitch));
 	cairo_show_text(cr, formatted_amount);
 
-	g_free(formatted_amount);
+	g_free(formatted_amount);*/
 
 	/* Increment the total of all amounts in the deposit slip and update its
 	value in the hash table of passed pointers. */
