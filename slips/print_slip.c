@@ -540,16 +540,25 @@ void draw_page(GtkPrintOperation *self, GtkPrintContext *context, gint page_nr, 
 
 	/* Write total of checks deposited */
 	data_passer->total_deposit += data_passer->total_back_side;
+	gchar formatted_amount[10];
+	g_snprintf (formatted_amount, 11, "%d", (guint)(data_passer->total_deposit * 100));
+	print_amounts_in_boxes(cr, 
+		formatted_amount, 
+		data_passer->font_family_mono, 
+		data_passer->front->account_number_human_font_size,
+		data_passer->front->amount_boxes_x + (7 * data_passer->front->amount_boxes_width + 3),
+		data_passer->front->amount_boxes_y + (6 * data_passer->front->amount_boxes_height) - 3, 
+		data_passer->front->amount_boxes_width);
 
 	/* Get the width of the total amount, and move to that point to print the total. */
 
-	gchar *formatted_total = comma_formatted_amount(data_passer->total_deposit);
+	/*gchar *formatted_total = comma_formatted_amount(data_passer->total_deposit);
 	cairo_text_extents(cr, formatted_total, &extents);
 	cairo_move_to(cr, front->amount_x - extents.width, front->total_y);
 	cairo_set_font_size(cr, data_passer->font_size_monospace);
 	cairo_select_font_face(cr, data_passer->font_family_mono, CAIRO_FONT_SLANT_NORMAL, CAIRO_FONT_WEIGHT_BOLD);
 	cairo_show_text(cr, formatted_total);
-	g_free(formatted_total);
+	g_free(formatted_total); */
 
 	/* If there are more than two checks, print their subtotal on the front side. */
 	if (number_of_checks(data_passer) > 2) {
