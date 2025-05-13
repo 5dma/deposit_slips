@@ -41,7 +41,7 @@ static const int line_spacer = 3;
 
 /** Path to configuration file */
 #define CONFIG_FILE "/home/abba/.deposit_slip/deposit_slips.json"
-/** Path to backup configuration file. See write_config_free_memory(). */
+/** Path to backup configuration file. See free_memory(). */
 #define CONFIG_FILE_BACKUP "/home/abba/.deposit_slip/deposit_slips_backup.json"
 
 /** Character corresponding to the `transit` character in MICR. This character can change depending on the MICR font. */

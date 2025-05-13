@@ -72,7 +72,7 @@ void set_boolean_value(JsonBuilder *builder, gchar *key, gboolean value) {
 }
 
 /**
-Frees memory allocated to a GSList of accounts. Called from write_config_free_memory().
+Frees memory allocated to a GSList of accounts. Called from free_memory().
 * @param data Pointer to user data, which is to an Account entry in a GSList.
 */
 void free_gslist_account(gpointer data) {
@@ -81,11 +81,11 @@ void free_gslist_account(gpointer data) {
 }
 
 /**
- * Writes the configuration file, and frees memory in the master and temporary account lists and other string data in a `Data_passer`. This callback fires after the user destroys the main application window.
+ * Frees memory in the master and temporary account lists and other string data in a `Data_passer`. This callback fires after the user destroys the main application window.
  * @param window The parent node.
  * @param data Pointer to user data
  */
-void write_config_free_memory(GtkWidget *window, gpointer data) {
+void free_memory(GtkWidget *window, gpointer data) {
 	Data_passer *data_passer = (Data_passer *)data;
 
 	/* Free memory allocated to the master and temporary list stores. */
