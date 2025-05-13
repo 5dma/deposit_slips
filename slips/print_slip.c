@@ -65,6 +65,7 @@ gboolean print_deposit_amounts_front(GtkTreeModel *model,
 	gchar *amount;
 	gtk_tree_model_get(model, iter, CHECK_AMOUNT, &amount, -1);
 	gchar *pathstring = gtk_tree_path_to_string(path); /* Memory freed below. */
+	guint current_row_number = atoi(pathstring) + 1;
 
 	guint64 row_number = 0;
 	GError *gerror = NULL;
@@ -82,20 +83,8 @@ gboolean print_deposit_amounts_front(GtkTreeModel *model,
 		return TRUE;
 	}
 
-	/* The current amount needs to be printed at a particular coordinate
-	in the preview. The horizontal coordinate is fixed, but the vertical coordinate
-	changes depending on index of the current check in the list. The farther down
-	the current check is, the farther down it is in the preview. The vertical coordinate
-	is therefore a function of the `path` passed to the callback. */
-
-
-
-	cairo_select_font_face(cr, data_passer->font_family_mono, CAIRO_FONT_SLANT_NORMAL, CAIRO_FONT_WEIGHT_BOLD);
-	cairo_set_font_size(cr, data_passer->font_size_monospace);
-
 	/* Get the formatted string corresponding to this check's amount. */
 	guint current_amount = atof(amount) * 100;
-
 	gchar formatted_amount[10];
 	g_snprintf (formatted_amount, 11, "%d", current_amount);
 
@@ -104,18 +93,8 @@ gboolean print_deposit_amounts_front(GtkTreeModel *model,
 		data_passer->font_family_mono, 
 		data_passer->front->account_number_human_font_size,
 		data_passer->front->amount_boxes_x + (7 * data_passer->front->amount_boxes_width + 3),
-		data_passer->front->amount_boxes_y + (2 * data_passer->front->amount_boxes_height) - 3, 
+		data_passer->front->amount_boxes_y + ((current_row_number + 1) * data_passer->front->amount_boxes_height) - 3, 
 		data_passer->front->amount_boxes_width);
-
-	/* Move to the correct position to print the amount such that it is right-aligned. */
-	/*cairo_text_extents_t extents;
-	cairo_text_extents(cr, formatted_amount, &extents);
-
-	Front *front = data_passer->front;
-	cairo_move_to(cr, front->amount_x - extents.width, front->first_amount_y + (row_number * front->amount_pitch));
-	cairo_show_text(cr, formatted_amount);
-
-	g_free(formatted_amount);*/
 
 	/* Increment the total of all amounts in the deposit slip and update its
 	value in the hash table of passed pointers. */
