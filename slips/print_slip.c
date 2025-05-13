@@ -7,9 +7,8 @@
  * @brief Prints the actual deposit slip.
  */
 
-
 /**
- * Prints text in outlined boxes. The function prints the characters in reverse order, 
+ * Prints text in outlined boxes. The function prints the characters in reverse order,
  * ensuring the rightmost character is aligned with the rightmost box.
  * @param cr Cairo context.
  * @param text Pointer to text to be printed (account number or amount).
@@ -19,32 +18,30 @@
  * @param y y position of the text.
  * @param pitch Spacing between printed letters.
  */
-void print_amounts_in_boxes(cairo_t *cr, 
-	const gchar *text, 
-	const gchar *font_face, 
-	const gint font_size, 
-	const gint right_x, 
-	const gint y, 
-	const gint pitch) {
+void print_amounts_in_boxes(cairo_t *cr,
+							const gchar *text,
+							const gchar *font_face,
+							const gint font_size,
+							const gint right_x,
+							const gint y,
+							const gint pitch) {
 	gchar destination[4];
 	cairo_save(cr);
 
-	gint current_x = right_x;	
+	gint current_x = right_x;
 	cairo_select_font_face(cr, font_face, CAIRO_FONT_SLANT_NORMAL, CAIRO_FONT_WEIGHT_BOLD);
 	cairo_set_font_size(cr, font_size);
-	guint string_length = strlen (text);
+	guint string_length = strlen(text);
 
 	/* In reverse order, print the current character.*/
-	for (gint i=string_length - 1; i>=0; i--) {
-		g_strlcpy (destination, text + i, 2);
+	for (gint i = string_length - 1; i >= 0; i--) {
+		g_strlcpy(destination, text + i, 2);
 		cairo_move_to(cr, current_x, y);
 		cairo_show_text(cr, destination);
 		current_x -= pitch;
 	}
 	cairo_restore(cr);
 }
-
-
 
 /**
  * Callback fired while iterating over all checks. This function prints the first two checks in the store on the front side of the deposit slip.
@@ -86,15 +83,15 @@ gboolean print_deposit_amounts_front(GtkTreeModel *model,
 	/* Get the formatted string corresponding to this check's amount. */
 	guint current_amount = atof(amount) * 100;
 	gchar formatted_amount[10];
-	g_snprintf (formatted_amount, 11, "%d", current_amount);
+	g_snprintf(formatted_amount, 11, "%d", current_amount);
 
-	print_amounts_in_boxes(cr, 
-		formatted_amount, 
-		data_passer->font_family_mono, 
-		data_passer->front->account_number_human_font_size,
-		data_passer->front->amount_boxes_x + (7 * data_passer->front->amount_boxes_width + 3),
-		data_passer->front->amount_boxes_y + ((current_row_number + 1) * data_passer->front->amount_boxes_height) - 3, 
-		data_passer->front->amount_boxes_width);
+	print_amounts_in_boxes(cr,
+						   formatted_amount,
+						   data_passer->font_family_mono,
+						   data_passer->front->account_number_human_font_size,
+						   data_passer->front->amount_boxes_x + (7 * data_passer->front->amount_boxes_width + 3),
+						   data_passer->front->amount_boxes_y + ((current_row_number + 1) * data_passer->front->amount_boxes_height) - 3,
+						   data_passer->front->amount_boxes_width);
 
 	/* Increment the total of all amounts in the deposit slip and update its
 	value in the hash table of passed pointers. */
@@ -419,7 +416,7 @@ void draw_page(GtkPrintOperation *self, GtkPrintContext *context, gint page_nr, 
 	cairo_move_to(cr, front->micr_routing_number_label_x, front->micr_routing_number_label_y);
 	gchar *routing_with_transit = g_strconcat(MICR_TRANSIT, routing_number, MICR_TRANSIT, NULL);
 	cairo_show_text(cr, routing_with_transit);
-	g_free(routing_with_transit);	
+	g_free(routing_with_transit);
 
 	/* Write MICR account number */
 	cairo_move_to(cr, front->micr_account_number_label_x, front->micr_routing_number_label_y);
@@ -509,7 +506,7 @@ void draw_page(GtkPrintOperation *self, GtkPrintContext *context, gint page_nr, 
 
 	/* Write date and name values */
 	cairo_save(cr); /* New state for font and size */
-	cairo_select_font_face(cr, data_passer->font_family_mono, CAIRO_FONT_SLANT_NORMAL,  CAIRO_FONT_WEIGHT_BOLD );
+	cairo_select_font_face(cr, data_passer->font_family_mono, CAIRO_FONT_SLANT_NORMAL, CAIRO_FONT_WEIGHT_BOLD);
 	cairo_set_font_size(cr, front->date_name_address_value_font_size);
 	GDateTime *date_time = g_date_time_new_now_local();
 	gchar *date_time_string = g_date_time_format(date_time, "%B %e, %Y");
@@ -522,15 +519,14 @@ void draw_page(GtkPrintOperation *self, GtkPrintContext *context, gint page_nr, 
 	cairo_show_text(cr, account_name);
 
 	cairo_restore(cr); /* Restore default font size*/
-	
-	/* Print account number in boxes */
-	print_amounts_in_boxes(cr, account_number, 
-		data_passer->font_family_mono, 
-		front->account_number_human_font_size,  
-		front->account_number_squares_x + ( 9.3 * front ->account_number_squares_width), 
-		front->account_number_squares_y + front->account_number_squares_height - 3, 
-		front->account_number_squares_width);
 
+	/* Print account number in boxes */
+	print_amounts_in_boxes(cr, account_number,
+						   data_passer->font_family_mono,
+						   front->account_number_human_font_size,
+						   front->account_number_squares_x + (9.3 * front->account_number_squares_width),
+						   front->account_number_squares_y + front->account_number_squares_height - 3,
+						   front->account_number_squares_width);
 
 	data_passer->cairo_context = cr;
 	data_passer->total_deposit = 0;
@@ -538,50 +534,25 @@ void draw_page(GtkPrintOperation *self, GtkPrintContext *context, gint page_nr, 
 	/* Write amount of first two checks on front side. */
 	gtk_tree_model_foreach(GTK_TREE_MODEL(data_passer->checks_store), print_deposit_amounts_front, data_passer);
 
-	/* Write total of checks deposited */
-	data_passer->total_deposit += data_passer->total_back_side;
+	/* Write subtotal of checks deposited */
 	gchar formatted_amount[10];
-	g_snprintf (formatted_amount, 11, "%d", (guint)(data_passer->total_deposit * 100));
-	print_amounts_in_boxes(cr, 
-		formatted_amount, 
-		data_passer->font_family_mono, 
-		data_passer->front->account_number_human_font_size,
-		data_passer->front->amount_boxes_x + (7 * data_passer->front->amount_boxes_width + 3),
-		data_passer->front->amount_boxes_y + (6 * data_passer->front->amount_boxes_height) - 3, 
-		data_passer->front->amount_boxes_width);
+	g_snprintf(formatted_amount, 11, "%d", (guint)(data_passer->total_deposit * 100));
+	print_amounts_in_boxes(cr,
+						   formatted_amount,
+						   data_passer->font_family_mono,
+						   data_passer->front->account_number_human_font_size,
+						   data_passer->front->amount_boxes_x + (7 * data_passer->front->amount_boxes_width + 3),
+						   data_passer->front->amount_boxes_y + (4 * data_passer->front->amount_boxes_height) - 3,
+						   data_passer->front->amount_boxes_width);
 
-	/* Get the width of the total amount, and move to that point to print the total. */
-
-	/*gchar *formatted_total = comma_formatted_amount(data_passer->total_deposit);
-	cairo_text_extents(cr, formatted_total, &extents);
-	cairo_move_to(cr, front->amount_x - extents.width, front->total_y);
-	cairo_set_font_size(cr, data_passer->font_size_monospace);
-	cairo_select_font_face(cr, data_passer->font_family_mono, CAIRO_FONT_SLANT_NORMAL, CAIRO_FONT_WEIGHT_BOLD);
-	cairo_show_text(cr, formatted_total);
-	g_free(formatted_total); */
-
-	/* If there are more than two checks, print their subtotal on the front side. */
-	if (number_of_checks(data_passer) > 2) {
-		gchar *formatted_total = comma_formatted_amount(data_passer->total_back_side);
-		/* Move to the correct position to print the amount such that it is right-aligned. */
-		cairo_text_extents_t extents;
-		cairo_text_extents(data_passer->cairo_context, formatted_total, &extents);
-
-		cairo_move_to(cr, front->amount_x - extents.width, front->subtotal_y);
-
-		cairo_show_text(data_passer->cairo_context, formatted_total);
-
-		/* Print the rear side */
-		gtk_print_operation_draw_page_finish(self);
-		gtk_tree_model_foreach(GTK_TREE_MODEL(data_passer->checks_store), print_deposit_amounts_back, data_passer);
-
-		Back *back = data_passer->back;
-
-		/* Print subtotal on back side. */
-		cairo_move_to(cr, back->amount_x - extents.width, back->total_y);
-		cairo_show_text(data_passer->cairo_context, formatted_total);
-		g_free(formatted_total);
-	}
+	/* Write total of checks deposited */
+	print_amounts_in_boxes(cr,
+						   formatted_amount,
+						   data_passer->font_family_mono,
+						   data_passer->front->account_number_human_font_size,
+						   data_passer->front->amount_boxes_x + (7 * data_passer->front->amount_boxes_width + 3),
+						   data_passer->front->amount_boxes_y + (6 * data_passer->front->amount_boxes_height) - 3,
+						   data_passer->front->amount_boxes_width);
 }
 
 /**
