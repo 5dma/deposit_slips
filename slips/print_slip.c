@@ -1,6 +1,7 @@
 #include <constants.h>
 #include <gtk/gtk.h>
 #include <headers.h>
+#include <math.h>
 
 /**
  * @file print_slip.c
@@ -533,9 +534,21 @@ void draw_page(GtkPrintOperation *self, GtkPrintContext *context, gint page_nr, 
 
 	/* Write amount of first two checks on front side. */
 	gtk_tree_model_foreach(GTK_TREE_MODEL(data_passer->checks_store), print_deposit_amounts_front, data_passer);
+	
+	/* Internal representation of a total deposit may not be accurate to two decimal places,
+		it may actually be much larger. For example, 8992.02 may be represented as 
+		8992.01953. Because g_snprintf below converts a float to a decimal by truncation,
+		we need to round up the hundredths place if necessary. */
+	float step1 = data_passer->total_deposit * 100.0;
+    int mantissa = trunc(step1);
+    float decimal = step1 - mantissa;
+    if (decimal >= 0.5) {
+        data_passer->total_deposit += 0.01;
+    }
 
 	/* Write subtotal of checks deposited */
 	gchar formatted_amount[10];
+
 	g_snprintf(formatted_amount, 11, "%d", (guint)(data_passer->total_deposit * 100));
 	print_amounts_in_boxes(cr,
 						   formatted_amount,
