@@ -11,7 +11,7 @@ OBJDIR      := obj
 TARGETDIR   := bin
 SRCEXT      := c
 OBJEXT      := o
-INSTALLDIR  := /usr/local/bin/
+INSTALLDIR  := /home/abba/.local/bin/
 #Flags, Libraries and Includes
 CFLAGS      := -g -Wall `pkg-config --cflags json-glib-1.0` `pkg-config --cflags glib-2.0` `pkg-config --cflags gtk+-3.0`
 LFLAGS         := `pkg-config --libs glib-2.0` `pkg-config --libs json-glib-1.0` `pkg-config --libs gtk+-3.0` -lm
