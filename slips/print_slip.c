@@ -19,9 +19,9 @@
  * @param y y position of the text.
  * @param pitch Spacing between printed letters.
  */
-void print_amounts_in_boxes(cairo_t *cr,
-							const gchar *text,
-							const gchar *font_face,
+void print_amounts_in_boxes(cairo_t* cr,
+							const gchar* text,
+							const gchar* font_face,
 							const gint font_size,
 							const gint right_x,
 							const gint y,
@@ -44,6 +44,71 @@ void print_amounts_in_boxes(cairo_t *cr,
 	cairo_restore(cr);
 }
 
+void print_deposit_slip_back_static(cairo_t* cr, Data_passer* data_passer) {
+	g_print("Here I am!\n");
+	Back* back = data_passer->back;
+	cairo_text_extents_t extents;
+
+	/*
+	Translate the surface so that the deposit slip appears in the top middle of the printed page.
+	Width of paper is 8.5 * 72 = 612
+	Width of deposit slip is 6 * 72 = 432
+	Difference is 180
+	Therefore there is a margin of 90 on each side of the deposit slip
+ */
+	cairo_translate(cr, -90, 200);
+	/*
+	Write rectangle arround the back of the deposit slip.
+	*/
+	cairo_rectangle(cr, 0, 0, 432, 198);
+	cairo_set_line_width(cr, 0.5);
+	cairo_stroke(cr);
+
+	/*
+	Write rectangle arround the currency count.
+	*/
+	cairo_rectangle(cr, back->currency_count_frame_top_x, back->currency_count_frame_top_y, back->currency_count_frame_width, back->currency_count_frame_height);
+	cairo_set_line_width(cr, 0.5);
+	cairo_stroke(cr);
+
+	/* Write horizontal body lines in currency count table.	*/
+	gdouble move_to_y = back->currency_count_frame_top_y + back->currency_count_frame_height;
+	for (gdouble i = 0; i <= 7; i++) {
+		gdouble current_x = back->currency_count_top_line_x + (i * back->currency_count_pitch);
+		cairo_move_to(cr, current_x, back->currency_count_frame_top_y);
+		cairo_line_to(cr, current_x, move_to_y);
+		cairo_stroke(cr);
+	}
+
+	/* Write vertical body lines in currency count table */
+
+	gdouble vertical_end_x = back->currency_count_frame_top_x + back->currency_count_frame_width;
+	cairo_move_to(cr, back->currency_count_top_line_x, back->currency_count_line_right_y);
+	cairo_line_to(cr, vertical_end_x, back->currency_count_line_right_y);
+	cairo_stroke(cr);
+
+	cairo_move_to(cr, back->currency_count_top_line_x, back->currency_count_line_middle_y);
+	cairo_line_to(cr, vertical_end_x, back->currency_count_line_middle_y);
+	cairo_stroke(cr);
+
+	cairo_move_to(cr, back->currency_count_top_line_x, back->currency_count_line_left_y);
+	cairo_line_to(cr, vertical_end_x - back->currency_count_pitch, back->currency_count_line_left_y);
+	cairo_stroke(cr);
+
+	/* Write Currency Count label. This label is rotated 90 degrees. */
+
+	cairo_save(cr); /* Start new state */
+	cairo_select_font_face(cr, data_passer->font_family_sans, CAIRO_FONT_SLANT_NORMAL, CAIRO_FONT_WEIGHT_NORMAL);
+	cairo_set_font_size(cr, back->currency_count_label_font_size);
+	cairo_move_to(cr, 0, 0);
+	cairo_rotate(cr, -1.570796);
+	cairo_text_extents(cr, "CURRENCY COUNT - FOR FINANCIAL INSTITUTION USE ONLY", &extents);
+	cairo_move_to(cr, back->currency_count_label_x - (extents.width / 2), back->currency_count_label_y);
+	cairo_show_text(cr, "CURRENCY COUNT - FOR FINANCIAL INSTITUTION USE ONLY");
+
+	cairo_restore(cr); /* remove rotation, font size*/
+}
+
 /**
  * Callback fired while iterating over all checks. This function prints the first two checks in the store on the front side of the deposit slip.
  * @param model Pointer to the model containing the checks.
@@ -54,19 +119,19 @@ void print_amounts_in_boxes(cairo_t *cr,
  * \sa draw_page()
  * \sa print_deposit_amounts_back()
  */
-gboolean print_deposit_amounts_front(GtkTreeModel *model,
-									 GtkTreePath *path,
-									 GtkTreeIter *iter,
+gboolean print_deposit_amounts_front(GtkTreeModel* model,
+									 GtkTreePath* path,
+									 GtkTreeIter* iter,
 									 gpointer data) {
-	Data_passer *data_passer = (Data_passer *)data;
-	cairo_t *cr = data_passer->cairo_context;
-	gchar *amount;
+	Data_passer* data_passer = (Data_passer*)data;
+	cairo_t* cr = data_passer->cairo_context;
+	gchar* amount;
 	gtk_tree_model_get(model, iter, CHECK_AMOUNT, &amount, -1);
-	gchar *pathstring = gtk_tree_path_to_string(path); /* Memory freed below. */
+	gchar* pathstring = gtk_tree_path_to_string(path); /* Memory freed below. */
 	guint current_row_number = atoi(pathstring) + 1;
 
 	guint64 row_number = 0;
-	GError *gerror = NULL;
+	GError* gerror = NULL;
 
 	g_ascii_string_to_unsigned(
 		pathstring, /* path of the current row */
@@ -97,7 +162,7 @@ gboolean print_deposit_amounts_front(GtkTreeModel *model,
 	/* Increment the total of all amounts in the deposit slip and update its
 	value in the hash table of passed pointers. */
 
-	float amount_float = atof((char *)amount);
+	float amount_float = atof((char*)amount);
 
 	data_passer->total_deposit += amount_float;
 
@@ -117,18 +182,18 @@ gboolean print_deposit_amounts_front(GtkTreeModel *model,
  * \sa draw_page()
  * \sa print_deposit_amounts_front()
  */
-gboolean print_deposit_amounts_back(GtkTreeModel *model,
-									GtkTreePath *path,
-									GtkTreeIter *iter,
+gboolean print_deposit_amounts_back(GtkTreeModel* model,
+									GtkTreePath* path,
+									GtkTreeIter* iter,
 									gpointer data) {
-	Data_passer *data_passer = (Data_passer *)data;
-	cairo_t *cr = data_passer->cairo_context;
-	gchar *amount;
+	Data_passer* data_passer = (Data_passer*)data;
+	cairo_t* cr = data_passer->cairo_context;
+	gchar* amount;
 	gtk_tree_model_get(model, iter, CHECK_AMOUNT, &amount, -1);
-	gchar *pathstring = gtk_tree_path_to_string(path); /* Memory freed below. */
+	gchar* pathstring = gtk_tree_path_to_string(path); /* Memory freed below. */
 
 	guint64 row_number = 0;
-	GError *gerror = NULL;
+	GError* gerror = NULL;
 
 	g_ascii_string_to_unsigned(
 		pathstring, /* path of the current row */
@@ -164,15 +229,15 @@ gboolean print_deposit_amounts_back(GtkTreeModel *model,
 
 	/* Get the formatted string corresponding to this check's amount. */
 	gfloat current_amount = atof(amount);
-	gchar *formatted_amount = comma_formatted_amount(current_amount); /* Memory freed below. */
+	gchar* formatted_amount = comma_formatted_amount(current_amount); /* Memory freed below. */
 
 	/* Move to the correct position to print the amount such that it is right-aligned. */
 	cairo_text_extents_t extents;
 	cairo_text_extents(cr, formatted_amount, &extents);
 
-	Back *back = data_passer->back;
+	/*Back* back = data_passer->back;
 	cairo_move_to(cr, back->amount_x - extents.width, back->first_amount_y + (row_number * back->amount_pitch));
-	cairo_show_text(cr, formatted_amount);
+	cairo_show_text(cr, formatted_amount); */
 	g_free(formatted_amount);
 	g_free(amount);
 	g_free(pathstring);
@@ -191,17 +256,17 @@ gboolean print_deposit_amounts_back(GtkTreeModel *model,
  * \sa print_deposit_amounts_front()
  * \sa print_deposit_amounts_back()
  */
-void draw_page(GtkPrintOperation *self, GtkPrintContext *context, gint page_nr, gpointer data) {
-	Data_passer *data_passer = (Data_passer *)data;
+void draw_page(GtkPrintOperation* self, GtkPrintContext* context, gint page_nr, gpointer data) {
+	Data_passer* data_passer = (Data_passer*)data;
 
-	gchar *routing_number = NULL;
-	gchar *account_number = NULL;
-	gchar *account_name = NULL;
+	gchar* routing_number = NULL;
+	gchar* account_number = NULL;
+	gchar* account_name = NULL;
 
 	GtkTreeIter iter;
-	GtkTreeModel *model;
+	GtkTreeModel* model;
 
-	GtkTreeSelection *tree_selection = gtk_tree_view_get_selection(GTK_TREE_VIEW(data_passer->checks_accounts_treeview));
+	GtkTreeSelection* tree_selection = gtk_tree_view_get_selection(GTK_TREE_VIEW(data_passer->checks_accounts_treeview));
 
 	if (gtk_tree_selection_get_selected(tree_selection, &model, &iter)) {
 		gtk_tree_model_get(model, &iter,
@@ -212,7 +277,7 @@ void draw_page(GtkPrintOperation *self, GtkPrintContext *context, gint page_nr, 
 	}
 
 	cairo_text_extents_t extents;
-	cairo_t *cr;
+	cairo_t* cr;
 	cr = gtk_print_context_get_cairo_context(context);
 
 	cairo_select_font_face(cr, data_passer->font_family_sans, CAIRO_FONT_SLANT_NORMAL, CAIRO_FONT_WEIGHT_NORMAL);
@@ -228,7 +293,7 @@ void draw_page(GtkPrintOperation *self, GtkPrintContext *context, gint page_nr, 
 	 */
 	cairo_translate(cr, 90, 10);
 
-	Front *front = data_passer->front;
+	Front* front = data_passer->front;
 
 	/*
 		Write rectangle arround the deposit slip.
@@ -415,13 +480,13 @@ void draw_page(GtkPrintOperation *self, GtkPrintContext *context, gint page_nr, 
 	cairo_select_font_face(cr, data_passer->font_face_micr, CAIRO_FONT_SLANT_NORMAL, CAIRO_FONT_WEIGHT_NORMAL);
 	cairo_set_font_size(cr, front->micr_font_size);
 	cairo_move_to(cr, front->micr_routing_number_label_x, front->micr_routing_number_label_y);
-	gchar *routing_with_transit = g_strconcat(MICR_TRANSIT, routing_number, MICR_TRANSIT, NULL);
+	gchar* routing_with_transit = g_strconcat(MICR_TRANSIT, routing_number, MICR_TRANSIT, NULL);
 	cairo_show_text(cr, routing_with_transit);
 	g_free(routing_with_transit);
 
 	/* Write MICR account number */
 	cairo_move_to(cr, front->micr_account_number_label_x, front->micr_routing_number_label_y);
-	gchar *account_with_transit = g_strconcat(account_number, MICR_ON_US, NULL);
+	gchar* account_with_transit = g_strconcat(account_number, MICR_ON_US, NULL);
 	cairo_show_text(cr, account_with_transit);
 	g_free(account_with_transit);
 
@@ -509,8 +574,8 @@ void draw_page(GtkPrintOperation *self, GtkPrintContext *context, gint page_nr, 
 	cairo_save(cr); /* New state for font and size */
 	cairo_select_font_face(cr, data_passer->font_family_mono, CAIRO_FONT_SLANT_NORMAL, CAIRO_FONT_WEIGHT_BOLD);
 	cairo_set_font_size(cr, front->date_name_address_value_font_size);
-	GDateTime *date_time = g_date_time_new_now_local();
-	gchar *date_time_string = g_date_time_format(date_time, "%B %e, %Y");
+	GDateTime* date_time = g_date_time_new_now_local();
+	gchar* date_time_string = g_date_time_format(date_time, "%B %e, %Y");
 	cairo_move_to(cr, front->date_name_value_x, front->date_value_y);
 	cairo_set_font_size(cr, data_passer->font_size_sans_serif);
 	cairo_show_text(cr, date_time_string);
@@ -534,17 +599,17 @@ void draw_page(GtkPrintOperation *self, GtkPrintContext *context, gint page_nr, 
 
 	/* Write amount of first two checks on front side. */
 	gtk_tree_model_foreach(GTK_TREE_MODEL(data_passer->checks_store), print_deposit_amounts_front, data_passer);
-	
+
 	/* Internal representation of a total deposit may not be accurate to two decimal places,
-		it may actually be much larger. For example, 8992.02 may be represented as 
+		it may actually be much larger. For example, 8992.02 may be represented as
 		8992.01953. Because g_snprintf below converts a float to a decimal by truncation,
 		we need to round up the hundredths place if necessary. */
 	float step1 = data_passer->total_deposit * 100.0;
-    int mantissa = trunc(step1);
-    float decimal = step1 - mantissa;
-    if (decimal >= 0.5) {
-        data_passer->total_deposit += 0.01;
-    }
+	int mantissa = trunc(step1);
+	float decimal = step1 - mantissa;
+	if (decimal >= 0.5) {
+		data_passer->total_deposit += 0.01;
+	}
 
 	/* Write subtotal of checks deposited */
 	gchar formatted_amount[10];
@@ -566,6 +631,8 @@ void draw_page(GtkPrintOperation *self, GtkPrintContext *context, gint page_nr, 
 						   data_passer->front->amount_boxes_x + (7 * data_passer->front->amount_boxes_width + 3),
 						   data_passer->front->amount_boxes_y + (6 * data_passer->front->amount_boxes_height) - 3,
 						   data_passer->front->amount_boxes_width);
+
+	print_deposit_slip_back_static(cr, data_passer);
 }
 
 /**
@@ -573,10 +640,10 @@ void draw_page(GtkPrintOperation *self, GtkPrintContext *context, gint page_nr, 
  * @param self Pointer to the clicked button.
  * @param data Pointer to user data.
  */
-void print_deposit_slip(GtkButton *self, gpointer data) {
-	Data_passer *data_passer = (Data_passer *)data;
-	GtkPrintOperation *operation;
-	GError *error;
+void print_deposit_slip(GtkButton* self, gpointer data) {
+	Data_passer* data_passer = (Data_passer*)data;
+	GtkPrintOperation* operation;
+	GError* error;
 	gint res;
 
 	operation = gtk_print_operation_new();
@@ -586,7 +653,7 @@ void print_deposit_slip(GtkButton *self, gpointer data) {
 	//  gtk_print_operation_set_allow_async(operation, TRUE);
 	gtk_print_operation_set_n_pages(operation, 1);
 
-	GtkPrintSettings *settings = gtk_print_settings_new();
+	GtkPrintSettings* settings = gtk_print_settings_new();
 
 	gtk_print_operation_set_print_settings(operation, settings);
 

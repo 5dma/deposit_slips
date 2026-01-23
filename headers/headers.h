@@ -120,10 +120,20 @@ typedef struct Front {
  * Structure holding printing coordinates on the back side of the deposit slip. Corresponds to the `back` stanza in the configuration file.
 */ 
 typedef struct Back {
- 	gdouble amount_x; /**< x position of all amounts. */
-	gdouble first_amount_y;  /**< y position of the first amount. */
-	gdouble amount_pitch;  /**< Line spacing between amounts. */
-	gdouble total_y;  /**< y position of the total. */
+	gdouble currency_count_frame_top_x; /**< top-left corner of frame for currency count, x position. */
+	gdouble currency_count_frame_top_y; /**< top-left corner of frame for currency count, y position. */
+	gdouble currency_count_frame_width; /**< Width of frame for currency count. */
+	gdouble currency_count_frame_height;  /**< Height of frame for currency count. */
+	gdouble currency_count_label_x; /**< x position of the rotated "Currency Count..." label. */
+	gdouble currency_count_label_y;  /**< y position of the rotated "Currency Count..." label. */
+	gdouble currency_count_label_font_size;  /**< Font size for the rotated "Currency Count..." label.*/
+	gdouble currency_count_top_line_x; /**< x position of the first body line in currency count table.*/
+	gdouble currency_count_pitch; /**< Spacing between lines in currency count table.*/
+	gdouble currency_count_line_left_y; /**< Starting point of left-most interior border of currency count table, y position.*/
+	gdouble currency_count_line_middle_y; /**< Starting point of middle interior border of currency count table, y position.*/
+	gdouble currency_count_line_right_y; /**< Starting point of right-most interior border of currency count table, y position.*/
+
+
 } Back;
 
 
