@@ -132,6 +132,13 @@ typedef struct Back {
 	gdouble currency_count_line_left_y; /**< Starting point of left-most interior border of currency count table, y position.*/
 	gdouble currency_count_line_middle_y; /**< Starting point of middle interior border of currency count table, y position.*/
 	gdouble currency_count_line_right_y; /**< Starting point of right-most interior border of currency count table, y position.*/
+	gdouble multiplication_sign_x; /**< Top multiplication sign, x position.*/
+	gdouble multiplication_sign_y; /**< Top multiplication sign, y position.*/
+	gdouble denomination_x; /**< Top denomination, x position.*/
+	gdouble total_x; /**< "Total" label, x position.*/
+	gdouble total_y; /**< "Total" label, y position.*/
+	gdouble total_font_size;  /**< "Total" label, font size.*/
+	gdouble dollar_x;  /**< "$" label, x position.*/
 
 
 } Back;

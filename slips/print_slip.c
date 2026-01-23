@@ -95,7 +95,8 @@ void print_deposit_slip_back_static(cairo_t* cr, Data_passer* data_passer) {
 	cairo_line_to(cr, vertical_end_x - back->currency_count_pitch, back->currency_count_line_left_y);
 	cairo_stroke(cr);
 
-	/* Write Currency Count label. This label is rotated 90 degrees. */
+	/* Labels, all of which are rotated 90 degrees. */
+	/* Write Currency Count label. */
 
 	cairo_save(cr); /* Start new state */
 	cairo_select_font_face(cr, data_passer->font_family_sans, CAIRO_FONT_SLANT_NORMAL, CAIRO_FONT_WEIGHT_NORMAL);
@@ -105,6 +106,32 @@ void print_deposit_slip_back_static(cairo_t* cr, Data_passer* data_passer) {
 	cairo_text_extents(cr, "CURRENCY COUNT - FOR FINANCIAL INSTITUTION USE ONLY", &extents);
 	cairo_move_to(cr, back->currency_count_label_x - (extents.width / 2), back->currency_count_label_y);
 	cairo_show_text(cr, "CURRENCY COUNT - FOR FINANCIAL INSTITUTION USE ONLY");
+
+	/* Write multiplication signs */
+	for (gdouble i = 0; i <= 6; i++) {
+		gdouble current_y = back->multiplication_sign_y + (i * back->currency_count_pitch);
+		cairo_move_to(cr, back->multiplication_sign_x, current_y);
+		cairo_show_text(cr, "×");
+	}
+	
+	/* Write denominations */
+	gchar* denominations[] = {"100", "50", "20", "10", "5", "2", "1"};
+	for (gint i = 0; i <= 6; i++) {
+		gdouble current_y = back->multiplication_sign_y + (i * back->currency_count_pitch);
+		cairo_text_extents(cr, denominations[i], &extents);
+		cairo_move_to(cr, back->denomination_x - extents.width , current_y);
+		cairo_show_text(cr, denominations[i]);
+	}
+
+	/* Write Total */
+	cairo_set_font_size(cr, back->total_font_size);
+	cairo_move_to(cr, back->total_x, back->total_y);
+	cairo_show_text(cr, "TOTAL");
+
+	/* Write dollar sign */
+	cairo_set_font_size(cr, back->total_font_size);
+	cairo_move_to(cr, back->dollar_x, back->total_y);
+	cairo_show_text(cr, "$");
 
 	cairo_restore(cr); /* remove rotation, font size*/
 }

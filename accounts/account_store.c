@@ -232,6 +232,12 @@ void read_configuration_data(Data_passer* data_passer) {
 	data_passer->back->currency_count_line_left_y = retrieve_json_int(reader, "currency_count_line_left_y");
 	data_passer->back->currency_count_line_middle_y = retrieve_json_int(reader, "currency_count_line_middle_y");
 	data_passer->back->currency_count_line_right_y = retrieve_json_int(reader, "currency_count_line_right_y");
+	data_passer->back->multiplication_sign_x = retrieve_json_int(reader, "multiplication_sign_x");
+	data_passer->back->multiplication_sign_y = retrieve_json_int(reader, "multiplication_sign_y");
+	data_passer->back->total_x =  retrieve_json_int(reader, "total_x");
+	data_passer->back->total_y =  retrieve_json_int(reader, "total_y");
+	data_passer->back->total_font_size =  retrieve_json_int(reader, "total_font_size");
+	data_passer->back->dollar_x =  retrieve_json_int(reader, "dollar_x");
 
 	json_reader_end_member(reader); /* back */
 	json_reader_end_member(reader); /* configuration */
