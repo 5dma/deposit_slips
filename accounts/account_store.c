@@ -234,10 +234,19 @@ void read_configuration_data(Data_passer* data_passer) {
 	data_passer->back->currency_count_line_right_y = retrieve_json_int(reader, "currency_count_line_right_y");
 	data_passer->back->multiplication_sign_x = retrieve_json_int(reader, "multiplication_sign_x");
 	data_passer->back->multiplication_sign_y = retrieve_json_int(reader, "multiplication_sign_y");
-	data_passer->back->total_x =  retrieve_json_int(reader, "total_x");
-	data_passer->back->total_y =  retrieve_json_int(reader, "total_y");
-	data_passer->back->total_font_size =  retrieve_json_int(reader, "total_font_size");
-	data_passer->back->dollar_x =  retrieve_json_int(reader, "dollar_x");
+	data_passer->back->total_x = retrieve_json_int(reader, "total_x");
+	data_passer->back->total_y = retrieve_json_int(reader, "total_y");
+	data_passer->back->total_font_size = retrieve_json_int(reader, "total_font_size");
+	data_passer->back->dollar_x = retrieve_json_int(reader, "dollar_x");
+	data_passer->back->denomination_x = retrieve_json_int(reader, "denomination_x");
+
+	data_passer->back->check_listing_top_x = retrieve_json_int(reader, "check_listing_top_x");
+	data_passer->back->check_listing_top_y = retrieve_json_int(reader, "check_listing_top_y");
+	data_passer->back->check_listing_width = retrieve_json_int(reader, "check_listing_width");
+	data_passer->back->check_listing_height = retrieve_json_int(reader, "check_listing_height");
+	data_passer->back->check_listing_separator_length = retrieve_json_int(reader, "check_listing_separator_length");
+	data_passer->back->check_listing_separator_width = retrieve_json_int(reader, "check_listing_separator_width");
+	data_passer->back->check_listing_decimal_width = retrieve_json_int(reader, "check_listing_decimal_width");
 
 	json_reader_end_member(reader); /* back */
 	json_reader_end_member(reader); /* configuration */

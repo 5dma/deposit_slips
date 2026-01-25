@@ -4,26 +4,26 @@
 /**
  * @file headers.h
  * @brief C headers.
-*/
+ */
 
 /**
  * Enum for declaring a list store of accounts.
-*/
+ */
 enum {
 	ACCOUNT_NUMBER, /**< 0 */
-	ACCOUNT_NAME,  /**< 1 */
-	DESCRIPTION,  /**< 2 */
+	ACCOUNT_NAME, /**< 1 */
+	DESCRIPTION, /**< 2 */
 	ROUTING_NUMBER, /**< 3 */
-	CHECKBOX,  /**< 4 */
-	N_COLUMNS  /**< 5 */
+	CHECKBOX, /**< 4 */
+	N_COLUMNS /**< 5 */
 };
 
 /**
  * Enum for declaring a list store of checks.
-*/
+ */
 enum {
 	CHECK_AMOUNT, /**< 0 */
-	CHECK_RADIO,  /**< 1 */
+	CHECK_RADIO, /**< 1 */
 	SLIP_COLUMNS /**< 2 */
 };
 
@@ -32,37 +32,36 @@ enum {
  */
 typedef struct Accounts {
 	/** Account number */
-	gchar number[100]; 
+	gchar number[100];
 	gchar name[100]; /**< Name of account holder */
-	gchar description[500];  /**< Informal description of account */
-	gchar routing[100];  /**< Routing number associated with bank account */
+	gchar description[500]; /**< Informal description of account */
+	gchar routing[100]; /**< Routing number associated with bank account */
 } Account;
-
 
 /**
  * Structure holding printing coordinates on the front side of the deposit slip. Corresponds to the `front` stanza in the configuration file.
-*/ 
+ */
 typedef struct Front {
-	gdouble checks_other_items_label_x;  /**< x position of the rotated "Checks and other itmes.." label. */
-	gdouble checks_other_items_label_y;  /**< y position of the rotated "Checks and other itmes.." label. */
-	gdouble checks_other_items_font_size;  /**< Font size for the rotated "Checks and other itmes.." label.*/
+	gdouble checks_other_items_label_x; /**< x position of the rotated "Checks and other itmes.." label. */
+	gdouble checks_other_items_label_y; /**< y position of the rotated "Checks and other itmes.." label. */
+	gdouble checks_other_items_font_size; /**< Font size for the rotated "Checks and other itmes.." label.*/
 
-	gdouble deposit_label_y;  /**< y position of the **Deposit** label (x-position determined by centering on the deposit slip).*/
-	gdouble deposit_label_font_size;  /**< Font size for the **Deposit** label.*/
+	gdouble deposit_label_y; /**< y position of the **Deposit** label (x-position determined by centering on the deposit slip).*/
+	gdouble deposit_label_font_size; /**< Font size for the **Deposit** label.*/
 
-	gdouble date_name_address_label_x;  /**< x position of the **Date**, **Name**, and **Address** labels. */
+	gdouble date_name_address_label_x; /**< x position of the **Date**, **Name**, and **Address** labels. */
 	gdouble date_label_y; /**< y position of the **Date** label. */
 	gdouble name_label_y; /**< y position of the **Name** label. */
 	gdouble date_name_value_x; /**< x position of the **Name** and **Date** values. */
 	gdouble date_value_y; /**< y position of the **Date** value. */
 	gdouble name_value_y; /**< y position of the **Name** value. */
-	
+
 	gdouble date_name_line_x; /**<x position of the line for the date and name field. */
 	gdouble date_name_line_y; /**<y position of the line for the date and name field. */
 	gdouble date_line_length; /**< Length of the line for the date field. */
 	gdouble name_line_length; /**< Length of the line for the name field. */
-	gdouble date_name_address_label_font_size;  /**< Font size for the **Date**, **Name**, and **Address** labels.*/
-	gdouble date_name_address_value_font_size;  /**< Font size for the **Date**, **Name**, and **Address** values.*/
+	gdouble date_name_address_label_font_size; /**< Font size for the **Date**, **Name**, and **Address** labels.*/
+	gdouble date_name_address_value_font_size; /**< Font size for the **Date**, **Name**, and **Address** values.*/
 
 	gdouble address_label_y; /**< y position of the **Address** label. */
 
@@ -78,7 +77,7 @@ typedef struct Front {
 	gdouble account_number_squares_y; /**< y position of the series of squares holding the human-readable account number. */
 	gdouble account_number_squares_width; /**< Width of each square holding the human-readable account number. */
 	gdouble account_number_squares_height; /**< Height of each square holding the human-readable account number. */
-	
+
 	gdouble micr_routing_number_label_x; /**< x position of MICR routing number. */
 	gdouble micr_routing_number_label_y; /**< y position of MICR routing number. */
 	gdouble micr_account_number_label_x; /**< x position of MICR account number. */
@@ -109,24 +108,24 @@ typedef struct Front {
 	gdouble amount_boxes_height; /**< Height of each amount box. */
 	gdouble amount_boxes_separator_height; /**< Height of each separator line in amount boxes. */
 
-	gdouble first_amount_y;  /**< y position of the first amount. */
-	gdouble amount_pitch;  /**< Line spacing between amounts. */
-	gdouble subtotal_y;  /**< y position of the subtotal carried from the back side of the deposit slip. */
-	gdouble total_y;  /**< y position of the total. */
-	gdouble amount_x;  /**< x position of all amounts. */
+	gdouble first_amount_y; /**< y position of the first amount. */
+	gdouble amount_pitch; /**< Line spacing between amounts. */
+	gdouble subtotal_y; /**< y position of the subtotal carried from the back side of the deposit slip. */
+	gdouble total_y; /**< y position of the total. */
+	gdouble amount_x; /**< x position of all amounts. */
 } Front;
 
 /**
  * Structure holding printing coordinates on the back side of the deposit slip. Corresponds to the `back` stanza in the configuration file.
-*/ 
+ */
 typedef struct Back {
 	gdouble currency_count_frame_top_x; /**< top-left corner of frame for currency count, x position. */
 	gdouble currency_count_frame_top_y; /**< top-left corner of frame for currency count, y position. */
 	gdouble currency_count_frame_width; /**< Width of frame for currency count. */
-	gdouble currency_count_frame_height;  /**< Height of frame for currency count. */
+	gdouble currency_count_frame_height; /**< Height of frame for currency count. */
 	gdouble currency_count_label_x; /**< x position of the rotated "Currency Count..." label. */
-	gdouble currency_count_label_y;  /**< y position of the rotated "Currency Count..." label. */
-	gdouble currency_count_label_font_size;  /**< Font size for the rotated "Currency Count..." label.*/
+	gdouble currency_count_label_y; /**< y position of the rotated "Currency Count..." label. */
+	gdouble currency_count_label_font_size; /**< Font size for the rotated "Currency Count..." label.*/
 	gdouble currency_count_top_line_x; /**< x position of the first body line in currency count table.*/
 	gdouble currency_count_pitch; /**< Spacing between lines in currency count table.*/
 	gdouble currency_count_line_left_y; /**< Starting point of left-most interior border of currency count table, y position.*/
@@ -137,72 +136,78 @@ typedef struct Back {
 	gdouble denomination_x; /**< Top denomination, x position.*/
 	gdouble total_x; /**< "Total" label, x position.*/
 	gdouble total_y; /**< "Total" label, y position.*/
-	gdouble total_font_size;  /**< "Total" label, font size.*/
-	gdouble dollar_x;  /**< "$" label, x position.*/
+	gdouble total_font_size; /**< "Total" label, font size.*/
+	gdouble dollar_x; /**< "$" label, x position.*/
 
+	gdouble check_listing_top_x; /**< top-left corner of check listing, x position. */
+	gdouble check_listing_top_y; /**< top-left corner of check listing, y position. */
+	gdouble check_listing_width; /**< Width of check listing. */
+	gdouble check_listing_height; /**< Height of check listing. */
+	gdouble check_listing_separator_length;  /**< Length of small line that separates digits in the check listing. */
+	gdouble check_listing_separator_width; /**< Width of line separating digits in the check listing. */
+	gdouble check_listing_decimal_width; /**< Width of line separating dollars and cents in the check listing. */
 
 } Back;
 
-
 /**
  * Structure for passing data between functions.
-*/ 
+ */
 typedef struct Data_passer {
-/** Pointer to master list store of checking accounts. */
-	GtkListStore *list_store_master; 
-/** Pointer to temporary list store of checking accounts. */
-	GtkListStore *list_store_temporary; 
-/** Pointer to cairo context for previewing and printing checks. */
-	cairo_t *cairo_context; 
-/** Pointer to checks tree view. */
-	GtkWidget *check_tree_view; 
-/** Indicates currently drawing the front of the slip. */
+	/** Pointer to master list store of checking accounts. */
+	GtkListStore* list_store_master;
+	/** Pointer to temporary list store of checking accounts. */
+	GtkListStore* list_store_temporary;
+	/** Pointer to cairo context for previewing and printing checks. */
+	cairo_t* cairo_context;
+	/** Pointer to checks tree view. */
+	GtkWidget* check_tree_view;
+	/** Indicates currently drawing the front of the slip. */
 	gboolean front_slip_active;
-/** Pointer to drawing area for slip. */
-	GtkWidget *drawing_area; 
-/** Pointer to list store of the checks.  */
-	GtkListStore *checks_store; 
-/** Sum of all checks deposited.  */
-	gfloat total_deposit; 
-/** Sum of all checks listed on back of slip.  */
-	gfloat total_back_side; 
-/** Pointer to tree view of accounts in the deposit slip tab.  */
-	GtkWidget *checks_accounts_treeview;
-/** Pointer to the application window.  */
-	GtkWidget *application_window;
-/** Pointer to the renderer for radio buttons.  */
-	GtkCellRenderer *radio_renderer;
-/** Pointer to the delete button in the checks view.  */
-	GtkWidget *btn_checks_delete;
-/** Pointer to the go_to_first button in the checks view.  */
-	GtkWidget *btn_go_to_first;
-/** Pointer to the go_to_last button in the checks view.  */
-	GtkWidget *btn_go_to_last;
-/** Font size for printing the text items, such as name and account number.  */
+	/** Pointer to drawing area for slip. */
+	GtkWidget* drawing_area;
+	/** Pointer to list store of the checks.  */
+	GtkListStore* checks_store;
+	/** Sum of all checks deposited.  */
+	gfloat total_deposit;
+	/** Sum of all checks listed on back of slip.  */
+	gfloat total_back_side;
+	/** Pointer to tree view of accounts in the deposit slip tab.  */
+	GtkWidget* checks_accounts_treeview;
+	/** Pointer to the application window.  */
+	GtkWidget* application_window;
+	/** Pointer to the renderer for radio buttons.  */
+	GtkCellRenderer* radio_renderer;
+	/** Pointer to the delete button in the checks view.  */
+	GtkWidget* btn_checks_delete;
+	/** Pointer to the go_to_first button in the checks view.  */
+	GtkWidget* btn_go_to_first;
+	/** Pointer to the go_to_last button in the checks view.  */
+	GtkWidget* btn_go_to_last;
+	/** Font size for printing the text items, such as name and account number.  */
 	gdouble font_size_sans_serif;
-/** Font size for printing the amounts.  */
+	/** Font size for printing the amounts.  */
 	gdouble font_size_monospace;
-/** Font face, sans serif.  */
+	/** Font face, sans serif.  */
 	gchar font_family_sans[100];
-/** Font face, MICR.  */
+	/** Font face, MICR.  */
 	gchar font_face_micr[100];
-/** Font face, mono.  */
+	/** Font face, mono.  */
 	gchar font_family_mono[100];
-/** Identifier of the sans-serif font selection button. The identifier is the pointer's memory location. */
+	/** Identifier of the sans-serif font selection button. The identifier is the pointer's memory location. */
 	gpointer btn_font_sans_serif;
-/** Identifier of the monospace font selection button. The identifier is the pointer's memory location. */
+	/** Identifier of the monospace font selection button. The identifier is the pointer's memory location. */
 	gpointer btn_font_monospace;
-/** Scaling for font size, applied to the static Name and Account labels. */	
+	/** Scaling for font size, applied to the static Name and Account labels. */
 	gdouble font_size_static_label_scaling;
-/** Structure containing printing coordinates on the front side of the deposit slip. See Front.*/
-	Front *front;
-/** Structure containing printing coordinates on the back side of the deposit slip. See Back.*/
-	Back *back;
-/** Object containing the CSS definitions.*/
+	/** Structure containing printing coordinates on the front side of the deposit slip. See Front.*/
+	Front* front;
+	/** Structure containing printing coordinates on the back side of the deposit slip. See Back.*/
+	Back* back;
+	/** Object containing the CSS definitions.*/
 	GtkCssProvider* css_provider;
- /** Soft gray text color for rendering the new account row. */	
+	/** Soft gray text color for rendering the new account row. */
 	GdkRGBA new_account_foreground;
-/** Black text color for rendering the new account row. */	
+	/** Black text color for rendering the new account row. */
 	GdkRGBA existing_account_foreground;
 } Data_passer;
 
@@ -210,43 +215,42 @@ typedef struct Data_passer {
  * Current UI state of a selected check.
  */
 typedef struct CheckSelections {
-	GtkTreePath *path; /**< Path to selected check. */
+	GtkTreePath* path; /**< Path to selected check. */
 	gboolean at_least_one_check_selected; /**< Indicates at least one check is selected */
 } CheckSelection;
 
-void on_app_activate(GApplication *app, gpointer data);
+void on_app_activate(GApplication* app, gpointer data);
 void build_list_store(gpointer account, gpointer list_builder_struct);
 
-GtkWidget *make_tree_view(GtkListStore *list_store, Data_passer *data_passer);
+GtkWidget* make_tree_view(GtkListStore* list_store, Data_passer* data_passer);
 
-GtkWidget *get_child_from_parent (GtkWidget * parent, const gchar * child_name);
-void read_configuration_data(Data_passer *data_passer);
-GtkWidget *make_accounts_buttons_hbox(Data_passer *data_passer);
-GtkWidget *make_configuration_view(Data_passer *data_passer);
-void free_memory (GtkWidget *window, gpointer user_data);
+GtkWidget* get_child_from_parent(GtkWidget* parent, const gchar* child_name);
+void read_configuration_data(Data_passer* data_passer);
+GtkWidget* make_accounts_buttons_hbox(Data_passer* data_passer);
+GtkWidget* make_configuration_view(Data_passer* data_passer);
+void free_memory(GtkWidget* window, gpointer user_data);
 
-gboolean preview_deposit_amounts_front(GtkTreeModel *model,
-							   GtkTreePath *path,
-							   GtkTreeIter *iter,
-							   gpointer data);
+gboolean preview_deposit_amounts_front(GtkTreeModel* model,
+									   GtkTreePath* path,
+									   GtkTreeIter* iter,
+									   gpointer data);
 
-gboolean preview_deposit_amounts_back(GtkTreeModel *model,
-							   GtkTreePath *path,
-							   GtkTreeIter *iter,
-							   gpointer data);
+gboolean preview_deposit_amounts_back(GtkTreeModel* model,
+									  GtkTreePath* path,
+									  GtkTreeIter* iter,
+									  gpointer data);
 
-void print_deposit_slip(GtkButton *self, gpointer data);
-gchar *comma_formatted_amount(gfloat amount);
+void print_deposit_slip(GtkButton* self, gpointer data);
+gchar* comma_formatted_amount(gfloat amount);
 
 void free_gslist_account(gpointer data);
 
-GtkWidget *make_slip_view(Data_passer *data_passer);
-void update_label(GtkTreeView *tree_view, gpointer user_data);
-void deposit_amount_edited(GtkCellRendererText *self, gchar *path, gchar *new_text, gpointer data);
-void check_toggle_clicked(GtkCellRendererToggle *renderer, gchar *path, gpointer data);
-void toggle_slip_view(GtkWidget *widget, gpointer data);
-void add_check_row(GtkWidget *widget, gpointer data);
-void delete_check_rows(GtkWidget *widget, gpointer data);
-void draw_preview(GtkWidget *widget, cairo_t *cr, gpointer data);
-gint number_of_checks (Data_passer *data_passer);
-
+GtkWidget* make_slip_view(Data_passer* data_passer);
+void update_label(GtkTreeView* tree_view, gpointer user_data);
+void deposit_amount_edited(GtkCellRendererText* self, gchar* path, gchar* new_text, gpointer data);
+void check_toggle_clicked(GtkCellRendererToggle* renderer, gchar* path, gpointer data);
+void toggle_slip_view(GtkWidget* widget, gpointer data);
+void add_check_row(GtkWidget* widget, gpointer data);
+void delete_check_rows(GtkWidget* widget, gpointer data);
+void draw_preview(GtkWidget* widget, cairo_t* cr, gpointer data);
+gint number_of_checks(Data_passer* data_passer);

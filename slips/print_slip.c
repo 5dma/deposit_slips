@@ -95,6 +95,89 @@ void print_deposit_slip_back_static(cairo_t* cr, Data_passer* data_passer) {
 	cairo_line_to(cr, vertical_end_x - back->currency_count_pitch, back->currency_count_line_left_y);
 	cairo_stroke(cr);
 
+	/* Check listing lines and rectangles, requires save/restore for a new color*/
+	cairo_save(cr); /* Start new state */
+
+	cairo_set_source_rgb(cr, 0.93, 0.93, 0.93);
+
+	/* Draw border for check listing and the horizontal interior borders */
+	cairo_save(cr); /* Start new state */
+	cairo_set_line_width(cr, 6);
+	cairo_rectangle(cr, back->check_listing_top_x, back->check_listing_top_y, back->check_listing_width, back->check_listing_height);
+	cairo_stroke(cr);
+
+	/* Draw internal horizontal horizontal borders for the check listing. */
+	gdouble internal_border_pitch_x = back->check_listing_width / 12.0;
+	gdouble current_internal_border_x = back->check_listing_top_x;
+	gdouble check_listing_bottom_y = back->check_listing_top_y + back->check_listing_height;
+	for (gint i = 1; i <= 11; i++) {
+		current_internal_border_x += internal_border_pitch_x;
+		cairo_move_to(cr, current_internal_border_x, back->check_listing_top_y);
+		cairo_line_to(cr, current_internal_border_x, check_listing_bottom_y);
+		cairo_stroke(cr);
+	}
+	cairo_restore(cr); /* Restore previous line wdith */
+
+	/*
+	Draw line separating dollars and cents. As there are seven spaces for amounts, and
+	and two spaces for cents, therefore this line is drawn at 2/7 of the height of the check
+	listing. This line requires a special line width, so we introduce a new cairo state.
+	*/
+	cairo_save(cr); /* Start new state */
+	cairo_set_line_width(cr, 4);
+	gdouble separator_y = (back->check_listing_height * (2.0 / 7.0)) + back->check_listing_top_y;
+	cairo_move_to(cr, back->check_listing_top_x, separator_y);
+	cairo_line_to(cr, back->check_listing_top_x + back->check_listing_width, separator_y);
+	cairo_stroke(cr);
+	cairo_restore(cr); /* Restore previous line wdith */
+
+	/* Draw the line separating the two cents digits As there are seven spaces for amounts,
+	this line is drawin at 1/7 of the height of the check listing. At this point we set the line width
+	to back->check_listing_separator_width, and use that width for the following digit separators. */
+
+	cairo_save(cr); /* Start new state */
+	cairo_set_line_width(cr, back->check_listing_separator_width);
+	separator_y = (back->check_listing_height / 7.0) + back->check_listing_top_y;
+	cairo_move_to(cr, back->check_listing_top_x, separator_y);
+	cairo_line_to(cr, back->check_listing_top_x + back->check_listing_width, separator_y);
+	cairo_stroke(cr);
+
+	/* Draw the small separator lines between digits. The lines are drawn across and then down.*/
+	gdouble separator_pitch_y = back->check_listing_height / 7.0;
+	separator_y = (back->check_listing_height * (2.0 / 7.0)) + back->check_listing_top_y;
+	gdouble long_seperator_length = back->check_listing_separator_length * 2.0;
+	for (gint horiz_y = 3; horiz_y <= 6; horiz_y++) {
+		separator_y += separator_pitch_y;
+		current_internal_border_x = back->check_listing_top_x;
+		for (gint horiz_x = 0; horiz_x <= 12; horiz_x++) {
+			switch (horiz_x) {
+				case 0:
+					/* Draw the short separator lines at the top of the check listing */
+					cairo_move_to(cr, current_internal_border_x, separator_y);
+					cairo_line_to(cr, current_internal_border_x + back->check_listing_separator_length, separator_y);
+					cairo_stroke(cr);
+					break;
+
+				case 12:
+					/* Draw the short separator lines at the end of the check listing */
+					gdouble last_internal_border_x = back->check_listing_top_x + back->check_listing_width - back->check_listing_separator_length;
+					cairo_move_to(cr, last_internal_border_x, separator_y);
+					cairo_line_to(cr, last_internal_border_x + back->check_listing_separator_length, separator_y);
+					cairo_stroke(cr);
+					break;
+
+				default:
+					current_internal_border_x += internal_border_pitch_x;
+					gdouble my_offset = current_internal_border_x - back->check_listing_separator_length;
+					cairo_move_to(cr, my_offset, separator_y);
+					cairo_line_to(cr, my_offset + long_seperator_length, separator_y);
+					cairo_stroke(cr);
+			}
+		}
+	}
+
+	cairo_restore(cr); /* Restore previous line wdith */
+
 	/* Labels, all of which are rotated 90 degrees. */
 	/* Write Currency Count label. */
 
@@ -113,13 +196,13 @@ void print_deposit_slip_back_static(cairo_t* cr, Data_passer* data_passer) {
 		cairo_move_to(cr, back->multiplication_sign_x, current_y);
 		cairo_show_text(cr, "×");
 	}
-	
+
 	/* Write denominations */
 	gchar* denominations[] = {"100", "50", "20", "10", "5", "2", "1"};
 	for (gint i = 0; i <= 6; i++) {
 		gdouble current_y = back->multiplication_sign_y + (i * back->currency_count_pitch);
 		cairo_text_extents(cr, denominations[i], &extents);
-		cairo_move_to(cr, back->denomination_x - extents.width , current_y);
+		cairo_move_to(cr, back->denomination_x - extents.width, current_y);
 		cairo_show_text(cr, denominations[i]);
 	}
 
