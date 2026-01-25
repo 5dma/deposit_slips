@@ -244,9 +244,14 @@ void read_configuration_data(Data_passer* data_passer) {
 	data_passer->back->check_listing_top_y = retrieve_json_int(reader, "check_listing_top_y");
 	data_passer->back->check_listing_width = retrieve_json_int(reader, "check_listing_width");
 	data_passer->back->check_listing_height = retrieve_json_int(reader, "check_listing_height");
+	data_passer->back->check_listing_horizontal_border_width = retrieve_json_int(reader, "check_listing_horizontal_border_width");
 	data_passer->back->check_listing_separator_length = retrieve_json_int(reader, "check_listing_separator_length");
 	data_passer->back->check_listing_separator_width = retrieve_json_int(reader, "check_listing_separator_width");
 	data_passer->back->check_listing_decimal_width = retrieve_json_int(reader, "check_listing_decimal_width");
+	data_passer->back->check_listing_check_number_line_length = retrieve_json_int(reader, "check_listing_check_number_line_length");
+
+	data_passer->back->dollars_cents_offset_x = retrieve_json_int(reader, "dollars_cents_offset_x");
+
 
 	json_reader_end_member(reader); /* back */
 	json_reader_end_member(reader); /* configuration */

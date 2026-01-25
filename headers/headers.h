@@ -143,9 +143,12 @@ typedef struct Back {
 	gdouble check_listing_top_y; /**< top-left corner of check listing, y position. */
 	gdouble check_listing_width; /**< Width of check listing. */
 	gdouble check_listing_height; /**< Height of check listing. */
-	gdouble check_listing_separator_length;  /**< Length of small line that separates digits in the check listing. */
+	gdouble check_listing_horizontal_border_width; /**< Width of horizontal internal borders. */
+	gdouble check_listing_separator_length; /**< Length of small line that separates digits in the check listing. */
 	gdouble check_listing_separator_width; /**< Width of line separating digits in the check listing. */
 	gdouble check_listing_decimal_width; /**< Width of line separating dollars and cents in the check listing. */
+	gdouble check_listing_check_number_line_length; /**< Length of line for writing check numbers. */
+	gdouble dollars_cents_offset_x; /**< Offset from check listing table to the DOLLARS and CENTS label. */
 
 } Back;
 

@@ -96,17 +96,17 @@ void print_deposit_slip_back_static(cairo_t* cr, Data_passer* data_passer) {
 	cairo_stroke(cr);
 
 	/* Check listing lines and rectangles, requires save/restore for a new color*/
-	cairo_save(cr); /* Start new state */
+	cairo_save(cr); /* Start new state for color */
 
 	cairo_set_source_rgb(cr, 0.93, 0.93, 0.93);
 
 	/* Draw border for check listing and the horizontal interior borders */
-	cairo_save(cr); /* Start new state */
-	cairo_set_line_width(cr, 6);
+	cairo_save(cr); /* Start new state for line width */
+	cairo_set_line_width(cr, back->check_listing_horizontal_border_width);
 	cairo_rectangle(cr, back->check_listing_top_x, back->check_listing_top_y, back->check_listing_width, back->check_listing_height);
 	cairo_stroke(cr);
 
-	/* Draw internal horizontal horizontal borders for the check listing. */
+	/* Draw internal horizontal borders for the check listing. */
 	gdouble internal_border_pitch_x = back->check_listing_width / 12.0;
 	gdouble current_internal_border_x = back->check_listing_top_x;
 	gdouble check_listing_bottom_y = back->check_listing_top_y + back->check_listing_height;
@@ -123,7 +123,7 @@ void print_deposit_slip_back_static(cairo_t* cr, Data_passer* data_passer) {
 	and two spaces for cents, therefore this line is drawn at 2/7 of the height of the check
 	listing. This line requires a special line width, so we introduce a new cairo state.
 	*/
-	cairo_save(cr); /* Start new state */
+	cairo_save(cr); /* Start new state for line width */
 	cairo_set_line_width(cr, 4);
 	gdouble separator_y = (back->check_listing_height * (2.0 / 7.0)) + back->check_listing_top_y;
 	cairo_move_to(cr, back->check_listing_top_x, separator_y);
@@ -135,7 +135,7 @@ void print_deposit_slip_back_static(cairo_t* cr, Data_passer* data_passer) {
 	this line is drawin at 1/7 of the height of the check listing. At this point we set the line width
 	to back->check_listing_separator_width, and use that width for the following digit separators. */
 
-	cairo_save(cr); /* Start new state */
+	cairo_save(cr); /* Start new state for line width */
 	cairo_set_line_width(cr, back->check_listing_separator_width);
 	separator_y = (back->check_listing_height / 7.0) + back->check_listing_top_y;
 	cairo_move_to(cr, back->check_listing_top_x, separator_y);
@@ -175,8 +175,25 @@ void print_deposit_slip_back_static(cairo_t* cr, Data_passer* data_passer) {
 			}
 		}
 	}
-
 	cairo_restore(cr); /* Restore previous line wdith */
+
+	cairo_restore(cr); /* Restore previous color */
+
+	/* Draw the lines for listing check numbers. Requires setting a line width */
+	cairo_save(cr); /* Set new state for line width */
+	//cairo_set_source_rgb(cr, 0.98, 0, 0);
+	cairo_set_line_width(cr, 0.5);
+	gdouble border_width_offset = back->check_listing_horizontal_border_width / 2.0;
+	current_internal_border_x = back->check_listing_top_x + internal_border_pitch_x - border_width_offset;
+	gdouble start_y = back->check_listing_top_y + back->check_listing_height + border_width_offset;
+	gdouble end_y = start_y + back->check_listing_check_number_line_length;
+	for (gint i = 0; i <= 10; i++) {
+		cairo_move_to(cr, current_internal_border_x, start_y);
+		cairo_line_to(cr, current_internal_border_x, end_y);
+		cairo_stroke(cr);
+		current_internal_border_x += internal_border_pitch_x;
+	}
+	cairo_restore(cr); /* Restore previous line width */
 
 	/* Labels, all of which are rotated 90 degrees. */
 	/* Write Currency Count label. */
@@ -215,6 +232,23 @@ void print_deposit_slip_back_static(cairo_t* cr, Data_passer* data_passer) {
 	cairo_set_font_size(cr, back->total_font_size);
 	cairo_move_to(cr, back->dollar_x, back->total_y);
 	cairo_show_text(cr, "$");
+
+	/* Write Dollars and Cents labels */
+	cairo_set_font_size(cr, back->currency_count_label_font_size);
+	gdouble label_baseline = back->check_listing_top_x - back->dollars_cents_offset_x;
+	/* Center the CENTS label in the middle of the CENTS column. */
+	cairo_text_extents(cr, "CENTS", &extents);
+	separator_y = (back->check_listing_height / 7.0) + back->check_listing_top_y + (extents.width / 2);
+	cairo_move_to(cr, -separator_y, label_baseline);
+	cairo_show_text(cr, "CENTS");
+
+	/* Center the DOLLARS label in the middle of the DOLLARS column. */
+	cairo_text_extents(cr, "DOLLARS", &extents);
+	separator_y = (back->check_listing_height * (4.5/ 7.0)) + back->check_listing_top_y + (extents.width / 2);
+	cairo_move_to(cr, -separator_y, label_baseline);
+	cairo_show_text(cr, "DOLLARS");
+
+
 
 	cairo_restore(cr); /* remove rotation, font size*/
 }
