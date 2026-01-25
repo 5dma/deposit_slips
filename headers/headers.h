@@ -148,8 +148,13 @@ typedef struct Back {
 	gdouble check_listing_separator_width; /**< Width of line separating digits in the check listing. */
 	gdouble check_listing_decimal_width; /**< Width of line separating dollars and cents in the check listing. */
 	gdouble check_listing_check_number_line_length; /**< Length of line for writing check numbers. */
-	gdouble dollars_cents_offset_x; /**< Offset from check listing table to the DOLLARS and CENTS label. */
-
+	gdouble dollars_cents_offset_x; /**< Offset from check listing table to the DOLLARS and CENTS labels. */
+	gdouble checks_offset_x; /**< Offset from check listing table to the CHECKS label. */
+	gdouble list_singly_offset_x; /**< Offset from check listing table to the LIST SINGLY label. */
+	gdouble total_offset_x; /**< Offset from check listing table to the TOTAL label. */
+	gdouble must_be_entered_offset_x; /**< Offset from check listing table to the MUST BE ENTERED label. */
+	gdouble on_front_side_offset_x; /**< Offset from check listing table to the ON FRONT SIDE label. */
+	gdouble must_be_entered_font_size; /**< Offset from check listing table to the ON FRONT SIDE label. */
 } Back;
 
 /**

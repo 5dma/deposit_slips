@@ -248,7 +248,31 @@ void print_deposit_slip_back_static(cairo_t* cr, Data_passer* data_passer) {
 	cairo_move_to(cr, -separator_y, label_baseline);
 	cairo_show_text(cr, "DOLLARS");
 
+	/* Write the CHECKS label. */
+	cairo_set_font_size(cr, back->total_font_size);
+	cairo_move_to(cr, -(back->check_listing_top_y + back->check_listing_height - border_width_offset + back->check_listing_check_number_line_length), back->check_listing_top_x - back->checks_offset_x);
+	cairo_show_text(cr, "CHECKS");
 
+	/* Write the LIST SINGLY label. */
+	cairo_set_font_size(cr, back->currency_count_label_font_size);
+	cairo_move_to(cr, -(back->check_listing_top_y + back->check_listing_height - border_width_offset + back->check_listing_check_number_line_length), back->check_listing_top_x - back->list_singly_offset_x);
+	cairo_show_text(cr, "LIST SINGLY");
+
+	/* Write the TOTAL label. */
+	cairo_text_extents(cr, "TOTAL", &extents);
+	cairo_move_to(cr, -(back->check_listing_top_y + back->check_listing_height + border_width_offset + (back->check_listing_check_number_line_length / 2.0) + (extents.width / 2.0)), back->check_listing_top_x + back->check_listing_width - back->total_offset_x);
+	cairo_show_text(cr, "TOTAL");
+	
+	/* Write the MUST BE ENTERED label. */
+	cairo_set_font_size(cr, back->must_be_entered_font_size);
+	cairo_text_extents(cr, "MUST BE ENTERED", &extents);
+	cairo_move_to(cr, -(back->check_listing_top_y + back->check_listing_height + border_width_offset + (back->check_listing_check_number_line_length / 2.0) + (extents.width / 2.0)), back->check_listing_top_x + back->check_listing_width - back->must_be_entered_offset_x);
+	cairo_show_text(cr, "MUST BE ENTERED");
+
+	cairo_text_extents(cr, "ON FRONT SIDE", &extents);
+	cairo_move_to(cr, -(back->check_listing_top_y + back->check_listing_height + border_width_offset + (back->check_listing_check_number_line_length / 2.0) + (extents.width / 2.0)), back->check_listing_top_x + back->check_listing_width - back->on_front_side_offset_x);
+	cairo_show_text(cr, "ON FRONT SIDE");
+	
 
 	cairo_restore(cr); /* remove rotation, font size*/
 }

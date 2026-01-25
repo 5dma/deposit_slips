@@ -249,10 +249,14 @@ void read_configuration_data(Data_passer* data_passer) {
 	data_passer->back->check_listing_separator_width = retrieve_json_int(reader, "check_listing_separator_width");
 	data_passer->back->check_listing_decimal_width = retrieve_json_int(reader, "check_listing_decimal_width");
 	data_passer->back->check_listing_check_number_line_length = retrieve_json_int(reader, "check_listing_check_number_line_length");
-
 	data_passer->back->dollars_cents_offset_x = retrieve_json_int(reader, "dollars_cents_offset_x");
+	data_passer->back->checks_offset_x = retrieve_json_int(reader, "checks_offset_x");
+	data_passer->back->list_singly_offset_x = retrieve_json_int(reader, "list_singly_offset_x");
 
-
+	data_passer->back->total_offset_x = retrieve_json_int(reader, "total_offset_x");
+	data_passer->back->must_be_entered_offset_x = retrieve_json_int(reader, "must_be_entered_offset_x");
+	data_passer->back->on_front_side_offset_x = retrieve_json_int(reader, "on_front_side_offset_x");
+	data_passer->back->must_be_entered_font_size = retrieve_json_int(reader, "must_be_entered_font_size");
 	json_reader_end_member(reader); /* back */
 	json_reader_end_member(reader); /* configuration */
 	g_object_unref(reader);
