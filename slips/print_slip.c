@@ -860,8 +860,23 @@ void draw_page(GtkPrintOperation* self, GtkPrintContext* context, gint page_nr, 
 						   data_passer->front->amount_boxes_y + (7 * data_passer->front->amount_boxes_height) - 3,
 						   data_passer->front->amount_boxes_width);
 
-	/* If we have more than three checks, output the front and process the back. */
+	/* If we have more than three checks:
+	 * Print the back side's subtotal on the front side.
+	 * Output the front side.
+	 * Print the back side. */
 	if (number_of_checks(data_passer) > 2) {
+		g_snprintf(formatted_amount, 11, "%d", (guint)(data_passer->total_back_side * 100));
+		print_amounts_in_boxes(cr,
+							   formatted_amount,
+							   data_passer->font_family_mono,
+							   data_passer->front->account_number_human_font_size,
+
+							   data_passer->front->amount_boxes_x + (7 * 		data_passer->front->amount_boxes_width + 3),
+
+							   data_passer->front->amount_boxes_y + (4 * data_passer->front->amount_boxes_height) - 3,
+
+							   data_passer->front->amount_boxes_width);
+
 		cairo_show_page(cr);
 		print_deposit_slip_back_static(cr, data_passer);
 		gtk_tree_model_foreach(GTK_TREE_MODEL(data_passer->checks_store), print_deposit_amounts_back, data_passer);
