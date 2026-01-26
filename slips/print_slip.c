@@ -77,14 +77,6 @@ void print_deposit_slip_back_static(cairo_t* cr, Data_passer* data_passer) {
 	cairo_text_extents_t extents;
 
 	/*
-	Translate the surface so that the deposit slip appears in the top middle of the printed page.
-	Width of paper is 8.5 * 72 = 612
-	Width of deposit slip is 6 * 72 = 432
-	Difference is 180
-	Therefore there is a margin of 90 on each side of the deposit slip
- */
-	cairo_translate(cr, -90, 200);
-	/*
 	Write rectangle arround the back of the deposit slip.
 	*/
 	cairo_rectangle(cr, 0, 0, 432, 198);
@@ -410,62 +402,66 @@ gboolean print_deposit_amounts_back(GtkTreeModel* model,
 									GtkTreeIter* iter,
 									gpointer data) {
 	Data_passer* data_passer = (Data_passer*)data;
-	cairo_t* cr = data_passer->cairo_context;
-	gchar* amount;
-	gtk_tree_model_get(model, iter, CHECK_AMOUNT, &amount, -1);
-	gchar* pathstring = gtk_tree_path_to_string(path); /* Memory freed below. */
+	GtkTreePath* tree_path = gtk_tree_model_get_path(model, iter);
+	gchar* pathstring = gtk_tree_path_to_string(tree_path);
 
-	guint64 row_number = 0;
-	GError* gerror = NULL;
+	guint current_row_number = atoi(pathstring);
+	g_print("Inside \n");
 
-	g_ascii_string_to_unsigned(
-		pathstring, /* path of the current row */
-		10, /* Base 10 */
-		0, /* minimum value */
-		100, /* maximum value */
-		&row_number, /* returned row number */
-		&gerror);
-
-	/* Ignore rendering of checks before the second one in the store. */
-	if (row_number < 2) {
+	/* Ignore first two checks as they are not on the back of the slip. */
+	if (current_row_number < 2) {
+		gtk_tree_path_free(tree_path);
+		g_free(pathstring);
 		return FALSE;
 	}
 
-	if (gerror != NULL) {
-		g_print("Failed converstion: %d: %s\n", gerror->code, gerror->message);
-	}
+	gchar* amount; /* Memory freed below. */
+	gtk_tree_model_get(model, iter, CHECK_AMOUNT, &amount, -1);
 
-	cairo_save(cr); /* Save passed context */
+	guint current_amount = atof(amount) * 100;
+	gchar formatted_amount[10];
+	g_snprintf(formatted_amount, 11, "%d", current_amount);
 
-	cairo_rotate(cr, G_PI_2); /* Rotate 90 degrees clockwise relative to previous context */
-	cairo_translate(cr, -90, -432); /* Cancel original translation */
-	cairo_translate(cr, 215, 0); /* Apply translation for the back side.*/
+	cairo_t* cr = data_passer->cairo_context;
 
-	/* The current amount needs to be printed at a particular coordinate
-	in the preview. The horizontal coordinate is fixed, but the vertical coordinate
-	changes depending on index of the current check in the list. The farther down
-	the current check is, the farther down it is in the preview. The vertical coordinate
-	is therefore a function of the `path` passed to the callback. */
+	cairo_save(cr); /* Save current rotation */
+	cairo_move_to(cr, 0, 0);
+	cairo_rotate(cr, -G_PI_2); /* Rotate 90 degrees clockwise relative to previous context */
 
 	cairo_select_font_face(cr, data_passer->font_family_mono, CAIRO_FONT_SLANT_NORMAL, CAIRO_FONT_WEIGHT_BOLD);
 	cairo_set_font_size(cr, data_passer->font_size_monospace);
 
-	/* Get the formatted string corresponding to this check's amount. */
-	gfloat current_amount = atof(amount);
-	gchar* formatted_amount = comma_formatted_amount(current_amount); /* Memory freed below. */
+	Back* back = data_passer->back;
 
-	/* Move to the correct position to print the amount such that it is right-aligned. */
+	guint string_length = strlen(formatted_amount);
+	gchar digit_string[2];
+	digit_string[1] = '\0';
+	gdouble separator_pitch_y = back->check_listing_height / 7.0;
+	gdouble separator_pitch_x = back->check_listing_width / 12.0;
+	/* The left edge of the right-most number is a function of
+	 * top-left corner of check listing, y position
+	 * border width
+	 * pitch between number separators
+	 * separator width
+	 */
+	gdouble current_y = back->check_listing_top_y + ((back->check_listing_horizontal_border_width + separator_pitch_y - back->check_listing_separator_width) / 2.0);
+	gdouble current_x = back->check_listing_top_x + ((back->check_listing_horizontal_border_width + separator_pitch_x - back->check_listing_separator_width) / 2.0) + ((current_row_number - 2) * separator_pitch_x);
+	/* In reverse order, print the current character.*/
 	cairo_text_extents_t extents;
-	cairo_text_extents(cr, formatted_amount, &extents);
+	for (gint i = string_length - 1; i >= 0; i--) {
+		digit_string[0] = formatted_amount[i];
+		cairo_text_extents(cr, digit_string, &extents);
+		cairo_move_to(cr, -(current_y + (extents.width / 2.0)),current_x + (extents.height / 2.0));
+		cairo_show_text(cr, digit_string);
+		current_y += separator_pitch_y;
+	}
 
-	/*Back* back = data_passer->back;
-	cairo_move_to(cr, back->amount_x - extents.width, back->first_amount_y + (row_number * back->amount_pitch));
-	cairo_show_text(cr, formatted_amount); */
-	g_free(formatted_amount);
+	//	cairo_move_to(cr, back->amount_x - extents.width, back->first_amount_y + (row_number * back->amount_pitch));
+	//	cairo_show_text(cr, formatted_amount);
+	//	g_free(formatted_amount);
 	g_free(amount);
 	g_free(pathstring);
-
-	cairo_restore(cr); /* Restore passed context */
+	cairo_restore(cr); /* Restore previous rotation */
 	return FALSE;
 }
 
@@ -844,7 +840,12 @@ void draw_page(GtkPrintOperation* self, GtkPrintContext* context, gint page_nr, 
 						   data_passer->front->amount_boxes_y + (7 * data_passer->front->amount_boxes_height) - 3,
 						   data_passer->front->amount_boxes_width);
 
-	print_deposit_slip_back_static(cr, data_passer);
+	/* If we have more than three checks, output the front and process the back. */
+	if (number_of_checks(data_passer) > 2) {
+		cairo_show_page(cr);
+		print_deposit_slip_back_static(cr, data_passer);
+		gtk_tree_model_foreach(GTK_TREE_MODEL(data_passer->checks_store), print_deposit_amounts_back, data_passer);
+	}
 }
 
 /**
