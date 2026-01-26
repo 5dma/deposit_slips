@@ -235,7 +235,6 @@ GtkWidget* make_tree_view(GtkListStore* list_store, Data_passer* data_passer);
 GtkWidget* get_child_from_parent(GtkWidget* parent, const gchar* child_name);
 void read_configuration_data(Data_passer* data_passer);
 GtkWidget* make_accounts_buttons_hbox(Data_passer* data_passer);
-GtkWidget* make_configuration_view(Data_passer* data_passer);
 void free_memory(GtkWidget* window, gpointer user_data);
 
 gboolean preview_deposit_amounts_front(GtkTreeModel* model,

@@ -698,16 +698,24 @@ void draw_page(GtkPrintOperation* self, GtkPrintContext* context, gint page_nr, 
 	cairo_move_to(cr, front->cash_label_x - extents.width, front->amount_boxes_y + (front->amount_boxes_height / 2) + extents.height / 2);
 	cairo_show_text(cr, "CASH");
 
+	/* Write total from other side.*/
+	cairo_save(cr);  /* New state for smaller font size. */
+	cairo_set_font_size(cr, front->checks_other_items_font_size);
+	cairo_text_extents(cr, "TOTAL FROM OTHER SIDE", &extents);
+	cairo_move_to(cr, front->cash_label_x - extents.width, front->amount_boxes_y + (3 * front->amount_boxes_height) + (front->amount_boxes_height / 2) + extents.height / 2);
+	cairo_show_text(cr, "TOTAL FROM OTHER SIDE");
+	cairo_restore(cr); /* Restore previous font. */
+
 	/* Write Subtotal label*/
 	cairo_text_extents(cr, "SUB TOTAL", &extents);
-	cairo_move_to(cr, front->cash_label_x - extents.width, front->amount_boxes_y + (3 * front->amount_boxes_height) + (front->amount_boxes_height / 2) + extents.height / 2);
+	cairo_move_to(cr, front->cash_label_x - extents.width, front->amount_boxes_y + (4 * front->amount_boxes_height) + (front->amount_boxes_height / 2) + extents.height / 2);
 	cairo_show_text(cr, "SUB TOTAL");
 
 	/* Write Less Cash Received label*/
 	cairo_text_extents(cr, "LESS CASH", &extents);
-	cairo_move_to(cr, front->cash_label_x - extents.width, front->amount_boxes_y + (4 * front->amount_boxes_height) + (front->amount_boxes_height / 2) + (extents.height / 2) - line_spacer);
+	cairo_move_to(cr, front->cash_label_x - extents.width, front->amount_boxes_y + (5 * front->amount_boxes_height) + (front->amount_boxes_height / 2) + (extents.height / 2) - line_spacer);
 	cairo_show_text(cr, "LESS CASH");
-	cairo_move_to(cr, front->cash_label_x - extents.width, front->amount_boxes_y + (4 * front->amount_boxes_height) + (front->amount_boxes_height / 2) + (extents.height / 2) + line_spacer);
+	cairo_move_to(cr, front->cash_label_x - extents.width, front->amount_boxes_y + (5 * front->amount_boxes_height) + (front->amount_boxes_height / 2) + (extents.height / 2) + line_spacer);
 	cairo_show_text(cr, "RECEIVED");
 
 	/* Write Net Deposit label*/
