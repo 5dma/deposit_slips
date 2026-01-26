@@ -44,6 +44,34 @@ void print_amounts_in_boxes(cairo_t* cr,
 	cairo_restore(cr);
 }
 
+/**
+ * Prints triangles on the front side of the deposit slip. There are triangles on the rows
+ * for cash, total from reverse side, subtotal, less cash received.
+ * @param cr Cairo context.
+ * @param front Pointer to a Front structure.
+ */
+void write_triangles(cairo_t* cr, Front* front) {
+	gint rows[] = {0, 3, 4, 5};
+	gint length = sizeof(rows) / sizeof(rows[0]);
+
+	for (int i = 0; i < length; i++) {
+		cairo_new_path(cr);
+		gdouble right_vertex_y = front->amount_boxes_y + (rows[i] * front->amount_boxes_height) + (front->amount_boxes_height / 2);
+		cairo_move_to(cr, 310, right_vertex_y - 3);
+		cairo_line_to(cr, 310, right_vertex_y + 3);
+		cairo_line_to(cr, front->checks_bracket_right_x, right_vertex_y);
+		cairo_close_path(cr);
+		cairo_fill(cr);
+	}
+}
+
+/**
+ * Prints the static shapes and text on the back of a deposit slip.
+ * for cash, total from reverse side, subtotal, less cash received.
+ * ensuring the rightmost character is aligned with the rightmost box.
+ * @param cr Cairo context.
+ * @param front Pointer to a Data_passer structure.
+ */
 void print_deposit_slip_back_static(cairo_t* cr, Data_passer* data_passer) {
 	g_print("Here I am!\n");
 	Back* back = data_passer->back;
@@ -181,7 +209,7 @@ void print_deposit_slip_back_static(cairo_t* cr, Data_passer* data_passer) {
 
 	/* Draw the lines for listing check numbers. Requires setting a line width */
 	cairo_save(cr); /* Set new state for line width */
-	//cairo_set_source_rgb(cr, 0.98, 0, 0);
+	// cairo_set_source_rgb(cr, 0.98, 0, 0);
 	cairo_set_line_width(cr, 0.5);
 	gdouble border_width_offset = back->check_listing_horizontal_border_width / 2.0;
 	current_internal_border_x = back->check_listing_top_x + internal_border_pitch_x - border_width_offset;
@@ -244,7 +272,7 @@ void print_deposit_slip_back_static(cairo_t* cr, Data_passer* data_passer) {
 
 	/* Center the DOLLARS label in the middle of the DOLLARS column. */
 	cairo_text_extents(cr, "DOLLARS", &extents);
-	separator_y = (back->check_listing_height * (4.5/ 7.0)) + back->check_listing_top_y + (extents.width / 2);
+	separator_y = (back->check_listing_height * (4.5 / 7.0)) + back->check_listing_top_y + (extents.width / 2);
 	cairo_move_to(cr, -separator_y, label_baseline);
 	cairo_show_text(cr, "DOLLARS");
 
@@ -262,7 +290,7 @@ void print_deposit_slip_back_static(cairo_t* cr, Data_passer* data_passer) {
 	cairo_text_extents(cr, "TOTAL", &extents);
 	cairo_move_to(cr, -(back->check_listing_top_y + back->check_listing_height + border_width_offset + (back->check_listing_check_number_line_length / 2.0) + (extents.width / 2.0)), back->check_listing_top_x + back->check_listing_width - back->total_offset_x);
 	cairo_show_text(cr, "TOTAL");
-	
+
 	/* Write the MUST BE ENTERED label. */
 	cairo_set_font_size(cr, back->must_be_entered_font_size);
 	cairo_text_extents(cr, "MUST BE ENTERED", &extents);
@@ -272,8 +300,6 @@ void print_deposit_slip_back_static(cairo_t* cr, Data_passer* data_passer) {
 	cairo_text_extents(cr, "ON FRONT SIDE", &extents);
 	cairo_move_to(cr, -(back->check_listing_top_y + back->check_listing_height + border_width_offset + (back->check_listing_check_number_line_length / 2.0) + (extents.width / 2.0)), back->check_listing_top_x + back->check_listing_width - back->on_front_side_offset_x);
 	cairo_show_text(cr, "ON FRONT SIDE");
-	
-
 	cairo_restore(cr); /* remove rotation, font size*/
 }
 
@@ -553,7 +579,7 @@ void draw_page(GtkPrintOperation* self, GtkPrintContext* context, gint page_nr, 
 	gint short_line_top;
 	gint line_bottom;
 
-	for (gint i = 0; i <= 4; i++) {
+	for (gint i = 0; i <= 5; i++) {
 		/* Draw a rectangle for a row of boxes. */
 		line_top = front->amount_boxes_y + (i * front->amount_boxes_height);
 		cairo_rectangle(cr, front->amount_boxes_x,
@@ -584,7 +610,7 @@ void draw_page(GtkPrintOperation* self, GtkPrintContext* context, gint page_nr, 
 		cairo_restore(cr); /* Restore previous line width*/
 	}
 	/* Draw amount boxes for net deposit */
-	line_top = front->amount_boxes_y + (5 * front->amount_boxes_height);
+	line_top = front->amount_boxes_y + (6 * front->amount_boxes_height);
 	gint net_deposit_left_edge = front->amount_boxes_x - front->amount_boxes_width;
 	cairo_rectangle(cr, net_deposit_left_edge,
 					line_top,
@@ -686,9 +712,9 @@ void draw_page(GtkPrintOperation* self, GtkPrintContext* context, gint page_nr, 
 
 	/* Write Net Deposit label*/
 	cairo_text_extents(cr, "DEPOSIT", &extents);
-	cairo_move_to(cr, front->net_deposit_label_x - extents.width, front->amount_boxes_y + (5 * front->amount_boxes_height) + (front->amount_boxes_height / 2) + (extents.height / 2) - line_spacer);
+	cairo_move_to(cr, front->net_deposit_label_x - extents.width, front->amount_boxes_y + (6 * front->amount_boxes_height) + (front->amount_boxes_height / 2) + (extents.height / 2) - line_spacer);
 	cairo_show_text(cr, "NET");
-	cairo_move_to(cr, front->net_deposit_label_x - extents.width, front->amount_boxes_y + (5 * front->amount_boxes_height) + (front->amount_boxes_height / 2) + (extents.height / 2) + line_spacer);
+	cairo_move_to(cr, front->net_deposit_label_x - extents.width, front->amount_boxes_y + (6 * front->amount_boxes_height) + (front->amount_boxes_height / 2) + (extents.height / 2) + line_spacer);
 	cairo_show_text(cr, "DEPOSIT");
 
 	/* Write Checks vertically */
@@ -702,34 +728,13 @@ void draw_page(GtkPrintOperation* self, GtkPrintContext* context, gint page_nr, 
 	}
 
 	/* Write triangles */
-	/* First triangle*/
-	cairo_new_path(cr);
-	cairo_move_to(cr, 310, 40);
-	cairo_line_to(cr, 310, 45);
-	cairo_line_to(cr, front->checks_bracket_right_x, 42.5);
-	cairo_close_path(cr);
-	cairo_fill(cr);
-
-	/* Second triangle */
-	cairo_new_path(cr);
-	cairo_move_to(cr, 310, 94);
-	cairo_line_to(cr, 310, 99);
-	cairo_line_to(cr, front->checks_bracket_right_x, 96.5);
-	cairo_close_path(cr);
-	cairo_fill(cr);
-
-	/* Third triangle */
-	cairo_new_path(cr);
-	cairo_move_to(cr, 310, 111);
-	cairo_line_to(cr, 310, 116);
-	cairo_line_to(cr, front->checks_bracket_right_x, 113.5);
-	cairo_close_path(cr);
-	cairo_fill(cr);
+	write_triangles(cr, front);
 
 	/* Write dollar sign */
 	cairo_save(cr); /* New state for large font size. */
 	cairo_set_font_size(cr, 14);
-	cairo_move_to(cr, 292, 138);
+	cairo_text_extents(cr, "$", &extents);
+	cairo_move_to(cr, 292, front->amount_boxes_y + (6 * front->amount_boxes_height) + (front->amount_boxes_height / 2) + (extents.height / 2) - line_spacer);
 	cairo_show_text(cr, "$");
 	cairo_restore(cr); /* Restore from large font size.*/
 
