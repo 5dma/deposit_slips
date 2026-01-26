@@ -801,7 +801,7 @@ void draw_page(GtkPrintOperation* self, GtkPrintContext* context, gint page_nr, 
 						   data_passer->font_family_mono,
 						   data_passer->front->account_number_human_font_size,
 						   data_passer->front->amount_boxes_x + (7 * data_passer->front->amount_boxes_width + 3),
-						   data_passer->front->amount_boxes_y + (4 * data_passer->front->amount_boxes_height) - 3,
+						   data_passer->front->amount_boxes_y + (5 * data_passer->front->amount_boxes_height) - 3,
 						   data_passer->front->amount_boxes_width);
 
 	/* Write total of checks deposited */
@@ -810,7 +810,7 @@ void draw_page(GtkPrintOperation* self, GtkPrintContext* context, gint page_nr, 
 						   data_passer->font_family_mono,
 						   data_passer->front->account_number_human_font_size,
 						   data_passer->front->amount_boxes_x + (7 * data_passer->front->amount_boxes_width + 3),
-						   data_passer->front->amount_boxes_y + (6 * data_passer->front->amount_boxes_height) - 3,
+						   data_passer->front->amount_boxes_y + (7 * data_passer->front->amount_boxes_height) - 3,
 						   data_passer->front->amount_boxes_width);
 
 	print_deposit_slip_back_static(cr, data_passer);
