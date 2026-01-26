@@ -406,7 +406,6 @@ gboolean print_deposit_amounts_back(GtkTreeModel* model,
 	gchar* pathstring = gtk_tree_path_to_string(tree_path);
 
 	guint current_row_number = atoi(pathstring);
-	g_print("Inside \n");
 
 	/* Ignore first two checks as they are not on the back of the slip. */
 	if (current_row_number < 2) {
@@ -438,27 +437,48 @@ gboolean print_deposit_amounts_back(GtkTreeModel* model,
 	digit_string[1] = '\0';
 	gdouble separator_pitch_y = back->check_listing_height / 7.0;
 	gdouble separator_pitch_x = back->check_listing_width / 12.0;
-	/* The left edge of the right-most number is a function of
+	/* The left edge of the right-most number is a function of the following:
 	 * top-left corner of check listing, y position
 	 * border width
 	 * pitch between number separators
 	 * separator width
 	 */
 	gdouble current_y = back->check_listing_top_y + ((back->check_listing_horizontal_border_width + separator_pitch_y - back->check_listing_separator_width) / 2.0);
+
+	/* The x position of the current number is a function of the following:
+	 * top-left corner of check listing, x position
+	 * border width
+	 * pitch between horizontal borders
+	 * separator width
+	 * current row number
+	 */
 	gdouble current_x = back->check_listing_top_x + ((back->check_listing_horizontal_border_width + separator_pitch_x - back->check_listing_separator_width) / 2.0) + ((current_row_number - 2) * separator_pitch_x);
 	/* In reverse order, print the current character.*/
 	cairo_text_extents_t extents;
 	for (gint i = string_length - 1; i >= 0; i--) {
 		digit_string[0] = formatted_amount[i];
 		cairo_text_extents(cr, digit_string, &extents);
-		cairo_move_to(cr, -(current_y + (extents.width / 2.0)),current_x + (extents.height / 2.0));
+		cairo_move_to(cr, -(current_y + (extents.width / 2.0)), current_x + (extents.height / 2.0));
 		cairo_show_text(cr, digit_string);
 		current_y += separator_pitch_y;
 	}
 
-	//	cairo_move_to(cr, back->amount_x - extents.width, back->first_amount_y + (row_number * back->amount_pitch));
-	//	cairo_show_text(cr, formatted_amount);
-	//	g_free(formatted_amount);
+	/* If printed the last check on the back side, print the subtotal. */
+	if ((current_row_number + 1) == number_of_checks(data_passer)) {
+		g_print("I am at the last row\n");
+		g_snprintf(formatted_amount, 11, "%d", (guint)data_passer->total_back_side * 100);
+		string_length = strlen(formatted_amount);
+		current_y = back->check_listing_top_y + ((back->check_listing_horizontal_border_width + separator_pitch_y - back->check_listing_separator_width) / 2.0);
+		current_x = back->check_listing_top_x + back->check_listing_width;
+		for (gint i = string_length - 1; i >= 0; i--) {
+			digit_string[0] = formatted_amount[i];
+			cairo_text_extents(cr, digit_string, &extents);
+			cairo_move_to(cr, -(current_y + (extents.width / 2.0)), current_x - (extents.height / 2.0));
+			cairo_show_text(cr, digit_string);
+			current_y += separator_pitch_y;
+		}
+	}
+
 	g_free(amount);
 	g_free(pathstring);
 	cairo_restore(cr); /* Restore previous rotation */
