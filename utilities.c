@@ -92,6 +92,7 @@ void free_memory(GtkWidget *window, gpointer data) {
 	gtk_list_store_clear(data_passer->list_store_master);
 	gtk_list_store_clear(data_passer->list_store_temporary);
 	g_object_unref(data_passer->css_provider);
+	 g_object_unref( data_passer->application_icon);
 	g_free(data_passer);
 }
 

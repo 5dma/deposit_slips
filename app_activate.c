@@ -44,12 +44,16 @@ void on_app_activate(GApplication *app, gpointer data) {
 
 
 
+
+
 	data_passer->css_provider = gtk_css_provider_new();
 	gtk_css_provider_load_from_path(data_passer->css_provider, "/home/abba/programming/c_programs/deposit_slips/styles.css", NULL);
 	gtk_style_context_add_provider_for_screen(gdk_screen_get_default(), GTK_STYLE_PROVIDER(data_passer->css_provider), GTK_STYLE_PROVIDER_PRIORITY_USER);
 
 	GtkWidget *window = gtk_application_window_new(GTK_APPLICATION(app));
 	gtk_window_set_resizable(GTK_WINDOW(window), FALSE);
+	data_passer->application_icon = gdk_pixbuf_new_from_file ("/home/abba/.deposit_slip/icon.png", NULL);
+	gtk_window_set_icon (GTK_WINDOW(window), data_passer->application_icon);
 	data_passer->application_window = window;
 
 	GtkWidget *notebook = gtk_notebook_new();

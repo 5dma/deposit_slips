@@ -217,6 +217,8 @@ typedef struct Data_passer {
 	GdkRGBA new_account_foreground;
 	/** Black text color for rendering the new account row. */
 	GdkRGBA existing_account_foreground;
+	/** Pointer to application icon. */
+	GdkPixbuf *application_icon;
 } Data_passer;
 
 /**
