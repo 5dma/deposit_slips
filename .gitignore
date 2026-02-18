@@ -8,3 +8,8 @@ latex/**
 cairo_test/**
 .vscode/**
 notes/**
+*.cbp
+*.depend
+*.layout
+.project
+bin/**
