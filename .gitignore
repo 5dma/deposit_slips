@@ -12,4 +12,7 @@ notes/**
 *.depend
 *.layout
 .project
+.cproject
 bin/**
+Debug/**
+.settings/**

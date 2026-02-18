@@ -465,8 +465,7 @@ gboolean print_deposit_amounts_back(GtkTreeModel* model,
 
 	/* If printed the last check on the back side, print the subtotal. */
 	if ((current_row_number + 1) == number_of_checks(data_passer)) {
-		g_print("I am at the last row\n");
-		g_snprintf(formatted_amount, 11, "%d", (guint)data_passer->total_back_side * 100);
+		g_snprintf(formatted_amount, 11, "%d", (guint)(data_passer->total_back_side * 100));
 		string_length = strlen(formatted_amount);
 		current_y = back->check_listing_top_y + ((back->check_listing_horizontal_border_width + separator_pitch_y - back->check_listing_separator_width) / 2.0);
 		current_x = back->check_listing_top_x + back->check_listing_width;
