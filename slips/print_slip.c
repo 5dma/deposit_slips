@@ -362,10 +362,9 @@ gboolean print_deposit_amounts_front(GtkTreeModel* model,
 	}
 
 	/* Get the formatted string corresponding to this check's amount. */
-	guint current_amount = atof(amount) * 100;
+	gfloat current_amount = atof(amount) * 100;
 	gchar formatted_amount[10];
-	g_snprintf(formatted_amount, 11, "%d", current_amount);
-
+	g_snprintf(formatted_amount, 11, "%3.0f", current_amount);
 	print_amounts_in_boxes(cr,
 						   formatted_amount,
 						   data_passer->font_family_mono,
@@ -417,9 +416,9 @@ gboolean print_deposit_amounts_back(GtkTreeModel* model,
 	gchar* amount; /* Memory freed below. */
 	gtk_tree_model_get(model, iter, CHECK_AMOUNT, &amount, -1);
 
-	guint current_amount = atof(amount) * 100;
+	gfloat current_amount = atof(amount) * 100;
 	gchar formatted_amount[10];
-	g_snprintf(formatted_amount, 11, "%d", current_amount);
+	g_snprintf(formatted_amount, 11, "%3.0f", current_amount);
 
 	cairo_t* cr = data_passer->cairo_context;
 
